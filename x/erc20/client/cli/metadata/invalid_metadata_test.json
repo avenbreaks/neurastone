@@ -1,0 +1,21 @@
+{
+  "metadata": [
+    {
+      "description": 1,
+      "denom_units": [
+        {
+          "denom": "aISLM",
+          "exponent": 0
+        },
+        {
+          "denom": "ISLM",
+          "exponent": 18
+        }
+      ],
+      "base": "aISLM",
+      "display": "aISLM",
+      "name": "Islamic Coin",
+      "symbol": "ISLM"
+    }
+  ]
+}
