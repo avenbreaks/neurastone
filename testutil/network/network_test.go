@@ -14,7 +14,7 @@ import (
 
 	"github.com/avenbreaks/neurastone/server/config"
 	"github.com/avenbreaks/neurastone/testutil/network"
-	haqqnetwork "github.com/avenbreaks/neurastone/testutil/network"
+	neuranetwork "github.com/avenbreaks/neurastone/testutil/network"
 )
 
 type IntegrationTestSuite struct {
@@ -27,7 +27,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
 	var err error
-	cfg := haqqnetwork.DefaultConfig()
+	cfg := neuranetwork.DefaultConfig()
 	cfg.JSONRPCAddress = config.DefaultJSONRPCAddress
 	cfg.NumValidators = 1
 

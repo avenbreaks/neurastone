@@ -26,7 +26,7 @@ import (
 	"github.com/avenbreaks/neurastone/encoding"
 	"github.com/avenbreaks/neurastone/testutil"
 	utiltx "github.com/avenbreaks/neurastone/testutil/tx"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/utils"
 	epochstypes "github.com/avenbreaks/neurastone/x/epochs/types"
 	"github.com/avenbreaks/neurastone/x/liquidvesting/types"
@@ -36,7 +36,7 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	ctx         sdk.Context
-	app         *app.Haqq
+	app         *app.neura
 	queryClient types.QueryClient
 	address     common.Address
 	consAddress sdk.ConsAddress
@@ -96,7 +96,7 @@ func (suite *KeeperTestSuite) DoSetupTest(t *testing.T) {
 		suite.app.EpochsKeeper.SetEpochInfo(suite.ctx, epoch)
 	}
 
-	acc := &haqqtypes.EthAccount{
+	acc := &neuratypes.EthAccount{
 		BaseAccount: authtypes.NewBaseAccount(suite.address.Bytes(), nil, 0, 0),
 		CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 	}

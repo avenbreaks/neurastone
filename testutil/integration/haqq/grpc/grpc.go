@@ -5,7 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	commongrpc "github.com/avenbreaks/neurastone/testutil/integration/common/grpc"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 	feemarkettypes "github.com/avenbreaks/neurastone/x/feemarket/types"
 )

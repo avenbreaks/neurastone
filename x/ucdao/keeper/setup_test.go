@@ -27,7 +27,7 @@ import (
 	"github.com/avenbreaks/neurastone/encoding"
 	"github.com/avenbreaks/neurastone/testutil"
 	utiltx "github.com/avenbreaks/neurastone/testutil/tx"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/utils"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 	"github.com/avenbreaks/neurastone/x/ucdao/types"
@@ -37,7 +37,7 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	ctx         sdk.Context
-	app         *app.Haqq
+	app         *app.neura
 	queryClient types.QueryClient
 	priv        *ethsecp256k1.PrivKey
 	address     sdk.AccAddress
@@ -85,7 +85,7 @@ func (suite *KeeperTestSuite) SetupApp(checkTx bool) {
 	suite.consAddress = sdk.ConsAddress(priv.PubKey().Address())
 
 	header := testutil.NewHeader(
-		1, time.Now().UTC(), "haqq_11235-1", suite.consAddress, nil, nil,
+		1, time.Now().UTC(), "neura_11235-1", suite.consAddress, nil, nil,
 	)
 
 	suite.ctx = suite.app.BaseApp.NewContext(checkTx, header)
@@ -94,7 +94,7 @@ func (suite *KeeperTestSuite) SetupApp(checkTx bool) {
 	types.RegisterQueryServer(queryHelper, suite.app.DaoKeeper)
 	suite.queryClient = types.NewQueryClient(queryHelper)
 
-	acc := &haqqtypes.EthAccount{
+	acc := &neuratypes.EthAccount{
 		BaseAccount: authtypes.NewBaseAccount(sdk.AccAddress(suite.address.Bytes()), nil, 0, 0),
 		CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 	}

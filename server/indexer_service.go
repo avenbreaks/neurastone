@@ -8,7 +8,7 @@ import (
 	rpcclient "github.com/cometbft/cometbft/rpc/client"
 	"github.com/cometbft/cometbft/types"
 
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 )
 
 const (
@@ -21,13 +21,13 @@ const (
 type EVMIndexerService struct {
 	service.BaseService
 
-	txIdxr haqqtypes.EVMTxIndexer
+	txIdxr neuratypes.EVMTxIndexer
 	client rpcclient.Client
 }
 
 // NewEVMIndexerService returns a new service instance.
 func NewEVMIndexerService(
-	txIdxr haqqtypes.EVMTxIndexer,
+	txIdxr neuratypes.EVMTxIndexer,
 	client rpcclient.Client,
 ) *EVMIndexerService {
 	is := &EVMIndexerService{txIdxr: txIdxr, client: client}

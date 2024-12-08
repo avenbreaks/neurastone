@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/avenbreaks/neurastone/crypto/ethsecp256k1"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/x/evm"
 	"github.com/avenbreaks/neurastone/x/evm/statedb"
 	"github.com/avenbreaks/neurastone/x/evm/types"
@@ -118,7 +118,7 @@ func (suite *EvmTestSuite) TestInitGenesis() {
 		{
 			"ignore empty account code checking with non-empty codehash",
 			func() {
-				ethAcc := &haqqtypes.EthAccount{
+				ethAcc := &neuratypes.EthAccount{
 					BaseAccount: authtypes.NewBaseAccount(address.Bytes(), nil, 0, 0),
 					CodeHash:    common.BytesToHash([]byte{1, 2, 3}).Hex(),
 				}

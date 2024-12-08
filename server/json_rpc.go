@@ -15,7 +15,7 @@ import (
 
 	"github.com/avenbreaks/neurastone/rpc"
 	"github.com/avenbreaks/neurastone/server/config"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 )
 
 // StartJSONRPC starts the JSON-RPC server
@@ -24,7 +24,7 @@ func StartJSONRPC(ctx *server.Context,
 	tmRPCAddr,
 	tmEndpoint string,
 	config *config.Config,
-	indexer haqqtypes.EVMTxIndexer,
+	indexer neuratypes.EVMTxIndexer,
 ) (*http.Server, chan struct{}, error) {
 	tmWsClient := ConnectTmWS(tmRPCAddr, tmEndpoint, ctx.Logger)
 

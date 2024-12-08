@@ -33,7 +33,7 @@ prometheus.scrape "tendermint" {
 		{
 			"__address__" = "localhost:26660",
 			"instance" = "@instance@",
-			"app" = "haqqd-tendermint",
+			"app" = "neurad-tendermint",
 		},
 	]
 }

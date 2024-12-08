@@ -19,15 +19,15 @@ import (
 	"golang.org/x/crypto/sha3"
 
 	"github.com/avenbreaks/neurastone/crypto/ethsecp256k1"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 )
 
 const (
-	MainNetChainID   = "haqq_11235"
-	TestEdge1ChainID = "haqq_53211"
-	TestEdge2ChainID = "haqq_54211"
-	LocalNetChainID  = "haqq_121799"
-	// BaseDenom defines the Haqq Network mainnet denomination
+	MainNetChainID   = "neura_11235"
+	TestEdge1ChainID = "neura_53211"
+	TestEdge2ChainID = "neura_54211"
+	LocalNetChainID  = "neura_121799"
+	// BaseDenom defines the neura Network mainnet denomination
 	BaseDenom = "aISLM"
 )
 
@@ -75,11 +75,11 @@ func IsSupportedKey(pubkey cryptotypes.PubKey) bool {
 	}
 }
 
-// GetHaqqAddressFromBech32 returns the sdk.Account address of given address,
+// GetneuraAddressFromBech32 returns the sdk.Account address of given address,
 // while also changing bech32 human readable prefix (HRP) to the value set on
-// the global sdk.Config (eg: `haqq`).
+// the global sdk.Config (eg: `neura`).
 // The function fails if the provided bech32 address is invalid.
-func GetHaqqAddressFromBech32(address string) (sdk.AccAddress, error) {
+func GetneuraAddressFromBech32(address string) (sdk.AccAddress, error) {
 	bech32Prefix := strings.SplitN(address, "1", 2)[0]
 	if bech32Prefix == address {
 		return nil, errorsmod.Wrapf(errortypes.ErrInvalidAddress, "invalid bech32 address: %s", address)
@@ -193,12 +193,12 @@ func CalculateStorageKey(addr string, i int) string {
 
 // IsContractAccount checks if the given account is a contract account
 func IsContractAccount(acc authtypes.AccountI) error {
-	contractETHAccount, ok := acc.(haqqtypes.EthAccountI)
+	contractETHAccount, ok := acc.(neuratypes.EthAccountI)
 	if !ok {
 		return fmt.Errorf("account is not an eth account")
 	}
 
-	if contractETHAccount.Type() != haqqtypes.AccountTypeContract {
+	if contractETHAccount.Type() != neuratypes.AccountTypeContract {
 		return fmt.Errorf("account is not a contract account")
 	}
 	return nil

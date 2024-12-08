@@ -27,7 +27,7 @@ import (
 	"github.com/avenbreaks/neurastone/precompiles/staking/testdata"
 	"github.com/avenbreaks/neurastone/precompiles/testutil"
 	"github.com/avenbreaks/neurastone/precompiles/testutil/contracts"
-	haqqtestutil "github.com/avenbreaks/neurastone/testutil"
+	neuratestutil "github.com/avenbreaks/neurastone/testutil"
 	testutiltx "github.com/avenbreaks/neurastone/testutil/tx"
 	vestingtypes "github.com/avenbreaks/neurastone/x/vesting/types"
 )
@@ -379,7 +379,7 @@ var _ = Describe("Calling staking precompile directly", func() {
 
 			// set up an approval with a different key than the one used to sign the transaction.
 			differentAddr, differentPriv := testutiltx.NewAddrKey()
-			err := haqqtestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, differentAddr.Bytes(), 1e18)
+			err := neuratestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, differentAddr.Bytes(), 1e18)
 			Expect(err).To(BeNil(), "error while funding account")
 
 			s.NextBlock()
@@ -754,7 +754,7 @@ var _ = Describe("Calling staking precompile directly", func() {
 			// Setup vesting account
 			funder = s.address
 			vestAcc, vestAccPriv = testutiltx.NewAddrKey()
-			vestingAmtTotal := haqqtestutil.TestVestingSchedule.TotalVestingCoins
+			vestingAmtTotal := neuratestutil.TestVestingSchedule.TotalVestingCoins
 
 			clawbackAccount = s.setupVestingAccount(funder.Bytes(), vestAcc.Bytes())
 
@@ -779,7 +779,7 @@ var _ = Describe("Calling staking precompile directly", func() {
 				unlocked := clawbackAccount.GetUnlockedCoins(s.ctx.BlockTime())
 				zeroCoins := sdk.NewCoins(sdk.NewCoin(s.bondDenom, math.ZeroInt()))
 				Expect(vested).To(Equal(zeroCoins), "expected different vested coins")
-				Expect(unvested).To(Equal(haqqtestutil.TestVestingSchedule.TotalVestingCoins), "expected different unvested coins")
+				Expect(unvested).To(Equal(neuratestutil.TestVestingSchedule.TotalVestingCoins), "expected different unvested coins")
 				Expect(unlocked).To(Equal(zeroCoins), "expected different unlocked coins")
 			})
 
@@ -799,12 +799,12 @@ var _ = Describe("Calling staking precompile directly", func() {
 			It("Should be able to delegate tokens not involved in vesting schedule", func() {
 				// send some coins to the vesting account
 				coinsToDelegate := sdk.NewCoins(sdk.NewCoin(s.bondDenom, math.NewInt(1e18)))
-				err := haqqtestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), coinsToDelegate)
+				err := neuratestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), coinsToDelegate)
 				Expect(err).To(BeNil())
 
 				// check balance is updated
 				balance := s.app.BankKeeper.GetBalance(s.ctx, clawbackAccount.GetAddress(), s.bondDenom)
-				Expect(balance).To(Equal(accountGasCoverage[0].Add(haqqtestutil.TestVestingSchedule.TotalVestingCoins[0]).Add(coinsToDelegate[0])))
+				Expect(balance).To(Equal(accountGasCoverage[0].Add(neuratestutil.TestVestingSchedule.TotalVestingCoins[0]).Add(coinsToDelegate[0])))
 
 				delegateArgs := defaultDelegateArgs.WithArgs(
 					vestAcc, valAddr.String(), coinsToDelegate.AmountOf(s.bondDenom).BigInt(),
@@ -821,27 +821,27 @@ var _ = Describe("Calling staking precompile directly", func() {
 
 				// check vesting balance is untouched
 				balancePost := s.app.BankKeeper.GetBalance(s.ctx, clawbackAccount.GetAddress(), s.bondDenom)
-				Expect(balancePost.IsGTE(haqqtestutil.TestVestingSchedule.TotalVestingCoins[0])).To(BeTrue())
+				Expect(balancePost.IsGTE(neuratestutil.TestVestingSchedule.TotalVestingCoins[0])).To(BeTrue())
 			})
 		})
 
 		Context("after first vesting period and before lockup - some vested tokens, but still all locked", func() {
 			BeforeEach(func() {
 				// Surpass cliff but none of lockup duration
-				cliffDuration := time.Duration(haqqtestutil.TestVestingSchedule.CliffPeriodLength)
+				cliffDuration := time.Duration(neuratestutil.TestVestingSchedule.CliffPeriodLength)
 				s.NextBlockAfter(cliffDuration * time.Second)
 
 				// Check if some, but not all tokens are vested
 				vested = clawbackAccount.GetVestedCoins(s.ctx.BlockTime())
-				expVested := sdk.NewCoins(sdk.NewCoin(s.bondDenom, haqqtestutil.TestVestingSchedule.VestedCoinsPerPeriod[0].Amount.Mul(math.NewInt(haqqtestutil.TestVestingSchedule.CliffMonths))))
-				Expect(vested).NotTo(Equal(haqqtestutil.TestVestingSchedule.TotalVestingCoins), "expected some tokens to have been vested")
+				expVested := sdk.NewCoins(sdk.NewCoin(s.bondDenom, neuratestutil.TestVestingSchedule.VestedCoinsPerPeriod[0].Amount.Mul(math.NewInt(neuratestutil.TestVestingSchedule.CliffMonths))))
+				Expect(vested).NotTo(Equal(neuratestutil.TestVestingSchedule.TotalVestingCoins), "expected some tokens to have been vested")
 				Expect(vested).To(Equal(expVested), "expected different vested amount")
 
 				// check the vested tokens are still locked
 				unlockedVested = clawbackAccount.GetUnlockedVestedCoins(s.ctx.BlockTime())
 				Expect(unlockedVested).To(Equal(sdk.Coins{}))
 
-				vestingAmtTotal := haqqtestutil.TestVestingSchedule.TotalVestingCoins
+				vestingAmtTotal := neuratestutil.TestVestingSchedule.TotalVestingCoins
 				res, err := s.app.VestingKeeper.Balances(s.ctx, &vestingtypes.QueryBalancesRequest{Address: clawbackAccount.Address})
 				Expect(err).To(BeNil())
 				Expect(res.Vested).To(Equal(expVested))
@@ -868,12 +868,12 @@ var _ = Describe("Calling staking precompile directly", func() {
 			It("Should be able to delegate locked vested tokens + free tokens (not in vesting schedule)", func() {
 				// send some coins to the vesting account
 				amt := sdk.NewCoins(sdk.NewCoin(s.bondDenom, math.NewInt(1e18)))
-				err := haqqtestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), amt)
+				err := neuratestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), amt)
 				Expect(err).To(BeNil())
 
 				// check balance is updated
 				balance := s.app.BankKeeper.GetBalance(s.ctx, clawbackAccount.GetAddress(), s.bondDenom)
-				Expect(balance).To(Equal(accountGasCoverage[0].Add(haqqtestutil.TestVestingSchedule.TotalVestingCoins[0]).Add(amt[0])))
+				Expect(balance).To(Equal(accountGasCoverage[0].Add(neuratestutil.TestVestingSchedule.TotalVestingCoins[0]).Add(amt[0])))
 
 				coinsToDelegate := amt.Add(vested...)
 
@@ -895,7 +895,7 @@ var _ = Describe("Calling staking precompile directly", func() {
 		Context("Between first and second lockup periods - vested coins are unlocked", func() {
 			BeforeEach(func() {
 				// Surpass first lockup
-				vestDuration := time.Duration(haqqtestutil.TestVestingSchedule.LockupPeriodLength)
+				vestDuration := time.Duration(neuratestutil.TestVestingSchedule.LockupPeriodLength)
 				s.NextBlockAfter(vestDuration * time.Second)
 
 				// Check if some, but not all tokens are vested and unlocked
@@ -903,14 +903,14 @@ var _ = Describe("Calling staking precompile directly", func() {
 				unlocked := clawbackAccount.GetUnlockedCoins(s.ctx.BlockTime())
 				unlockedVested = clawbackAccount.GetUnlockedVestedCoins(s.ctx.BlockTime())
 
-				expVested := sdk.NewCoins(sdk.NewCoin(s.bondDenom, haqqtestutil.TestVestingSchedule.VestedCoinsPerPeriod[0].Amount.Mul(math.NewInt(haqqtestutil.TestVestingSchedule.LockupMonths))))
+				expVested := sdk.NewCoins(sdk.NewCoin(s.bondDenom, neuratestutil.TestVestingSchedule.VestedCoinsPerPeriod[0].Amount.Mul(math.NewInt(neuratestutil.TestVestingSchedule.LockupMonths))))
 				expUnlockedVested := expVested
 
-				Expect(vested).NotTo(Equal(haqqtestutil.TestVestingSchedule.TotalVestingCoins), "expected not all tokens to be vested")
+				Expect(vested).NotTo(Equal(neuratestutil.TestVestingSchedule.TotalVestingCoins), "expected not all tokens to be vested")
 				Expect(vested).To(Equal(expVested), "expected different amount of vested tokens")
 				// all vested coins are unlocked
 				Expect(unlockedVested).To(Equal(vested))
-				Expect(unlocked).To(Equal(haqqtestutil.TestVestingSchedule.UnlockedCoinsPerLockup))
+				Expect(unlocked).To(Equal(neuratestutil.TestVestingSchedule.UnlockedCoinsPerLockup))
 				Expect(unlockedVested).To(Equal(expUnlockedVested))
 			})
 			It("Should be able to delegate unlocked vested tokens", func() {
@@ -1833,7 +1833,7 @@ var _ = Describe("Calling staking precompile via Solidity", func() {
 
 			It("should not delegate when sending from a different address", func() {
 				newAddr, newPriv := testutiltx.NewAccAddressAndKey()
-				err := haqqtestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, newAddr, 1e18)
+				err := neuratestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, newAddr, 1e18)
 				Expect(err).To(BeNil(), "error while funding account: %v", err)
 
 				s.NextBlock()
@@ -1898,7 +1898,7 @@ var _ = Describe("Calling staking precompile via Solidity", func() {
 				clawbackAccount = s.setupVestingAccount(funder.Bytes(), vestAcc.Bytes())
 
 				// Check if all tokens are unvested at vestingStart
-				totalVestingCoins := haqqtestutil.TestVestingSchedule.TotalVestingCoins
+				totalVestingCoins := neuratestutil.TestVestingSchedule.TotalVestingCoins
 				unvested = clawbackAccount.GetVestingCoins(s.ctx.BlockTime())
 				vested = clawbackAccount.GetVestedCoins(s.ctx.BlockTime())
 				Expect(unvested).To(Equal(totalVestingCoins))
@@ -1924,7 +1924,7 @@ var _ = Describe("Calling staking precompile via Solidity", func() {
 					unlocked := clawbackAccount.GetUnlockedCoins(s.ctx.BlockTime())
 					zeroCoins := sdk.NewCoins(sdk.NewCoin(s.bondDenom, math.ZeroInt()))
 					Expect(vested).To(Equal(zeroCoins))
-					Expect(unvested).To(Equal(haqqtestutil.TestVestingSchedule.TotalVestingCoins))
+					Expect(unvested).To(Equal(neuratestutil.TestVestingSchedule.TotalVestingCoins))
 					Expect(unlocked).To(Equal(zeroCoins))
 				})
 
@@ -1940,7 +1940,7 @@ var _ = Describe("Calling staking precompile via Solidity", func() {
 				It("Should be able to delegate tokens not involved in vesting schedule", func() {
 					// send some coins to the vesting account
 					coinsToDelegate := sdk.NewCoins(sdk.NewCoin(s.bondDenom, math.NewInt(1e18)))
-					err := haqqtestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), coinsToDelegate)
+					err := neuratestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), coinsToDelegate)
 					Expect(err).To(BeNil())
 
 					delegateArgs := defaultArgs.WithArgs(
@@ -1961,20 +1961,20 @@ var _ = Describe("Calling staking precompile via Solidity", func() {
 			Context("after first vesting period and before lockup - some vested tokens, but still all locked", func() {
 				BeforeEach(func() {
 					// Surpass cliff but none of lockup duration
-					cliffDuration := time.Duration(haqqtestutil.TestVestingSchedule.CliffPeriodLength)
+					cliffDuration := time.Duration(neuratestutil.TestVestingSchedule.CliffPeriodLength)
 					s.NextBlockAfter(cliffDuration * time.Second)
 
 					// Check if some, but not all tokens are vested
 					vested = clawbackAccount.GetVestedCoins(s.ctx.BlockTime())
-					expVested := sdk.NewCoins(sdk.NewCoin(s.bondDenom, haqqtestutil.TestVestingSchedule.VestedCoinsPerPeriod[0].Amount.Mul(math.NewInt(haqqtestutil.TestVestingSchedule.CliffMonths))))
-					Expect(vested).NotTo(Equal(haqqtestutil.TestVestingSchedule.TotalVestingCoins))
+					expVested := sdk.NewCoins(sdk.NewCoin(s.bondDenom, neuratestutil.TestVestingSchedule.VestedCoinsPerPeriod[0].Amount.Mul(math.NewInt(neuratestutil.TestVestingSchedule.CliffMonths))))
+					Expect(vested).NotTo(Equal(neuratestutil.TestVestingSchedule.TotalVestingCoins))
 					Expect(vested).To(Equal(expVested))
 
 					// check the vested tokens are still locked
 					unlockedVested = clawbackAccount.GetUnlockedVestedCoins(s.ctx.BlockTime())
 					Expect(unlockedVested).To(Equal(sdk.Coins{}))
 
-					vestingAmtTotal := haqqtestutil.TestVestingSchedule.TotalVestingCoins
+					vestingAmtTotal := neuratestutil.TestVestingSchedule.TotalVestingCoins
 					res, err := s.app.VestingKeeper.Balances(s.ctx, &vestingtypes.QueryBalancesRequest{Address: clawbackAccount.Address})
 					Expect(err).To(BeNil())
 					Expect(res.Vested).To(Equal(expVested))
@@ -2001,7 +2001,7 @@ var _ = Describe("Calling staking precompile via Solidity", func() {
 				It("Should be able to delegate locked vested tokens + free tokens (not in vesting schedule)", func() {
 					// send some coins to the vesting account
 					amt := sdk.NewCoins(sdk.NewCoin(s.bondDenom, math.NewInt(1e18)))
-					err := haqqtestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), amt)
+					err := neuratestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), amt)
 					Expect(err).To(BeNil())
 
 					coinsToDelegate := amt.Add(vested...)
@@ -2024,7 +2024,7 @@ var _ = Describe("Calling staking precompile via Solidity", func() {
 			Context("Between first and second lockup periods - vested coins are unlocked", func() {
 				BeforeEach(func() {
 					// Surpass first lockup
-					vestDuration := time.Duration(haqqtestutil.TestVestingSchedule.LockupPeriodLength)
+					vestDuration := time.Duration(neuratestutil.TestVestingSchedule.LockupPeriodLength)
 					s.NextBlockAfter(vestDuration * time.Second)
 
 					// Check if some, but not all tokens are vested and unlocked
@@ -2032,14 +2032,14 @@ var _ = Describe("Calling staking precompile via Solidity", func() {
 					unlocked := clawbackAccount.GetUnlockedCoins(s.ctx.BlockTime())
 					unlockedVested = clawbackAccount.GetUnlockedVestedCoins(s.ctx.BlockTime())
 
-					expVested := sdk.NewCoins(sdk.NewCoin(s.bondDenom, haqqtestutil.TestVestingSchedule.VestedCoinsPerPeriod[0].Amount.Mul(math.NewInt(haqqtestutil.TestVestingSchedule.LockupMonths))))
+					expVested := sdk.NewCoins(sdk.NewCoin(s.bondDenom, neuratestutil.TestVestingSchedule.VestedCoinsPerPeriod[0].Amount.Mul(math.NewInt(neuratestutil.TestVestingSchedule.LockupMonths))))
 					expUnlockedVested := expVested
 
-					Expect(vested).NotTo(Equal(haqqtestutil.TestVestingSchedule.TotalVestingCoins))
+					Expect(vested).NotTo(Equal(neuratestutil.TestVestingSchedule.TotalVestingCoins))
 					Expect(vested).To(Equal(expVested))
 					// all vested coins are unlocked
 					Expect(unlockedVested).To(Equal(vested))
-					Expect(unlocked).To(Equal(haqqtestutil.TestVestingSchedule.UnlockedCoinsPerLockup))
+					Expect(unlocked).To(Equal(neuratestutil.TestVestingSchedule.UnlockedCoinsPerLockup))
 					Expect(unlockedVested).To(Equal(expUnlockedVested))
 				})
 				It("Should be able to delegate unlocked vested tokens", func() {
@@ -2142,7 +2142,7 @@ var _ = Describe("Calling staking precompile via Solidity", func() {
 
 			It("should not undelegate when called from a different address", func() {
 				newAddr, newPriv := testutiltx.NewAccAddressAndKey()
-				err := haqqtestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, newAddr, 1e18)
+				err := neuratestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, newAddr, 1e18)
 				Expect(err).To(BeNil(), "error while funding account: %v", err)
 
 				s.NextBlock()
@@ -2246,7 +2246,7 @@ var _ = Describe("Calling staking precompile via Solidity", func() {
 
 			It("should not redelegate when calling from a different address", func() {
 				newAddr, newPriv := testutiltx.NewAccAddressAndKey()
-				err := haqqtestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, newAddr, 1e18)
+				err := neuratestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, newAddr, 1e18)
 				Expect(err).To(BeNil(), "error while funding account: %v", err)
 
 				s.NextBlock()
@@ -2391,7 +2391,7 @@ var _ = Describe("Calling staking precompile via Solidity", func() {
 
 			It("should not cancel unbonding delegations when calling from a different address", func() {
 				newAddr, newPriv := testutiltx.NewAccAddressAndKey()
-				err := haqqtestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, newAddr, 1e18)
+				err := neuratestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, newAddr, 1e18)
 				Expect(err).To(BeNil(), "error while funding account: %v", err)
 
 				s.NextBlock()
@@ -3114,11 +3114,11 @@ var _ = Describe("Batching cosmos and eth interactions", func() {
 		s.NextBlock()
 
 		// Deploy StakingCaller contract
-		contractAddr, err = haqqtestutil.DeployContract(s.ctx, s.app, s.privKey, s.queryClientEVM, testdata.StakingCallerContract)
+		contractAddr, err = neuratestutil.DeployContract(s.ctx, s.app, s.privKey, s.queryClientEVM, testdata.StakingCallerContract)
 		Expect(err).To(BeNil(), "error while deploying the StakingCaller contract")
 
 		// Deploy ERC20 contract
-		erc20ContractAddr, err = haqqtestutil.DeployContract(s.ctx, s.app, s.privKey, s.queryClientEVM, erc20Contract,
+		erc20ContractAddr, err = neuratestutil.DeployContract(s.ctx, s.app, s.privKey, s.queryClientEVM, erc20Contract,
 			erc20Name, erc20Token, erc20Decimals,
 		)
 		Expect(err).To(BeNil(), "error while deploying the ERC20 contract")

@@ -29,7 +29,7 @@ import (
 	"github.com/avenbreaks/neurastone/app"
 	"github.com/avenbreaks/neurastone/crypto/ethsecp256k1"
 	"github.com/avenbreaks/neurastone/server/config"
-	haqqtypes "github.com/avenbreaks/neurastone/utils"
+	neuratypes "github.com/avenbreaks/neurastone/utils"
 	erc20types "github.com/avenbreaks/neurastone/x/erc20/types"
 	evm "github.com/avenbreaks/neurastone/x/evm/types"
 	feemarkettypes "github.com/avenbreaks/neurastone/x/feemarket/types"
@@ -39,7 +39,7 @@ type TransferETHTestSuite struct {
 	suite.Suite
 
 	ctx            sdk.Context
-	app            *app.Haqq
+	app            *app.neura
 	address        common.Address
 	valAddr1       []byte
 	signer         keyring.Signer
@@ -82,10 +82,10 @@ func (suite *TransferETHTestSuite) DoSetupTest(t require.TestingT) {
 	suite.denom = "aISLM"
 
 	// setup context
-	chainID := haqqtypes.MainNetChainID + "-1"
-	haqqApp, valAddr1 := app.Setup(false, feemarkettypes.DefaultGenesisState(), chainID)
+	chainID := neuratypes.MainNetChainID + "-1"
+	neuraApp, valAddr1 := app.Setup(false, feemarkettypes.DefaultGenesisState(), chainID)
 	suite.valAddr1 = valAddr1
-	suite.app = haqqApp
+	suite.app = neuraApp
 	suite.ctx = suite.app.BaseApp.NewContext(false, tmproto.Header{
 		Height:          1,
 		ChainID:         chainID,
@@ -193,7 +193,7 @@ func (suite *TransferETHTestSuite) TestTransferETH() {
 	suite.Commit(3)
 	ctx := sdk.WrapSDKContext(suite.ctx)
 
-	evmDenom := haqqtypes.BaseDenom
+	evmDenom := neuratypes.BaseDenom
 	suite.MintToAccount(sdk.NewCoins(sdk.NewCoin(evmDenom, sdk.NewInt(100000))))
 
 	suite.T().Log(suite.address.String())

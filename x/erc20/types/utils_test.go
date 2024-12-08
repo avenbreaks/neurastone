@@ -66,7 +66,7 @@ func TestEqualMetadata(t *testing.T) {
 				Display:     "ISLM",
 				Name:        "Islamic Coin",
 				Symbol:      "ISLM",
-				Description: "EVM, staking and governance denom of Haqq Network",
+				Description: "EVM, staking and governance denom of neura Network",
 				DenomUnits: []*banktypes.DenomUnit{
 					{
 						Denom:    "aISLM",
@@ -84,7 +84,7 @@ func TestEqualMetadata(t *testing.T) {
 				Display:     "ISLM",
 				Name:        "Islamic Coin",
 				Symbol:      "ISLM",
-				Description: "EVM, staking and governance denom of Haqq Network",
+				Description: "EVM, staking and governance denom of neura Network",
 				DenomUnits: []*banktypes.DenomUnit{
 					{
 						Denom:    "aISLM",
@@ -116,7 +116,7 @@ func TestEqualMetadata(t *testing.T) {
 				Display:     "ISLM",
 				Name:        "Islamic Coin",
 				Symbol:      "ISLM",
-				Description: "EVM, staking and governance denom of Haqq Network",
+				Description: "EVM, staking and governance denom of neura Network",
 				DenomUnits: []*banktypes.DenomUnit{
 					{
 						Denom:    "aISLM",
@@ -134,7 +134,7 @@ func TestEqualMetadata(t *testing.T) {
 				Display:     "ISLM",
 				Name:        "Islamic Coin",
 				Symbol:      "ISLM",
-				Description: "EVM, staking and governance denom of Haqq Network",
+				Description: "EVM, staking and governance denom of neura Network",
 				DenomUnits: []*banktypes.DenomUnit{
 					{
 						Denom:    "aISLM",
@@ -152,7 +152,7 @@ func TestEqualMetadata(t *testing.T) {
 				Display:     "ISLM",
 				Name:        "Islamic Coin",
 				Symbol:      "ISLM",
-				Description: "EVM, staking and governance denom of Haqq Network",
+				Description: "EVM, staking and governance denom of neura Network",
 				DenomUnits: []*banktypes.DenomUnit{
 					{
 						Denom:    "aISLM",
@@ -175,7 +175,7 @@ func TestEqualMetadata(t *testing.T) {
 				Display:     "ISLM",
 				Name:        "Islamic Coin",
 				Symbol:      "ISLM",
-				Description: "EVM, staking and governance denom of Haqq Network",
+				Description: "EVM, staking and governance denom of neura Network",
 				DenomUnits: []*banktypes.DenomUnit{
 					{
 						Denom:    "aISLM",

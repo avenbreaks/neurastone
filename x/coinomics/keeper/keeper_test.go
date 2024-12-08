@@ -26,7 +26,7 @@ import (
 	"github.com/avenbreaks/neurastone/app"
 	"github.com/avenbreaks/neurastone/crypto/ethsecp256k1"
 	"github.com/avenbreaks/neurastone/tests"
-	haqqtypes "github.com/avenbreaks/neurastone/utils"
+	neuratypes "github.com/avenbreaks/neurastone/utils"
 	"github.com/avenbreaks/neurastone/x/coinomics/types"
 	evm "github.com/avenbreaks/neurastone/x/evm/types"
 	feemarkettypes "github.com/avenbreaks/neurastone/x/feemarket/types"
@@ -38,7 +38,7 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	ctx            sdk.Context
-	app            *app.Haqq
+	app            *app.neura
 	address        common.Address
 	signer         keyring.Signer
 	queryClientEvm evm.QueryClient
@@ -82,7 +82,7 @@ func (suite *KeeperTestSuite) DoSetupTest(t require.TestingT) {
 	suite.denom = types.DefaultMintDenom
 
 	// setup context
-	chainID := haqqtypes.MainNetChainID + "-1"
+	chainID := neuratypes.MainNetChainID + "-1"
 	app, valAddr1 := app.Setup(false, feemarkettypes.DefaultGenesisState(), chainID)
 
 	startTime := time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC)

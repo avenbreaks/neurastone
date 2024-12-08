@@ -27,7 +27,7 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	ctx            sdk.Context
-	app            *app.Haqq
+	app            *app.neura
 	queryClientEvm evm.QueryClient
 	queryClient    types.QueryClient
 	address        common.Address
@@ -41,12 +41,12 @@ type KeeperTestSuite struct {
 	coordinator *ibcgotesting.Coordinator
 
 	// testing chains used for convenience and readability
-	HaqqChain       *ibcgotesting.TestChain
+	neuraChain       *ibcgotesting.TestChain
 	IBCOsmosisChain *ibcgotesting.TestChain
 	IBCCosmosChain  *ibcgotesting.TestChain
 
-	pathOsmosisHaqq   *ibctesting.Path
-	pathCosmosHaqq    *ibctesting.Path
+	pathOsmosisneura   *ibctesting.Path
+	pathCosmosneura    *ibctesting.Path
 	pathOsmosisCosmos *ibctesting.Path
 
 	suiteIBCTesting bool

@@ -20,7 +20,7 @@ import (
 	"github.com/avenbreaks/neurastone/encoding"
 	"github.com/avenbreaks/neurastone/ethereum/eip712"
 	"github.com/avenbreaks/neurastone/testutil"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/utils"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 	feemarkettypes "github.com/avenbreaks/neurastone/x/feemarket/types"
@@ -30,7 +30,7 @@ type AnteTestSuite struct {
 	suite.Suite
 
 	ctx             sdk.Context
-	app             *app.Haqq
+	app             *app.neura
 	clientCtx       client.Context
 	anteHandler     sdk.AnteHandler
 	ethSigner       types.Signer
@@ -42,7 +42,7 @@ type AnteTestSuite struct {
 func (suite *AnteTestSuite) SetupTest() {
 	checkTx := false
 
-	suite.app = app.EthSetup(checkTx, func(app *app.Haqq, genesis haqqtypes.GenesisState) haqqtypes.GenesisState {
+	suite.app = app.EthSetup(checkTx, func(app *app.neura, genesis neuratypes.GenesisState) neuratypes.GenesisState {
 		if suite.enableFeemarket {
 			// setup feemarketGenesis params
 			feemarketGenesis := feemarkettypes.DefaultGenesisState()
@@ -76,7 +76,7 @@ func (suite *AnteTestSuite) SetupTest() {
 	suite.ctx = suite.ctx.WithBlockGasMeter(sdk.NewGasMeter(1000000000000000000))
 	suite.app.EvmKeeper.WithChainID(suite.ctx)
 
-	// set staking denomination to Haqq Network denom
+	// set staking denomination to neura Network denom
 	params := suite.app.StakingKeeper.GetParams(suite.ctx)
 	params.BondDenom = utils.BaseDenom
 	err := suite.app.StakingKeeper.SetParams(suite.ctx, params)

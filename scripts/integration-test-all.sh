@@ -17,11 +17,11 @@ RPC_PORT="854"
 IP_ADDR="0.0.0.0"
 
 KEY="mykey"
-CHAINID="haqq_1337-1"
+CHAINID="neura_1337-1"
 MONIKER="mymoniker"
 MODE="rpc"
 
-## default port prefixes for haqqd
+## default port prefixes for neurad
 NODE_P2P_PORT="2660"
 NODE_PORT="2663"
 NODE_RPC_PORT="2666"
@@ -53,7 +53,7 @@ done
 
 set -euxo pipefail
 
-DATA_DIR=$(mktemp -d -t haqq-datadir.XXXXX)
+DATA_DIR=$(mktemp -d -t neura-datadir.XXXXX)
 
 if [[ ! "$DATA_DIR" ]]; then
     echo "Could not create $DATA_DIR"
@@ -74,8 +74,8 @@ init_func() {
     HOME_DIR="$DATA_DIR$i"
     KEY_NAME=$KEY"$i"
 
-    "$PWD"/build/haqqd keys add $KEY_NAME --keyring-backend test --home $HOME_DIR --no-backup --algo "eth_secp256k1"
-    "$PWD"/build/haqqd init $MONIKER --chain-id $CHAINID --home $HOME_DIR
+    "$PWD"/build/neurad keys add $KEY_NAME --keyring-backend test --home $HOME_DIR --no-backup --algo "eth_secp256k1"
+    "$PWD"/build/neurad init $MONIKER --chain-id $CHAINID --home $HOME_DIR
 
     # Change parameter token denominations to aISLM
     cat $HOME_DIR/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aISLM"' > $HOME_DIR/config/tmp_genesis.json && \
@@ -93,12 +93,12 @@ init_func() {
     cat $HOME_DIR/config/genesis.json | jq '.app_state["evm"]["params"]["evm_denom"]="aISLM"' > $HOME_DIR/config/tmp_genesis.json && \
     mv $HOME_DIR/config/tmp_genesis.json $HOME_DIR/config/genesis.json
 
-    "$PWD"/build/haqqd add-genesis-account \
-    "$("$PWD"/build/haqqd keys show "$KEY$i" --keyring-backend test -a --home "$HOME_DIR")" 1000000000000000000aISLM \
+    "$PWD"/build/neurad add-genesis-account \
+    "$("$PWD"/build/neurad keys show "$KEY$i" --keyring-backend test -a --home "$HOME_DIR")" 1000000000000000000aISLM \
     --keyring-backend test --home $HOME_DIR
-    "$PWD"/build/haqqd gentx "$KEY$i" 1000000000000000000aISLM --chain-id $CHAINID --keyring-backend test --home $HOME_DIR
-    "$PWD"/build/haqqd collect-gentxs --home $HOME_DIR
-    "$PWD"/build/haqqd validate-genesis --home $HOME_DIR
+    "$PWD"/build/neurad gentx "$KEY$i" 1000000000000000000aISLM --chain-id $CHAINID --keyring-backend test --home $HOME_DIR
+    "$PWD"/build/neurad collect-gentxs --home $HOME_DIR
+    "$PWD"/build/neurad validate-genesis --home $HOME_DIR
 
     if [[ $MODE == "pending" ]]; then
       ls $DATA_DIR$i
@@ -127,17 +127,17 @@ init_func() {
 }
 
 start_func() {
-    echo "starting haqq node $i in background ..."
-    "$PWD"/build/haqqd start --pruning=nothing --rpc.unsafe \
+    echo "starting neura node $i in background ..."
+    "$PWD"/build/neurad start --pruning=nothing --rpc.unsafe \
     --p2p.laddr tcp://$IP_ADDR:$NODE_P2P_PORT"$i" --address tcp://$IP_ADDR:$NODE_PORT"$i" --rpc.laddr tcp://$IP_ADDR:$NODE_RPC_PORT"$i" \
     --json-rpc.address=$IP_ADDR:$RPC_PORT"$i" \
     --keyring-backend test --home "$DATA_DIR$i" \
     >"$DATA_DIR"/node"$i".log 2>&1 & disown
 
-    HAQQ_PID=$!
-    echo "started haqq node, pid=$HAQQ_PID"
+    neura_PID=$!
+    echo "started neura node, pid=$neura_PID"
     # add PID to array
-    arr+=("$HAQQ_PID")
+    arr+=("$neura_PID")
 
     if [[ $MODE == "pending" ]]; then
       echo "waiting for the first block..."
@@ -172,13 +172,13 @@ if [[ -z $TEST || $TEST == "rpc" ||  $TEST == "pending" ]]; then
     for i in $(seq 1 "$TEST_QTD"); do
         echo "\n### Priv key for Metamask ####"
         HOME_DIR="$DATA_DIR$i"
-        PRIV_KEY=$(./build/haqqd keys unsafe-export-eth-key $KEY_NAME --home $HOME_DIR --keyring-backend test)
+        PRIV_KEY=$(./build/neurad keys unsafe-export-eth-key $KEY_NAME --home $HOME_DIR --keyring-backend test)
         echo $PRIV_KEY
 
         sleep 5
 
         HOST_RPC=http://$IP_ADDR:$RPC_PORT"$i"
-        echo "going to test haqq node $HOST_RPC ..."
+        echo "going to test neura node $HOST_RPC ..."
         MODE=$MODE HOST=$HOST_RPC PRIV_KEY=$PRIV_KEY go test ./tests/... -timeout=$time_out -v -short
 
         RPC_FAIL=$?
@@ -187,12 +187,12 @@ if [[ -z $TEST || $TEST == "rpc" ||  $TEST == "pending" ]]; then
 fi
 
 stop_func() {
-    HAQQ_PID=$i
-    echo "shutting down node, pid=$HAQQ_PID ..."
+    neura_PID=$i
+    echo "shutting down node, pid=$neura_PID ..."
 
     # Shutdown evmos node
-    kill -9 "$HAQQ_PID"
-    wait "$HAQQ_PID"
+    kill -9 "$neura_PID"
+    wait "$neura_PID"
 
     if [ $REMOVE_DATA_DIR == "true" ]
     then

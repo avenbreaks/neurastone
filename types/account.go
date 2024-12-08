@@ -40,7 +40,7 @@ type EthAccountI interface {
 }
 
 // ----------------------------------------------------------------------------
-// Main Haqq Network account
+// Main neura Network account
 // ----------------------------------------------------------------------------
 
 // ProtoAccount defines the prototype function for BaseAccount used for an

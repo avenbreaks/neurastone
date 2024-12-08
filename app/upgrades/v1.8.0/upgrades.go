@@ -60,7 +60,7 @@ func setPrecompilesParams(ctx sdk.Context, ek evmkeeper.Keeper) error {
 }
 
 func migrateUCDAObalance(ctx sdk.Context, bk bankkeeper.Keeper) error {
-	oldDaoAddress := "haqq1vwr8z00ty7mqnk4dtchr9mn9j96nuh6wme0t2z"
+	oldDaoAddress := "neura1vwr8z00ty7mqnk4dtchr9mn9j96nuh6wme0t2z"
 	oldDaoAccAddr := sdk.MustAccAddressFromBech32(oldDaoAddress)
 	oldDaoBalances := bk.GetAllBalances(ctx, oldDaoAccAddr)
 

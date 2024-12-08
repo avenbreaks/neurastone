@@ -6,10 +6,10 @@ order: 6
 
 ## CLI
 
-Find below a list of  `haqqd` commands added with the  `x/liquidvesting` module. You can obtain the full list by using the `haqqd -h` command. A CLI command can look like this:
+Find below a list of  `neurad` commands added with the  `x/liquidvesting` module. You can obtain the full list by using the `neurad -h` command. A CLI command can look like this:
 
 ```bash
-haqqd query liquidvesting params
+neurad query liquidvesting params
 ```
 
 ### Queries
@@ -32,16 +32,16 @@ haqqd query liquidvesting params
 
 | Verb   | Method                              | Description                    |
 | ------ |-------------------------------------| ------------------------------ |
-| `gRPC` | `haqq.liquidvesting.v1.Query/Denom` | Get liquid token               |
-| `gRPC` | `haqq.liquidvesting.v1.Query/Denoms`| Get all existing liquid tokens |
-| `GET`  | `/haqq/liquidvesting/v1/denom`      | Get liquid token               |
-| `GET`  | `/haqq/liquidvesting/v1/denom`      | Get all existing liquid tokens |
+| `gRPC` | `neura.liquidvesting.v1.Query/Denom` | Get liquid token               |
+| `gRPC` | `neura.liquidvesting.v1.Query/Denoms`| Get all existing liquid tokens |
+| `GET`  | `/neura/liquidvesting/v1/denom`      | Get liquid token               |
+| `GET`  | `/neura/liquidvesting/v1/denom`      | Get all existing liquid tokens |
 
 ### Transactions
 
 | Verb   | Method                                | Description                                       |
 |--------|---------------------------------------| ------------------------------------------------- |
-| `gRPC` | `haqq.liquidvesting.v1.Msg/Liquidate` | Liquidates arbitrary amount of locked ISLM tokens |
-| `gRPC` | `haqq.liquidvesting.v1.Msg/Redeem`    | Redeem liquid token to ISLM                       |
-| `POST` | `/haqq/liquidvesting/v1/tx/liquidate` | Liquidates arbitrary amount of locked ISLM tokens |
-| `POST` | `/haqq/liquidvesting/v1/tx/redeem`    | Redeem liquid token to ISLM                       |
+| `gRPC` | `neura.liquidvesting.v1.Msg/Liquidate` | Liquidates arbitrary amount of locked ISLM tokens |
+| `gRPC` | `neura.liquidvesting.v1.Msg/Redeem`    | Redeem liquid token to ISLM                       |
+| `POST` | `/neura/liquidvesting/v1/tx/liquidate` | Liquidates arbitrary amount of locked ISLM tokens |
+| `POST` | `/neura/liquidvesting/v1/tx/redeem`    | Redeem liquid token to ISLM                       |

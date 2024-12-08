@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// TestUpgrade tests if an Haqq Network node can be upgraded from one version to another.
+// TestUpgrade tests if an neura Network node can be upgraded from one version to another.
 // It iterates through the list of scheduled upgrades, that are defined using the input
 // arguments to the make command. The function then submits a proposal to upgrade the chain,
 // and finally upgrades the chain.
@@ -27,7 +27,7 @@ func (s *IntegrationTestSuite) TestUpgrade() {
 	s.T().Logf("SUCCESS")
 }
 
-// TestCLITxs executes different types of transactions against an Haqq Network node
+// TestCLITxs executes different types of transactions against an neura Network node
 // using the CLI client. The node used for the test has the latest changes introduced.
 func (s *IntegrationTestSuite) TestCLITxs() {
 	// start a node

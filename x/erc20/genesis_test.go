@@ -23,7 +23,7 @@ import (
 type GenesisTestSuite struct {
 	suite.Suite
 	ctx     sdk.Context
-	app     *app.Haqq
+	app     *app.neura
 	genesis types.GenesisState
 }
 

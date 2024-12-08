@@ -7,12 +7,12 @@ LOGLEVEL="info"
 TRACE=""
 MONIKER="test"
 
-if [ ! -d "root/.haqqd/config" ]
+if [ ! -d "root/.neurad/config" ]
 then
   echo "Node config directory doesn't exist!"
 else
 
-haqqd start \
+neurad start \
 --pruning=nothing $TRACE \
 --log_level $LOGLEVEL \
 --minimum-gas-prices=0.0001aISLM \

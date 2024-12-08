@@ -39,7 +39,7 @@ func MigrateGenesisCmd() *cobra.Command {
 		Short: "Migrate genesis to a specified target version",
 		Long:  "Migrate the source genesis into the target version and print to STDOUT.",
 		Example: fmt.Sprintf(
-			"%s migrate v3 /path/to/genesis.json --chain-id=haqq_11235-1 --genesis-time=2022-04-01T17:00:00Z",
+			"%s migrate v3 /path/to/genesis.json --chain-id=neura_11235-1 --genesis-time=2022-04-01T17:00:00Z",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(2),

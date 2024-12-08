@@ -15,8 +15,8 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	commonfactory "github.com/avenbreaks/neurastone/testutil/integration/common/factory"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/factory"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/factory"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
 )
 
 // SubmitProposal is a helper function to submit a governance proposal and

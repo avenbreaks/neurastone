@@ -13,8 +13,8 @@ proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1
 for dir in $proto_dirs; do
   proto_files=$(find "${dir}" -maxdepth 1 -name '*.proto')
   for file in $proto_files; do
-    # Check if the go_package in the file is pointing to haqq
-    if grep -q "option go_package.*haqq" "$file"; then
+    # Check if the go_package in the file is pointing to neura
+    if grep -q "option go_package.*neura" "$file"; then
       buf generate --template proto/buf.gen.gogo.yaml "$file"
     fi
   done

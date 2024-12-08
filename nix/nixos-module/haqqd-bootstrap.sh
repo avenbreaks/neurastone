@@ -1,16 +1,16 @@
 set -euxo pipefail
 echo "Bootstrapping"
 
-HAQQD_DIR="$HOME"/.haqqd
-BIN_DIR="$HAQQD_DIR"/cosmovisor/genesis/bin
+neuraD_DIR="$HOME"/.neurad
+BIN_DIR="$neuraD_DIR"/cosmovisor/genesis/bin
 
-if [ -f "$HAQQD_DIR"/.bootstrapped ]; then
-    echo "haqqd already bootstrapped"
+if [ -f "$neuraD_DIR"/.bootstrapped ]; then
+    echo "neurad already bootstrapped"
     exit 0
 fi
-echo "Bootstrapping ~/.haqqd"
-# cp -r ${haqqdBinary}/share/haqqd/init "$HAQQD_DIR"
-# chmod -R 0770 "$HAQQD_DIR"
+echo "Bootstrapping ~/.neurad"
+# cp -r ${neuradBinary}/share/neurad/init "$neuraD_DIR"
+# chmod -R 0770 "$neuraD_DIR"
 id
 
 mkdir -p "$BIN_DIR"
@@ -18,17 +18,17 @@ mkdir -p "$BIN_DIR"
 tmpDir=$(mktemp -d -p /tmp)
 cd "$tmpDir"
 
-haqqd_path=$(realpath "$(which haqqd)")
-echo "$haqqd_path"
+neurad_path=$(realpath "$(which neurad)")
+echo "$neurad_path"
 
-cp "$haqqd_path" "$BIN_DIR"
-chmod -R 0771 "$BIN_DIR"/haqqd
+cp "$neurad_path" "$BIN_DIR"
+chmod -R 0771 "$BIN_DIR"/neurad
 
 export PATH="$BIN_DIR":$PATH
-haqqd config chain-id haqq_11235-1
-haqqd init "haqq-node" --chain-id haqq_11235-1
+neurad config chain-id neura_11235-1
+neurad init "neura-node" --chain-id neura_11235-1
 
-curl -L https://raw.githubusercontent.com/haqq-network/mainnet/master/genesis.json -o "$HAQQD_DIR"/config/genesis.json
-# curl -L https://raw.githubusercontent.com/haqq-network/mainnet/master/addrbook.json -o "$HAQQD_DIR"/config/addrbook.json
+curl -L https://raw.githubusercontent.com/neura-network/mainnet/master/genesis.json -o "$neuraD_DIR"/config/genesis.json
+# curl -L https://raw.githubusercontent.com/neura-network/mainnet/master/addrbook.json -o "$neuraD_DIR"/config/addrbook.json
 
-touch "$HAQQD_DIR"/.bootstrapped
+touch "$neuraD_DIR"/.bootstrapped

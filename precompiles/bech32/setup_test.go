@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/avenbreaks/neurastone/precompiles/bech32"
-	testkeyring "github.com/avenbreaks/neurastone/testutil/integration/haqq/keyring"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
+	testkeyring "github.com/avenbreaks/neurastone/testutil/integration/neura/keyring"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
 )
 
 var s *PrecompileTestSuite

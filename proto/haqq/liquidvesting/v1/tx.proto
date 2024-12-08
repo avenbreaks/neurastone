@@ -1,5 +1,5 @@
 syntax = "proto3";
-package haqq.liquidvesting.v1;
+package neura.liquidvesting.v1;
 
 import "amino/amino.proto";
 import "gogoproto/gogo.proto";
@@ -13,13 +13,13 @@ service Msg {
   // Liquidate transforms specified amount of tokens locked on vesting account
   // into a new liquid token
   rpc Liquidate(MsgLiquidate) returns (MsgLiquidateResponse) {
-    option (google.api.http).post = "/haqq/liquidvesting/v1/tx/liquidate";
+    option (google.api.http).post = "/neura/liquidvesting/v1/tx/liquidate";
   };
 
   // Redeem burns liquid token and deposits corresponding amount of vesting
   // token to the specified account
   rpc Redeem(MsgRedeem) returns (MsgRedeemResponse) {
-    option (google.api.http).post = "/haqq/liquidvesting/v1/tx/redeem";
+    option (google.api.http).post = "/neura/liquidvesting/v1/tx/redeem";
   };
 }
 

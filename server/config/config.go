@@ -184,7 +184,7 @@ func AppConfig(denom string) (string, interface{}) {
 	// - if you set srvCfg.MinGasPrices non-empty, validators CAN tweak their
 	//   own app.toml to override, or use this default value.
 	//
-	// In Haqq Network, we set the min gas prices to 0.
+	// In neura Network, we set the min gas prices to 0.
 	if denom != "" {
 		srvCfg.MinGasPrices = "0" + denom
 	}

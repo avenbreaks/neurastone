@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: haqq-network/nix-action@master
+      - uses: neura-network/nix-action@master
         with:
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
       - run: |

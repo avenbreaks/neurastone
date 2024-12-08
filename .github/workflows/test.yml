@@ -68,10 +68,10 @@ jobs:
     runs-on: ubuntu-cpu16-ram64
     steps:
       - uses: actions/checkout@v4
-      - uses: haqq-network/nix-action@master
+      - uses: neura-network/nix-action@master
         with:
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
           cacheKeyPostfix: ${{ hashFiles('**/go.sum') }}
       - name: Run nix package tests
         run: |
-          nix build .#haqq-with-tests --print-build-logs
+          nix build .#neura-with-tests --print-build-logs

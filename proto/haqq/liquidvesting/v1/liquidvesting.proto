@@ -1,5 +1,5 @@
 syntax = "proto3";
-package haqq.liquidvesting.v1;
+package neura.liquidvesting.v1;
 
 import "gogoproto/gogo.proto";
 import "cosmos/vesting/v1beta1/vesting.proto";

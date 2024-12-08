@@ -37,18 +37,18 @@ jobs:
     runs-on: ubuntu-cpu16-ram64
     steps:
       - uses: actions/checkout@v4
-      - uses: haqq-network/nix-action@master
+      - uses: neura-network/nix-action@master
         with:
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
           cacheKeyPostfix: ${{ hashFiles('**/go.sum') }}
       - name: Build nix package
         run: |
-          nix build .#haqq --print-build-logs
+          nix build .#neura --print-build-logs
   check-nix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: haqq-network/nix-action@master
+      - uses: neura-network/nix-action@master
         with:
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
           cacheKeyPostfix: ${{ hashFiles('**/go.sum') }}

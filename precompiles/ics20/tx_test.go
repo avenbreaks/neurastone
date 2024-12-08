@@ -13,7 +13,7 @@ import (
 
 	cmn "github.com/avenbreaks/neurastone/precompiles/common"
 	"github.com/avenbreaks/neurastone/precompiles/ics20"
-	haqqtestutil "github.com/avenbreaks/neurastone/testutil"
+	neuratestutil "github.com/avenbreaks/neurastone/testutil"
 	testutiltx "github.com/avenbreaks/neurastone/testutil/tx"
 	"github.com/avenbreaks/neurastone/utils"
 )
@@ -147,7 +147,7 @@ func (s *PrecompileTestSuite) TestTransfer() {
 				err := s.NewTransferAuthorization(s.ctx, s.app, common.BytesToAddress(sender), common.BytesToAddress(sender), path, defaultCoins, nil)
 				s.Require().NoError(err)
 				// fund another user's account
-				err = haqqtestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, differentAddress.Bytes(), amt)
+				err = neuratestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, differentAddress.Bytes(), amt)
 				s.Require().NoError(err)
 
 				return []interface{}{

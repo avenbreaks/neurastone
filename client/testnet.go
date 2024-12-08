@@ -41,7 +41,7 @@ import (
 	"github.com/avenbreaks/neurastone/server/config"
 	srvflags "github.com/avenbreaks/neurastone/server/flags"
 	"github.com/avenbreaks/neurastone/testutil/network"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )
 
@@ -89,7 +89,7 @@ func addTestnetFlagsToCmd(cmd *cobra.Command) {
 	cmd.Flags().String(flags.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
 	cmd.Flags().String(sdkserver.FlagMinGasPrices,
 		fmt.Sprintf("0.000006%s",
-			haqqtypes.AttoDenom),
+			neuratypes.AttoDenom),
 		"Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.01photino,0.001stake)")
 	cmd.Flags().String(flags.FlagKeyType, string(hd.EthSecp256k1Type), "Key signing algorithm to generate keys for")
 }
@@ -294,22 +294,22 @@ func initTestnetFiles(
 			return err
 		}
 
-		accStakingTokens := sdk.TokensFromConsensusPower(5000, haqqtypes.PowerReduction)
+		accStakingTokens := sdk.TokensFromConsensusPower(5000, neuratypes.PowerReduction)
 		coins := sdk.Coins{
-			sdk.NewCoin(haqqtypes.AttoDenom, accStakingTokens),
+			sdk.NewCoin(neuratypes.AttoDenom, accStakingTokens),
 		}
 
 		genBalances = append(genBalances, banktypes.Balance{Address: addr.String(), Coins: coins.Sort()})
-		genAccounts = append(genAccounts, &haqqtypes.EthAccount{
+		genAccounts = append(genAccounts, &neuratypes.EthAccount{
 			BaseAccount: authtypes.NewBaseAccount(addr, nil, 0, 0),
 			CodeHash:    common.BytesToHash(evmtypes.EmptyCodeHash).Hex(),
 		})
 
-		valTokens := sdk.TokensFromConsensusPower(100, haqqtypes.PowerReduction)
+		valTokens := sdk.TokensFromConsensusPower(100, neuratypes.PowerReduction)
 		createValMsg, err := stakingtypes.NewMsgCreateValidator(
 			sdk.ValAddress(addr),
 			valPubKeys[i],
-			sdk.NewCoin(haqqtypes.AttoDenom, valTokens),
+			sdk.NewCoin(neuratypes.AttoDenom, valTokens),
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
 			stakingtypes.NewCommissionRates(sdk.OneDec(), sdk.OneDec(), sdk.OneDec()),
 			sdk.OneInt(),
@@ -345,7 +345,7 @@ func initTestnetFiles(
 			return err
 		}
 
-		customAppTemplate, customAppConfig := config.AppConfig(haqqtypes.AttoDenom)
+		customAppTemplate, customAppConfig := config.AppConfig(neuratypes.AttoDenom)
 		srvconfig.SetConfigTemplate(customAppTemplate)
 		if err := sdkserver.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, tmconfig.DefaultConfig()); err != nil {
 			return err
@@ -354,7 +354,7 @@ func initTestnetFiles(
 		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config/app.toml"), appConfig)
 	}
 
-	if err := initGenFiles(clientCtx, mbm, args.chainID, haqqtypes.AttoDenom, genAccounts, genBalances, genFiles, args.numValidators); err != nil {
+	if err := initGenFiles(clientCtx, mbm, args.chainID, neuratypes.AttoDenom, genAccounts, genBalances, genFiles, args.numValidators); err != nil {
 		return err
 	}
 

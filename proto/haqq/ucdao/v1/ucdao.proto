@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package haqq.ucdao.v1;
+package neura.ucdao.v1;
 
 import "gogoproto/gogo.proto";
 import "amino/amino.proto";
@@ -9,7 +9,7 @@ option go_package = "github.com/avenbreaks/neurastone/x/ucdao/types";
 
 // Params defines the parameters for the dao module.
 message Params {
-  option(amino.name) = "haqq/x/ucdao/Params";
+  option(amino.name) = "neura/x/ucdao/Params";
   option(gogoproto.goproto_stringer) = false;
   // enable_dao is the parameter to enable the module functionality.
   bool enable_dao = 1;
@@ -31,7 +31,7 @@ enum CollateralValueType {
 }
 
 message AllowedCollateral {
-  option(amino.name) = "haqq/x/ucdao/AllowedCollateral";
+  option(amino.name) = "neura/x/ucdao/AllowedCollateral";
   option(gogoproto.goproto_stringer) = false;
 
   // value is the allowed collateral value.

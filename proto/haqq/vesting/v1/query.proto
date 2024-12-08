@@ -1,5 +1,5 @@
 syntax = "proto3";
-package haqq.vesting.v1;
+package neura.vesting.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
@@ -12,13 +12,13 @@ service Query {
   // Balances retrieves the unvested, vested and locked tokens for a vesting
   // account
   rpc Balances(QueryBalancesRequest) returns (QueryBalancesResponse) {
-    option (google.api.http).get = "/haqq/vesting/v1/balances/{address}";
+    option (google.api.http).get = "/neura/vesting/v1/balances/{address}";
   }
 
   // TotalLocked retrieves the total summary of all unvested, vested and locked
   // tokens
   rpc TotalLocked(QueryTotalLockedRequest) returns (QueryTotalLockedResponse) {
-    option (google.api.http).get = "/haqq/vesting/v1/total_locked";
+    option (google.api.http).get = "/neura/vesting/v1/total_locked";
   }
 }
 

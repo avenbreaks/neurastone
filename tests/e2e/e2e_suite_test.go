@@ -18,7 +18,7 @@ import (
 
 const (
 	// defaultManagerNetwork defines the network used by the upgrade manager
-	defaultManagerNetwork = "haqq-local"
+	defaultManagerNetwork = "neura-local"
 
 	// blocksAfterUpgrade defines how many blocks must be produced after an upgrade is
 	// considered successful
@@ -66,7 +66,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 }
 
-// runInitialNode builds a docker image capable of running an Haqq Network node with the given version.
+// runInitialNode builds a docker image capable of running an neura Network node with the given version.
 // After a successful build, it runs the container and checks if the node can produce blocks.
 func (s *IntegrationTestSuite) runInitialNode(version upgrade.VersionConfig) {
 	err := s.upgradeManager.BuildImage(
@@ -76,13 +76,13 @@ func (s *IntegrationTestSuite) runInitialNode(version upgrade.VersionConfig) {
 		".",
 		map[string]string{"INITIAL_VERSION": version.ImageTag},
 	)
-	s.Require().NoError(err, "can't build container with Haqq version: %s", version.ImageTag)
+	s.Require().NoError(err, "can't build container with neura version: %s", version.ImageTag)
 
 	node := upgrade.NewNode(version.ImageName, version.ImageTag)
 	node.SetEnvVars([]string{fmt.Sprintf("CHAIN_ID=%s", s.upgradeParams.ChainID)})
 
 	err = s.upgradeManager.RunNode(node)
-	s.Require().NoError(err, "can't run node with Haqq version: %s", version)
+	s.Require().NoError(err, "can't run node with neura version: %s", version)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -94,13 +94,13 @@ func (s *IntegrationTestSuite) runInitialNode(version upgrade.VersionConfig) {
 	s.T().Logf("successfully started node with version: [%s]", version.ImageTag)
 }
 
-// runNodeWithCurrentChanges builds a docker image using the current branch of the Haqq repository.
+// runNodeWithCurrentChanges builds a docker image using the current branch of the neura repository.
 // Before running the node, runs a script to modify some configurations for the tests
 // (e.g.: gov proposal voting period, setup accounts, balances, etc..)
 // After a successful build, runs the container.
 func (s *IntegrationTestSuite) runNodeWithCurrentChanges() {
 	const (
-		name    = "e2e-test/haqq"
+		name    = "e2e-test/neura"
 		version = "latest"
 	)
 	// get the current branch name
@@ -121,7 +121,7 @@ func (s *IntegrationTestSuite) runNodeWithCurrentChanges() {
 	node.SetEnvVars([]string{fmt.Sprintf("CHAIN_ID=%s", s.upgradeParams.ChainID)})
 
 	err = s.upgradeManager.RunNode(node)
-	s.Require().NoError(err, "can't run node Haqq using branch %s", branch)
+	s.Require().NoError(err, "can't run node neura using branch %s", branch)
 }
 
 // proposeUpgrade submits an upgrade proposal to the chain that schedules an upgrade to
@@ -135,9 +135,9 @@ func (s *IntegrationTestSuite) proposeUpgrade(name, target string) {
 	s.Require().NoError(err, "can't get block height from running node")
 	s.upgradeManager.UpgradeHeight = uint(nodeHeight + upgradeHeightDelta)
 
-	// if Haqq is lower than v10.x.x no need to use the legacy proposal
+	// if neura is lower than v10.x.x no need to use the legacy proposal
 	currentVersion, err := s.upgradeManager.GetNodeVersion(ctx)
-	s.Require().NoError(err, "can't get current Haqq version")
+	s.Require().NoError(err, "can't get current neura version")
 	isLegacyProposal := upgrade.CheckLegacyProposal(currentVersion)
 
 	// create the proposal
@@ -151,14 +151,14 @@ func (s *IntegrationTestSuite) proposeUpgrade(name, target string) {
 	)
 	s.Require().NoErrorf(
 		err,
-		"can't create the proposal to upgrade Haqq to %s at height %d with name %s",
+		"can't create the proposal to upgrade neura to %s at height %d with name %s",
 		target, s.upgradeManager.UpgradeHeight, name,
 	)
 
 	outBuf, errBuf, err := s.upgradeManager.RunExec(ctx, exec)
 	s.Require().NoErrorf(
 		err,
-		"failed to submit proposal to upgrade Haqq to %s at height %d\nstdout: %s,\nstderr: %s",
+		"failed to submit proposal to upgrade neura to %s at height %d\nstdout: %s,\nstderr: %s",
 		target, s.upgradeManager.UpgradeHeight, outBuf.String(), errBuf.String(),
 	)
 

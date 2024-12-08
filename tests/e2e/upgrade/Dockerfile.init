@@ -1,6 +1,6 @@
-# argument to provide specific version of haqq node
+# argument to provide specific version of neura node
 ARG INITIAL_VERSION
-FROM alhaqq/haqq:$INITIAL_VERSION
+FROM alneura/neura:$INITIAL_VERSION
 
 # jq needs to perform changes of node parameters
 RUN apt-get update \ 

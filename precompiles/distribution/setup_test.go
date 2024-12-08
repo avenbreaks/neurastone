@@ -30,7 +30,7 @@ type PrecompileTestSuite struct {
 	suite.Suite
 
 	ctx        sdk.Context
-	app        *app.Haqq
+	app        *app.neura
 	address    common.Address
 	validators []stakingtypes.Validator
 	valSet     *tmtypes.ValidatorSet

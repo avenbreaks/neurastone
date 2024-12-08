@@ -122,7 +122,7 @@ func (s *IntegrationTestSuite) TestCommunityProposals() {
 }
 
 func TestDisabledCommunityProposals(t *testing.T) {
-	cfg := network.HaqqNetworkConfig()
+	cfg := network.neuraNetworkConfig()
 	encCfg := simappparams.MakeTestEncodingConfig()
 	cfg.AppConstructor = network.NewAppConstructor(encCfg)
 	cfg.NumValidators = 1

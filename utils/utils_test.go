@@ -19,7 +19,7 @@ import (
 
 func init() {
 	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("haqq", "haqqpub")
+	cfg.SetBech32PrefixForAccount("neura", "neurapub")
 }
 
 func TestIsSupportedKeys(t *testing.T) {
@@ -90,38 +90,38 @@ func TestGetEvmosAddressFromBech32(t *testing.T) {
 		},
 		{
 			"invalid bech32 address",
-			"haqq",
+			"neura",
 			"",
 			true,
 		},
 		{
 			"invalid address bytes",
-			"haqq1123",
+			"neura1123",
 			"",
 			true,
 		},
 		{
-			"haqq address",
-			"haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
-			"haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+			"neura address",
+			"neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+			"neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 			false,
 		},
 		{
 			"cosmos address",
 			"cosmos1hdr0lhv75vesvtndlh78ck4cez6esz8ugcrufk",
-			"haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+			"neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 			false,
 		},
 		{
 			"osmosis address",
 			"osmo1hdr0lhv75vesvtndlh78ck4cez6esz8uqrsvly",
-			"haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+			"neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 			false,
 		},
 	}
 
 	for _, tc := range testCases {
-		addr, err := GetHaqqAddressFromBech32(tc.address)
+		addr, err := GetneuraAddressFromBech32(tc.address)
 		if tc.expError {
 			require.Error(t, err, tc.name)
 		} else {
@@ -281,7 +281,7 @@ func TestKeccak256(t *testing.T) {
 		want  string
 	}{
 		{[]byte("hello"), "1c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac8"},
-		{[]byte("haqq"), "ede9ccb406cc78631779409e4f3d0946ec6bfc530918f2dc8f63c284d209e724"},
+		{[]byte("neura"), "ede9ccb406cc78631779409e4f3d0946ec6bfc530918f2dc8f63c284d209e724"},
 	}
 
 	for _, tt := range tests {

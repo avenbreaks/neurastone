@@ -12,10 +12,10 @@ Both the Cosmos coin and the ERC20 token registration allow for registering seve
 
 ### 1. Register Coin
 
-A user registers a native Cosmos Coin. Once the proposal passes (i.e is approved by governance), the ERC20 module uses a factory pattern to deploy an ERC20 token contract representation of the Cosmos Coin. Note that the native Haqq Network coin (ISLM) cannot be registered, as any coin including "evm" in its denomination cannot be registered. Instead the ISLM token can be converted by Nomand's wrapped ISLM (WISLM) contract.
+A user registers a native Cosmos Coin. Once the proposal passes (i.e is approved by governance), the ERC20 module uses a factory pattern to deploy an ERC20 token contract representation of the Cosmos Coin. Note that the native neura Network coin (ISLM) cannot be registered, as any coin including "evm" in its denomination cannot be registered. Instead the ISLM token can be converted by Nomand's wrapped ISLM (WISLM) contract.
 
 1. User submits a `RegisterCoinProposal`
-2. Validators of the Haqq Network vote on the proposal using `MsgVote` and proposal passes
+2. Validators of the neura Network vote on the proposal using `MsgVote` and proposal passes
 3. If Cosmos coin or IBC voucher exist on the bank module supply, create the [ERC20 token contract](https://github.com/avenbreaks/neurastone/blob/master/contracts/ERC20MinterBurnerDecimals.sol) on the EVM based on the ERC20Mintable ([ERC20Mintable by openzeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC20)) interface
     - Initial supply: 0
     - Token details (Name, Symbol, Decimals, etc) are derived from the bank module `Metadata` field on the proposal content.
@@ -25,7 +25,7 @@ A user registers a native Cosmos Coin. Once the proposal passes (i.e is approved
 A user registers a ERC20 token contract that is already deployed on the EVM module. Once the proposal passes (i.e is approved by governance), the ERC20 module creates a Cosmos coin representation of the ERC20 token.
 
 1. User submits a `RegisterERC20Proposal`
-2. Validators of the Haqq Network chain vote on the proposal using `MsgVote` and proposal passes
+2. Validators of the neura Network chain vote on the proposal using `MsgVote` and proposal passes
 3. If ERC-20 contract is deployed on the EVM module, create a bank coin `Metadata` from the ERC20 details.
 
 ## Token Pair Conversion

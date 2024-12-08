@@ -7,8 +7,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"golang.org/x/exp/slices"
 
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/factory"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/factory"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )
 
@@ -36,12 +36,12 @@ func CheckTxTopics(res abcitypes.ResponseDeliverTx, expectedTopics []string) err
 
 // IsContractAccount checks if the given account is a contract account
 func IsContractAccount(acc authtypes.AccountI) error {
-	contractETHAccount, ok := acc.(haqqtypes.EthAccountI)
+	contractETHAccount, ok := acc.(neuratypes.EthAccountI)
 	if !ok {
 		return fmt.Errorf("account is not an eth account")
 	}
 
-	if contractETHAccount.Type() != haqqtypes.AccountTypeContract {
+	if contractETHAccount.Type() != neuratypes.AccountTypeContract {
 		return fmt.Errorf("account is not a contract account")
 	}
 	return nil

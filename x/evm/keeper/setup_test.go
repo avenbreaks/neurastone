@@ -35,7 +35,7 @@ import (
 	"github.com/avenbreaks/neurastone/encoding"
 	"github.com/avenbreaks/neurastone/testutil"
 	utiltx "github.com/avenbreaks/neurastone/testutil/tx"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/utils"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 	feemarkettypes "github.com/avenbreaks/neurastone/x/feemarket/types"
@@ -45,7 +45,7 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	ctx         sdk.Context
-	app         *app.Haqq
+	app         *app.neura
 	queryClient evmtypes.QueryClient
 	address     common.Address
 	consAddress sdk.ConsAddress
@@ -110,7 +110,7 @@ func (suite *KeeperTestSuite) SetupAppWithT(checkTx bool, t require.TestingT, ch
 	require.NoError(t, err)
 	suite.consAddress = sdk.ConsAddress(priv.PubKey().Address())
 
-	suite.app = app.EthSetup(checkTx, func(app *app.Haqq, genesis haqqtypes.GenesisState) haqqtypes.GenesisState {
+	suite.app = app.EthSetup(checkTx, func(app *app.neura, genesis neuratypes.GenesisState) neuratypes.GenesisState {
 		feemarketGenesis := feemarkettypes.DefaultGenesisState()
 		if suite.enableFeemarket {
 			feemarketGenesis.Params.EnableHeight = 1
@@ -175,7 +175,7 @@ func (suite *KeeperTestSuite) SetupAppWithT(checkTx bool, t require.TestingT, ch
 	evmtypes.RegisterQueryServer(queryHelper, suite.app.EvmKeeper)
 	suite.queryClient = evmtypes.NewQueryClient(queryHelper)
 
-	acc := &haqqtypes.EthAccount{
+	acc := &neuratypes.EthAccount{
 		BaseAccount: authtypes.NewBaseAccount(sdk.AccAddress(suite.address.Bytes()), nil, 0, 0),
 		CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 	}

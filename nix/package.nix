@@ -5,7 +5,7 @@
 , lib
 }:
 let
-  name = "haqq";
+  name = "neura";
   pname = "${name}";
   version =
     (import ./version.nix { });
@@ -36,7 +36,7 @@ buildGoApplication rec {
 
   pwd = src;
 
-  subPackages = [ "cmd/haqqd" ];
+  subPackages = [ "cmd/neurad" ];
 
   doCheck = false;
 

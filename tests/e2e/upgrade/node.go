@@ -4,7 +4,7 @@ import "github.com/ory/dockertest/v3"
 
 const jrpcPort = "8545"
 
-// Node represents an Haqq Network node in the context of the upgrade tests. It contains
+// Node represents an neura Network node in the context of the upgrade tests. It contains
 // fields to store the used repository, version as well as custom run options for
 // dockertest.
 type Node struct {

@@ -1,38 +1,38 @@
 { pkgs, lib, config, ... }:
-let cfg = config.services.haqqd-supervised; in
+let cfg = config.services.neurad-supervised; in
 {
   systemd.timers = lib.mkIf (cfg.enable && cfg.deleteOldBackups > 0)
     {
-      haqqd-delete-old-backups = {
+      neurad-delete-old-backups = {
         timerConfig = {
           OnCalendar = "hourly";
           # OnCalendar = "*:0/1";
           Persistent = true;
-          Unit = "haqqd-delete-old-backups.service";
+          Unit = "neurad-delete-old-backups.service";
         };
 
         wantedBy = [ "timers.target" ];
       };
     };
 
-  systemd.services.haqqd-delete-old-backups = lib.mkIf (cfg.enable && cfg.deleteOldBackups > 0)
+  systemd.services.neurad-delete-old-backups = lib.mkIf (cfg.enable && cfg.deleteOldBackups > 0)
     {
       serviceConfig =
         let
           deleteOldBackups = pkgs.writeShellApplication {
-            name = "haqqd-delete-old-backups";
+            name = "neurad-delete-old-backups";
             # buildInputs = [ pkgs.coreutils ];
             text = ''
               set -x
-              find ${config.users.users.haqqd.home}/.haqqd -type d -name "data-backup-*" -mtime +${builtins.toString cfg.deleteOldBackups} -exec rm -rf {} +
+              find ${config.users.users.neurad.home}/.neurad -type d -name "data-backup-*" -mtime +${builtins.toString cfg.deleteOldBackups} -exec rm -rf {} +
             '';
           };
         in
         {
-          User = config.users.users.haqqd.name;
+          User = config.users.users.neurad.name;
           Type = "oneshot";
           ExecStart = ''
-            ${deleteOldBackups}/bin/haqqd-delete-old-backups
+            ${deleteOldBackups}/bin/neurad-delete-old-backups
           '';
         };
     };

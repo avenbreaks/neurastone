@@ -9,21 +9,21 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	haqqbankkeeper "github.com/avenbreaks/neurastone/x/bank/keeper"
+	neurabankkeeper "github.com/avenbreaks/neurastone/x/bank/keeper"
 )
 
 type AppModule struct {
 	bank.AppModule
 
 	keeper      bankkeeper.Keeper
-	wKeeper     haqqbankkeeper.WrappedBaseKeeper
-	erc20keeper haqqbankkeeper.ERC20Keeper
+	wKeeper     neurabankkeeper.WrappedBaseKeeper
+	erc20keeper neurabankkeeper.ERC20Keeper
 	subspace    exported.Subspace
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(module bank.AppModule, keeper bankkeeper.Keeper, erc20keeper haqqbankkeeper.ERC20Keeper, accountKeeper haqqbankkeeper.AccountKeeper, ss exported.Subspace) AppModule {
-	wrappedBankKeeper := haqqbankkeeper.NewWrappedBaseKeeper(keeper, erc20keeper, accountKeeper)
+func NewAppModule(module bank.AppModule, keeper bankkeeper.Keeper, erc20keeper neurabankkeeper.ERC20Keeper, accountKeeper neurabankkeeper.AccountKeeper, ss exported.Subspace) AppModule {
+	wrappedBankKeeper := neurabankkeeper.NewWrappedBaseKeeper(keeper, erc20keeper, accountKeeper)
 	return AppModule{
 		AppModule:   module,
 		keeper:      keeper,
@@ -35,7 +35,7 @@ func NewAppModule(module bank.AppModule, keeper bankkeeper.Keeper, erc20keeper h
 
 // RegisterServices registers module services.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	banktypes.RegisterMsgServer(cfg.MsgServer(), haqqbankkeeper.NewMsgServerImpl(am.wKeeper))
+	banktypes.RegisterMsgServer(cfg.MsgServer(), neurabankkeeper.NewMsgServerImpl(am.wKeeper))
 	banktypes.RegisterQueryServer(cfg.QueryServer(), am.wKeeper)
 
 	m := bankkeeper.NewMigrator(am.keeper.(bankkeeper.BaseKeeper), am.subspace)

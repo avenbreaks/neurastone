@@ -26,7 +26,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/avenbreaks/neurastone/testutil/network"
-	// haqqnetwork "github.com/avenbreaks/neurastone/testutil/network"
+	// neuranetwork "github.com/avenbreaks/neurastone/testutil/network"
 )
 
 type BurnCoinsTestSuite struct {
@@ -546,7 +546,7 @@ func (s *BurnCoinsTestSuite) TestCase4LowDeposit() {
 }
 
 func TestBurnCoins(t *testing.T) {
-	cfg := network.HaqqNetworkConfigCoinomicsDisabled()
+	cfg := network.neuraNetworkConfigCoinomicsDisabled()
 	encCfg := simapp.MakeTestEncodingConfig()
 	cfg.AppConstructor = network.NewAppConstructor(encCfg)
 	cfg.NumValidators = 1

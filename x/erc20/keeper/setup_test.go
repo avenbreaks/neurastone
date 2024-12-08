@@ -28,7 +28,7 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	ctx              sdk.Context
-	app              *app.Haqq
+	app              *app.neura
 	queryClientEvm   evm.QueryClient
 	queryClient      types.QueryClient
 	address          common.Address
@@ -43,12 +43,12 @@ type KeeperTestSuite struct {
 	coordinator *ibcgotesting.Coordinator
 
 	// testing chains used for convenience and readability
-	HaqqChain       *ibcgotesting.TestChain
+	neuraChain       *ibcgotesting.TestChain
 	IBCOsmosisChain *ibcgotesting.TestChain
 	IBCCosmosChain  *ibcgotesting.TestChain
 
-	pathOsmosisHaqq   *ibctesting.Path
-	pathCosmosHaqq    *ibctesting.Path
+	pathOsmosisneura   *ibctesting.Path
+	pathCosmosneura    *ibctesting.Path
 	pathOsmosisCosmos *ibctesting.Path
 
 	suiteIBCTesting bool
@@ -56,11 +56,11 @@ type KeeperTestSuite struct {
 
 var (
 	s *KeeperTestSuite
-	// sendAndReceiveMsgFee corresponds to the fees paid on Haqq Network chain when calling the SendAndReceive function
+	// sendAndReceiveMsgFee corresponds to the fees paid on neura Network chain when calling the SendAndReceive function
 	// This function makes 3 cosmos txs under the hood
 	sendAndReceiveMsgFee = math.NewInt(ibctesting.DefaultFeeAmt * 3)
-	// sendBackCoinsFee corresponds to the fees paid on Haqq Network chain when calling the SendBackCoins function
-	// or calling the SendAndReceive from another chain to Haqq Network
+	// sendBackCoinsFee corresponds to the fees paid on neura Network chain when calling the SendBackCoins function
+	// or calling the SendAndReceive from another chain to neura Network
 	// This function makes 2 cosmos txs under the hood
 	sendBackCoinsFee = math.NewInt(ibctesting.DefaultFeeAmt * 2)
 )

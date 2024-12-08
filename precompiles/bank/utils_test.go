@@ -12,7 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/avenbreaks/neurastone/precompiles/bank"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/factory"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/factory"
 	coinomicstypes "github.com/avenbreaks/neurastone/x/coinomics/types"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )

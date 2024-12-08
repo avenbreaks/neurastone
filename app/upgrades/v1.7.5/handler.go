@@ -28,7 +28,7 @@ import (
 
 	sdkvestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 
-	haqqvestingtypes "github.com/avenbreaks/neurastone/x/vesting/types"
+	neuravestingtypes "github.com/avenbreaks/neurastone/x/vesting/types"
 
 	"github.com/avenbreaks/neurastone/utils"
 )
@@ -51,7 +51,7 @@ func TurnOffLiquidVesting(ctx sdk.Context, bk bankkeeper.Keeper, lk liquidvestin
 	// Redeem's vector
 	redeemsVector := make([]liquidvestingtypes.MsgRedeem, 0)
 	// Updated vesting accounts
-	updatedVestingAccounts := make([]haqqvestingtypes.ClawbackVestingAccount, 0)
+	updatedVestingAccounts := make([]neuravestingtypes.ClawbackVestingAccount, 0)
 
 	// Collect all reedem messages
 	var wg sync.WaitGroup
@@ -131,8 +131,8 @@ func collectStorageEntries(ctx sdk.Context, erc20 erc20keeper.Keeper, ek evmkeep
 	return storageMap
 }
 
-func tryFoundFixScheduleForVestingAccount(acc authtypes.AccountI, vestingAccounts *[]haqqvestingtypes.ClawbackVestingAccount) {
-	va, ok := acc.(*haqqvestingtypes.ClawbackVestingAccount)
+func tryFoundFixScheduleForVestingAccount(acc authtypes.AccountI, vestingAccounts *[]neuravestingtypes.ClawbackVestingAccount) {
+	va, ok := acc.(*neuravestingtypes.ClawbackVestingAccount)
 	if !ok {
 		return
 	}

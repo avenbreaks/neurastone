@@ -10,7 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/x/evm/keeper"
 	"github.com/avenbreaks/neurastone/x/evm/types"
 )
@@ -43,7 +43,7 @@ func InitGenesis(
 			panic(fmt.Errorf("account not found for address %s", account.Address))
 		}
 
-		ethAcct, ok := acc.(haqqtypes.EthAccountI)
+		ethAcct, ok := acc.(neuratypes.EthAccountI)
 		if !ok {
 			panic(
 				fmt.Errorf("account %s must be an EthAccount interface, got %T",
@@ -75,7 +75,7 @@ func InitGenesis(
 func ExportGenesis(ctx sdk.Context, k *keeper.Keeper, ak types.AccountKeeper) *types.GenesisState {
 	var ethGenAccounts []types.GenesisAccount
 	ak.IterateAccounts(ctx, func(account authtypes.AccountI) bool {
-		ethAccount, ok := account.(haqqtypes.EthAccountI)
+		ethAccount, ok := account.(neuratypes.EthAccountI)
 		if !ok {
 			// ignore non EthAccounts
 			return false

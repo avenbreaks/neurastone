@@ -1,10 +1,10 @@
 { pkgs, config, lib, ... }:
 let
-  haqqCfg = config.services.haqqd-supervised;
-  cfg = haqqCfg.grafana;
+  neuraCfg = config.services.neurad-supervised;
+  cfg = neuraCfg.grafana;
 in
 {
-  config = lib.mkIf (haqqCfg.enable && cfg.enable) {
+  config = lib.mkIf (neuraCfg.enable && cfg.enable) {
 
     # This is using an age key that is expected to already be in the filesystem
     # sops.age.keyFile = "/var/lib/sops-nix/key.txt";

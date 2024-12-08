@@ -20,7 +20,7 @@ import (
 
 	"github.com/avenbreaks/neurastone/app"
 	"github.com/avenbreaks/neurastone/encoding"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	coinomicstypes "github.com/avenbreaks/neurastone/x/coinomics/types"
 )
 
@@ -50,7 +50,7 @@ func createGenesisAccounts(accounts []sdktypes.AccAddress) []authtypes.GenesisAc
 	emptyCodeHash := crypto.Keccak256Hash(nil).String()
 	for _, acc := range accounts {
 		baseAcc := authtypes.NewBaseAccount(acc, nil, 0, 0)
-		ethAcc := &haqqtypes.EthAccount{
+		ethAcc := &neuratypes.EthAccount{
 			BaseAccount: baseAcc,
 			CodeHash:    emptyCodeHash,
 		}
@@ -85,9 +85,9 @@ func createBalances(accounts []sdktypes.AccAddress, coin sdktypes.Coin) []bankty
 	return fundedAccountBalances
 }
 
-// createHaqqApp creates a Haqq app
-func createHaqqApp(chainID string) *app.Haqq {
-	// Create Haqq app
+// createneuraApp creates a neura app
+func createneuraApp(chainID string) *app.neura {
+	// Create neura app
 	db := dbm.NewMemDB()
 	logger := log.NewNopLogger()
 	loadLatest := true
@@ -98,7 +98,7 @@ func createHaqqApp(chainID string) *app.Haqq {
 	appOptions := simutils.NewAppOptionsWithFlagHome(app.DefaultNodeHome)
 	baseAppOptions := []func(*baseapp.BaseApp){baseapp.SetChainID(chainID)}
 
-	return app.NewHaqq(
+	return app.Newneura(
 		logger,
 		db,
 		nil,
@@ -176,30 +176,30 @@ type StakingCustomGenesisState struct {
 }
 
 // setStakingGenesisState sets the staking genesis state
-func setStakingGenesisState(haqqApp *app.Haqq, genesisState haqqtypes.GenesisState, overwriteParams StakingCustomGenesisState) haqqtypes.GenesisState {
+func setStakingGenesisState(neuraApp *app.neura, genesisState neuratypes.GenesisState, overwriteParams StakingCustomGenesisState) neuratypes.GenesisState {
 	// Set staking params
 	stakingParams := stakingtypes.DefaultParams()
 	stakingParams.BondDenom = overwriteParams.denom
 
 	stakingGenesis := stakingtypes.NewGenesisState(stakingParams, overwriteParams.validators, overwriteParams.delegations)
-	genesisState[stakingtypes.ModuleName] = haqqApp.AppCodec().MustMarshalJSON(stakingGenesis)
+	genesisState[stakingtypes.ModuleName] = neuraApp.AppCodec().MustMarshalJSON(stakingGenesis)
 	return genesisState
 }
 
 // setAuthGenesisState sets the auth genesis state
-func setAuthGenesisState(haqqApp *app.Haqq, genesisState haqqtypes.GenesisState, genAccounts []authtypes.GenesisAccount) haqqtypes.GenesisState {
+func setAuthGenesisState(neuraApp *app.neura, genesisState neuratypes.GenesisState, genAccounts []authtypes.GenesisAccount) neuratypes.GenesisState {
 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccounts)
-	genesisState[authtypes.ModuleName] = haqqApp.AppCodec().MustMarshalJSON(authGenesis)
+	genesisState[authtypes.ModuleName] = neuraApp.AppCodec().MustMarshalJSON(authGenesis)
 	return genesisState
 }
 
 // setCoinomicsGenesisState sets the coinomics genesis state
-func setCoinomicsGenesisState(haqqApp *app.Haqq, genesisState haqqtypes.GenesisState) haqqtypes.GenesisState {
+func setCoinomicsGenesisState(neuraApp *app.neura, genesisState neuratypes.GenesisState) neuratypes.GenesisState {
 	coinomicsParams := coinomicstypes.DefaultParams()
 	coinomicsParams.EnableCoinomics = false
 
 	coinomicsGenesis := coinomicstypes.NewGenesisState(coinomicsParams, sdktypes.NewCoin("aISLM", sdkmath.NewInt(10_000_000_000)))
-	genesisState[coinomicstypes.ModuleName] = haqqApp.AppCodec().MustMarshalJSON(&coinomicsGenesis)
+	genesisState[coinomicstypes.ModuleName] = neuraApp.AppCodec().MustMarshalJSON(&coinomicsGenesis)
 	return genesisState
 }
 
@@ -209,7 +209,7 @@ type BankCustomGenesisState struct {
 }
 
 // setBankGenesisState sets the bank genesis state
-func setBankGenesisState(haqqApp *app.Haqq, genesisState haqqtypes.GenesisState, overwriteParams BankCustomGenesisState) haqqtypes.GenesisState {
+func setBankGenesisState(neuraApp *app.neura, genesisState neuratypes.GenesisState, overwriteParams BankCustomGenesisState) neuratypes.GenesisState {
 	bankGenesis := banktypes.NewGenesisState(
 		banktypes.DefaultGenesisState().Params,
 		overwriteParams.balances,
@@ -217,7 +217,7 @@ func setBankGenesisState(haqqApp *app.Haqq, genesisState haqqtypes.GenesisState,
 		[]banktypes.Metadata{},
 		[]banktypes.SendEnabled{},
 	)
-	genesisState[banktypes.ModuleName] = haqqApp.AppCodec().MustMarshalJSON(bankGenesis)
+	genesisState[banktypes.ModuleName] = neuraApp.AppCodec().MustMarshalJSON(bankGenesis)
 	return genesisState
 }
 

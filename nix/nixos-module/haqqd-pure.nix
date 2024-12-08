@@ -2,7 +2,7 @@
 
 # Not being used right now, keeping it for future reference
 
-# This derivation downloads the haqqd binary from GitHub releases
+# This derivation downloads the neurad binary from GitHub releases
 # It's useful when you need to get a version built without nix
 # on nixos it's required to set `programs.nix-ld.enable = true;`
 # and `environ,ent.NIX_LD = config.environment.variables.NIX_LD`, if you run this binary in a systemd service
@@ -36,25 +36,25 @@ let
   dist = dists.${platform} or (throw "Unsupported platform ${platform}");
 in
 stdenv.mkDerivation {
-  name = "haqqd-pure";
+  name = "neurad-pure";
   inherit version;
 
   src = fetchurl {
-    url = "https://github.com/avenbreaks/neurastone/releases/download/v${version}/haqq_${version}_${dist.os}_${dist.arch}.tar.gz";
+    url = "https://github.com/avenbreaks/neurastone/releases/download/v${version}/neura_${version}_${dist.os}_${dist.arch}.tar.gz";
     sha256 = dist.hash;
   };
 
   installPhase = ''
     echo 1
     mkdir -p $out/bin
-    cp haqqd $out/bin/haqqd
+    cp neurad $out/bin/neurad
 
-    export chain_id=haqq_11235-1
-    export haqqd_share=$out/share/haqqd/init
-    mkdir -p $haqqd_share
+    export chain_id=neura_11235-1
+    export neurad_share=$out/share/neurad/init
+    mkdir -p $neurad_share
 
-    $out/bin/haqqd-patched config chain-id $chain_id --home $haqqd_share
-    $out/bin/haqqd-patched init "haqq-node" --chain-id $chain_id --home $haqqd_share
+    $out/bin/neurad-patched config chain-id $chain_id --home $neurad_share
+    $out/bin/neurad-patched init "neura-node" --chain-id $chain_id --home $neurad_share
   '';
 
   meta.platforms = lib.platforms.unix ++ lib.platforms.windows;

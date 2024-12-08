@@ -44,7 +44,7 @@ func (suite *KeeperTestSuite) TestBalances() {
 			name: "invalid address",
 			malleate: func() {
 				req = &types.QueryBalancesRequest{
-					Address: "haqq11",
+					Address: "neura11",
 				}
 			},
 			expPass:     false,

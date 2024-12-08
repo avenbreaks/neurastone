@@ -20,7 +20,7 @@ func TestInitCmd(t *testing.T) {
 	rootCmd, _ := neurd.NewRootCmd()
 	rootCmd.SetArgs([]string{
 		"init",      // Test the init cmd
-		"haqq-test", // Moniker
+		"neura-test", // Moniker
 		fmt.Sprintf("--%s=%s", cli.FlagOverwrite, "true"), // Overwrite genesis.json, in case it already exists
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, utils.TestEdge2ChainID+"-3"),
 	})

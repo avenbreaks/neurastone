@@ -11,7 +11,7 @@ printf "version: v1\nname: buf.build/avenbreaks/neurastone\n" > "$SWAGGER_PROTO_
 
 ln -snf ../../proto/buf.gen.swagger.yaml ${SWAGGER_PROTO_DIR}/proto/buf.gen.swagger.yaml
 
-ln -snf ../../proto/haqq "${SWAGGER_PROTO_DIR}/proto/haqq"
+ln -snf ../../proto/neura "${SWAGGER_PROTO_DIR}/proto/neura"
 ln -snf ../../proto/evmos "${SWAGGER_PROTO_DIR}/proto/evmos"
 ln -snf ../../proto/ethermint "${SWAGGER_PROTO_DIR}/proto/ethermint"
 
@@ -35,7 +35,7 @@ eval "buf generate --template proto/buf.gen.swagger.yaml $PATHS"
 
 cd ..
 
-cat tmp-swagger-gen/apidocs.swagger.json | jq '.info.title |= "Haqq Network gRPC API"' | jq '.info.version |= "1.8.0"' > client/docs/swagger-ui/swagger.json
+cat tmp-swagger-gen/apidocs.swagger.json | jq '.info.title |= "neura Network gRPC API"' | jq '.info.version |= "1.8.0"' > client/docs/swagger-ui/swagger.json
 # cp tmp-swagger-gen/apidocs.swagger.yaml client/docs/swagger-ui/swagger.yaml
 
 # generate binary for static server

@@ -21,13 +21,13 @@ var (
 	DefaultChainID = utils.MainNetChainID + "-1"
 	// DefaultPrecompilesBech32 is the standard bech32 address for the precompiles
 	DefaultPrecompilesBech32 = []string{
-		"haqq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqgqj6krnj", // secp256r1 curve precompile ??? 0x0000000000000000000000000000000000000100
-		"haqq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqpqqnxumqn", // bech32 precompile 0x0000000000000000000000000000000000000400
-		"haqq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqq4q8tzj", // Staking precompile 0x0000000000000000000000000000000000000800
-		"haqq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqpgkn7lq", // Distribution precompile 0x0000000000000000000000000000000000000801
-		"haqq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqzx9xg3l", // ICS20 transfer precompile 0x0000000000000000000000000000000000000802
-		// "haqq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqrmnjavd", // Vesting precompile 0x0000000000000000000000000000000000000803
-		"haqq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqy629ddg", // Bank precompile 0x0000000000000000000000000000000000000804
+		"neura1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqgqj6krnj", // secp256r1 curve precompile ??? 0x0000000000000000000000000000000000000100
+		"neura1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqpqqnxumqn", // bech32 precompile 0x0000000000000000000000000000000000000400
+		"neura1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqq4q8tzj", // Staking precompile 0x0000000000000000000000000000000000000800
+		"neura1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqpgkn7lq", // Distribution precompile 0x0000000000000000000000000000000000000801
+		"neura1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqzx9xg3l", // ICS20 transfer precompile 0x0000000000000000000000000000000000000802
+		// "neura1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqrmnjavd", // Vesting precompile 0x0000000000000000000000000000000000000803
+		"neura1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqy629ddg", // Bank precompile 0x0000000000000000000000000000000000000804
 	}
 )
 

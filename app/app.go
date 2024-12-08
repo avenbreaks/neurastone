@@ -138,8 +138,8 @@ import (
 	_ "github.com/avenbreaks/neurastone/client/docs/statik"
 
 	"github.com/avenbreaks/neurastone/app/ante"
-	haqqbank "github.com/avenbreaks/neurastone/x/bank"
-	haqqbankkeeper "github.com/avenbreaks/neurastone/x/bank/keeper"
+	neurabank "github.com/avenbreaks/neurastone/x/bank"
+	neurabankkeeper "github.com/avenbreaks/neurastone/x/bank/keeper"
 	"github.com/avenbreaks/neurastone/x/coinomics"
 	coinomicskeeper "github.com/avenbreaks/neurastone/x/coinomics/keeper"
 	coinomicstypes "github.com/avenbreaks/neurastone/x/coinomics/types"
@@ -275,15 +275,15 @@ var (
 )
 
 var (
-	_ servertypes.Application = (*Haqq)(nil)
-	_ ibctesting.TestingApp   = (*Haqq)(nil)
-	_ runtime.AppI            = (*Haqq)(nil)
+	_ servertypes.Application = (*neura)(nil)
+	_ ibctesting.TestingApp   = (*neura)(nil)
+	_ runtime.AppI            = (*neura)(nil)
 )
 
-// Haqq implements an extended ABCI application. It is an application
+// neura implements an extended ABCI application. It is an application
 // that may process transactions through Ethereum's EVM running atop of
 // CometBFT consensus.
-type Haqq struct {
+type neura struct {
 	*baseapp.BaseApp
 
 	// encoding
@@ -332,7 +332,7 @@ type Haqq struct {
 	VestingKeeper       vestingkeeper.Keeper
 	LiquidVestingKeeper liquidvestingkeeper.Keeper
 
-	// Haqq keepers
+	// neura keepers
 	CoinomicsKeeper coinomicskeeper.Keeper
 	DaoKeeper       ucdaokeeper.Keeper
 
@@ -348,8 +348,8 @@ type Haqq struct {
 	tpsCounter *tpsCounter
 }
 
-// NewHaqq returns a reference to a new initialized Ethermint application.
-func NewHaqq(
+// Newneura returns a reference to a new initialized Ethermint application.
+func Newneura(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
@@ -360,7 +360,7 @@ func NewHaqq(
 	encodingConfig simappparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
-) *Haqq {
+) *neura {
 	appCodec := encodingConfig.Codec
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -405,7 +405,7 @@ func NewHaqq(
 		// evmos keys
 		erc20types.StoreKey,
 		epochstypes.StoreKey, vestingtypes.StoreKey,
-		// haqq keys
+		// neura keys
 		coinomicstypes.StoreKey,
 		liquidvestingtypes.StoreKey,
 		ucdaotypes.StoreKey,
@@ -421,7 +421,7 @@ func NewHaqq(
 		os.Exit(1)
 	}
 
-	app := &Haqq{
+	app := &neura{
 		BaseApp:           bApp,
 		cdc:               cdc,
 		appCodec:          appCodec,
@@ -460,14 +460,14 @@ func NewHaqq(
 		sdk.GetConfig().GetBech32AccountAddrPrefix(),
 		authAddr,
 	)
-	haqqBankKeeper := haqqbankkeeper.NewBaseKeeper(
+	neuraBankKeeper := neurabankkeeper.NewBaseKeeper(
 		appCodec, keys[banktypes.StoreKey], keys[distrtypes.StoreKey], app.AccountKeeper, app.DistrKeeper, app.BlockedAddrs(), authAddr,
 	)
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		appCodec, keys[banktypes.StoreKey], app.AccountKeeper, app.BlockedAddrs(), authAddr,
 	)
 	stakingKeeper := stakingkeeper.NewKeeper(
-		appCodec, keys[stakingtypes.StoreKey], app.AccountKeeper, &haqqBankKeeper, authAddr,
+		appCodec, keys[stakingtypes.StoreKey], app.AccountKeeper, &neuraBankKeeper, authAddr,
 	)
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec, keys[distrtypes.StoreKey], app.AccountKeeper, app.BankKeeper,
@@ -519,14 +519,14 @@ func NewHaqq(
 		MaxMetadataLen: 10000,
 	}
 	govKeeper := govkeeper.NewKeeper(
-		appCodec, keys[govtypes.StoreKey], app.AccountKeeper, &haqqBankKeeper,
+		appCodec, keys[govtypes.StoreKey], app.AccountKeeper, &neuraBankKeeper,
 		stakingKeeper, app.MsgServiceRouter(), govConfig, authAddr,
 	)
 
 	// Set legacy router for backwards compatibility with gov v1beta1
 	govKeeper.SetLegacyRouter(govRouter)
 
-	// Haqq Keeper
+	// neura Keeper
 	app.CoinomicsKeeper = coinomicskeeper.NewKeeper(
 		keys[coinomicstypes.StoreKey], appCodec, app.GetSubspace(coinomicstypes.ModuleName),
 		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, stakingKeeper,
@@ -696,7 +696,7 @@ func NewHaqq(
 			encodingConfig.TxConfig,
 		),
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
-		haqqbank.NewAppModule(
+		neurabank.NewAppModule(
 			bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
 			app.BankKeeper, app.Erc20Keeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName),
 		),
@@ -728,7 +728,7 @@ func NewHaqq(
 		vesting.NewAppModule(app.VestingKeeper, app.AccountKeeper, app.BankKeeper, *app.StakingKeeper.Keeper),
 		liquidvesting.NewAppModule(appCodec, app.LiquidVestingKeeper, app.AccountKeeper, app.BankKeeper, app.Erc20Keeper),
 
-		// Haqq app modules
+		// neura app modules
 		coinomics.NewAppModule(app.CoinomicsKeeper, app.AccountKeeper, *app.StakingKeeper.Keeper),
 		ucdao.NewAppModule(appCodec, app.DaoKeeper, app.GetSubspace(ucdaotypes.ModuleName)),
 	)
@@ -801,7 +801,7 @@ func NewHaqq(
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
 
-		// Haqq modules
+		// neura modules
 		coinomicstypes.ModuleName,
 		liquidvestingtypes.ModuleName,
 		ucdaotypes.ModuleName,
@@ -913,9 +913,9 @@ func NewHaqq(
 }
 
 // Name returns the name of the App
-func (app *Haqq) Name() string { return app.BaseApp.Name() }
+func (app *neura) Name() string { return app.BaseApp.Name() }
 
-func (app *Haqq) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64) {
+func (app *neura) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64) {
 	options := ante.HandlerOptions{
 		Cdc:                    app.appCodec,
 		AccountKeeper:          app.AccountKeeper,
@@ -937,10 +937,10 @@ func (app *Haqq) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64) {
 		panic(err)
 	}
 
-	app.SetAnteHandler(NewHaqqAnteHandlerDecorator(*app.StakingKeeper.Keeper, ante.NewAnteHandler(options)))
+	app.SetAnteHandler(NewneuraAnteHandlerDecorator(*app.StakingKeeper.Keeper, ante.NewAnteHandler(options)))
 }
 
-func (app *Haqq) setPostHandler() {
+func (app *neura) setPostHandler() {
 	postHandler, err := posthandler.NewPostHandler(
 		posthandler.HandlerOptions{},
 	)
@@ -953,19 +953,19 @@ func (app *Haqq) setPostHandler() {
 // BeginBlocker runs the CometBFT ABCI BeginBlock logic. It executes state changes at the beginning
 // of the new block for every registered module. If there is a registered fork at the current height,
 // BeginBlocker will schedule the upgrade plan and perform the state migration (if any).
-func (app *Haqq) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *neura) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	// Perform any scheduled forks before executing the modules logic
 	app.ScheduleForkUpgrade(ctx)
 	return app.mm.BeginBlock(ctx, req)
 }
 
 // EndBlocker updates every end block
-func (app *Haqq) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *neura) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
 
 // DeliverTx We are intentionally decomposing this method to calculate the transactions per second.
-func (app *Haqq) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
+func (app *neura) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
 	defer func() {
 		// TODO: Record the count along with the code and or reason so as to display
 		// in the transactions per second live dashboards.
@@ -979,7 +979,7 @@ func (app *Haqq) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverT
 }
 
 // InitChainer updates at chain initialization
-func (app *Haqq) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *neura) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState ethermint.GenesisState
 	if err := json.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
@@ -991,12 +991,12 @@ func (app *Haqq) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Re
 }
 
 // LoadHeight loads state at a particular height
-func (app *Haqq) LoadHeight(height int64) error {
+func (app *neura) LoadHeight(height int64) error {
 	return app.LoadVersion(height)
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
-func (app *Haqq) ModuleAccountAddrs() map[string]bool {
+func (app *neura) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 
 	accs := make([]string, 0, len(maccPerms))
@@ -1014,7 +1014,7 @@ func (app *Haqq) ModuleAccountAddrs() map[string]bool {
 
 // BlockedAddrs returns all the app's module account addresses that are not
 // allowed to receive external tokens.
-func (app *Haqq) BlockedAddrs() map[string]bool {
+func (app *neura) BlockedAddrs() map[string]bool {
 	blockedAddrs := make(map[string]bool)
 
 	accs := make([]string, 0, len(maccPerms))
@@ -1034,64 +1034,64 @@ func (app *Haqq) BlockedAddrs() map[string]bool {
 	return blockedAddrs
 }
 
-// LegacyAmino returns Haqq's amino codec.
+// LegacyAmino returns neura's amino codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *Haqq) LegacyAmino() *codec.LegacyAmino {
+func (app *neura) LegacyAmino() *codec.LegacyAmino {
 	return app.cdc
 }
 
-// AppCodec returns Haqq's app codec.
+// AppCodec returns neura's app codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *Haqq) AppCodec() codec.Codec {
+func (app *neura) AppCodec() codec.Codec {
 	return app.appCodec
 }
 
-// InterfaceRegistry returns Haqq's InterfaceRegistry
-func (app *Haqq) InterfaceRegistry() types.InterfaceRegistry {
+// InterfaceRegistry returns neura's InterfaceRegistry
+func (app *neura) InterfaceRegistry() types.InterfaceRegistry {
 	return app.interfaceRegistry
 }
 
 // GetKey returns the KVStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *Haqq) GetKey(storeKey string) *storetypes.KVStoreKey {
+func (app *neura) GetKey(storeKey string) *storetypes.KVStoreKey {
 	return app.keys[storeKey]
 }
 
 // GetTKey returns the TransientStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *Haqq) GetTKey(storeKey string) *storetypes.TransientStoreKey {
+func (app *neura) GetTKey(storeKey string) *storetypes.TransientStoreKey {
 	return app.tkeys[storeKey]
 }
 
 // GetMemKey returns the MemStoreKey for the provided mem key.
 //
 // NOTE: This is solely used for testing purposes.
-func (app *Haqq) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
+func (app *neura) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
 	return app.memKeys[storeKey]
 }
 
 // GetSubspace returns a param subspace for a given module name.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *Haqq) GetSubspace(moduleName string) paramstypes.Subspace {
+func (app *neura) GetSubspace(moduleName string) paramstypes.Subspace {
 	subspace, _ := app.ParamsKeeper.GetSubspace(moduleName)
 	return subspace
 }
 
 // SimulationManager implements the SimulationApp interface
-func (app *Haqq) SimulationManager() *module.SimulationManager {
+func (app *neura) SimulationManager() *module.SimulationManager {
 	return app.sm
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
-func (app *Haqq) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
+func (app *neura) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
 
 	// Register new tx routes from grpc-gateway.
@@ -1110,12 +1110,12 @@ func (app *Haqq) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfi
 	}
 }
 
-func (app *Haqq) RegisterTxService(clientCtx client.Context) {
+func (app *neura) RegisterTxService(clientCtx client.Context) {
 	authtx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
 }
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
-func (app *Haqq) RegisterTendermintService(clientCtx client.Context) {
+func (app *neura) RegisterTendermintService(clientCtx client.Context) {
 	tmservice.RegisterTendermintService(
 		clientCtx,
 		app.BaseApp.GRPCQueryRouter(),
@@ -1126,39 +1126,39 @@ func (app *Haqq) RegisterTendermintService(clientCtx client.Context) {
 
 // RegisterNodeService registers the node gRPC service on the provided
 // application gRPC query router.
-func (app *Haqq) RegisterNodeService(clientCtx client.Context) {
+func (app *neura) RegisterNodeService(clientCtx client.Context) {
 	node.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
 }
 
 // IBC Go TestingApp functions
 
 // GetBaseApp implements the TestingApp interface.
-func (app *Haqq) GetBaseApp() *baseapp.BaseApp {
+func (app *neura) GetBaseApp() *baseapp.BaseApp {
 	return app.BaseApp
 }
 
 // GetStakingKeeper implements the TestingApp interface.
-func (app *Haqq) GetStakingKeeper() ibctestingtypes.StakingKeeper {
+func (app *neura) GetStakingKeeper() ibctestingtypes.StakingKeeper {
 	return app.StakingKeeper
 }
 
 // GetStakingKeeperSDK implements the TestingApp interface.
-func (app *Haqq) GetStakingKeeperSDK() stakingkeeper.Keeper {
+func (app *neura) GetStakingKeeperSDK() stakingkeeper.Keeper {
 	return app.StakingKeeper
 }
 
 // GetIBCKeeper implements the TestingApp interface.
-func (app *Haqq) GetIBCKeeper() *ibckeeper.Keeper {
+func (app *neura) GetIBCKeeper() *ibckeeper.Keeper {
 	return app.IBCKeeper
 }
 
 // GetScopedIBCKeeper implements the TestingApp interface.
-func (app *Haqq) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
+func (app *neura) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
 	return app.ScopedIBCKeeper
 }
 
 // GetTxConfig implements the TestingApp interface.
-func (app *Haqq) GetTxConfig() client.TxConfig {
+func (app *neura) GetTxConfig() client.TxConfig {
 	cfg := encoding.MakeConfig(ModuleBasics)
 	return cfg.TxConfig
 }
@@ -1207,7 +1207,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(feemarkettypes.ModuleName).WithKeyTable(feemarkettypes.ParamKeyTable())
 	// evmos subspaces
 	paramsKeeper.Subspace(erc20types.ModuleName)
-	// haqq subspaces
+	// neura subspaces
 	paramsKeeper.Subspace(coinomicstypes.ModuleName)
 	paramsKeeper.Subspace(liquidvestingtypes.ModuleName)
 	paramsKeeper.Subspace(ucdaotypes.ModuleName)
@@ -1215,7 +1215,7 @@ func initParamsKeeper(
 	return paramsKeeper
 }
 
-func (app *Haqq) setupUpgradeHandlers(keys map[string]*storetypes.KVStoreKey) {
+func (app *neura) setupUpgradeHandlers(keys map[string]*storetypes.KVStoreKey) {
 	// v1.7.0 Upgrade SDK, CometBFT and IBC
 	app.UpgradeKeeper.SetUpgradeHandler(
 		v170.UpgradeName,

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package haqq.vesting.v1;
+package neura.vesting.v1;
 
 option go_package = "github.com/avenbreaks/neurastone/x/vesting/types";
 

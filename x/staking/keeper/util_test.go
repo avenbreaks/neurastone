@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/avenbreaks/neurastone/testutil"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
 	"github.com/avenbreaks/neurastone/x/vesting/types"
 )
 

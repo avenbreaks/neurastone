@@ -21,7 +21,7 @@ import (
 	"github.com/avenbreaks/neurastone/precompiles/distribution"
 	"github.com/avenbreaks/neurastone/precompiles/testutil"
 	"github.com/avenbreaks/neurastone/precompiles/testutil/contracts"
-	haqqtestutil "github.com/avenbreaks/neurastone/testutil"
+	neuratestutil "github.com/avenbreaks/neurastone/testutil"
 	testutiltx "github.com/avenbreaks/neurastone/testutil/tx"
 	"github.com/avenbreaks/neurastone/utils"
 )
@@ -311,7 +311,7 @@ var _ = Describe("Calling distribution precompile from EOA", func() {
 		It("should get validator distribution info - validatorDistributionInfo query", func() {
 			addr := sdk.AccAddress(s.validators[0].GetOperator())
 			// fund validator account to make self-delegation
-			err := haqqtestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, addr, 10)
+			err := neuratestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, addr, 10)
 			Expect(err).To(BeNil())
 			// make a self delegation
 			_, err = s.app.StakingKeeper.Delegate(s.ctx, addr, math.NewInt(1), stakingtypes.Unspecified, s.validators[0], true)
@@ -1043,7 +1043,7 @@ var _ = Describe("Calling distribution precompile from another contract", func()
 			BeforeEach(func() {
 				addr := sdk.AccAddress(s.validators[0].GetOperator())
 				// fund validator account to make self-delegation
-				err := haqqtestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, addr, 10)
+				err := neuratestutil.FundAccountWithBaseDenom(s.ctx, s.app.BankKeeper, addr, 10)
 				Expect(err).To(BeNil())
 				// make a self delegation
 				_, err = s.app.StakingKeeper.Delegate(s.ctx, addr, math.NewInt(1), stakingtypes.Unspecified, s.validators[0], true)

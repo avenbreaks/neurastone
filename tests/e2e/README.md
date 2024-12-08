@@ -1,9 +1,9 @@
 # End-to-End Testing Suite
 
 The End-to-End (E2E) testing suite provides an environment
-for running end-to-end tests on Haqq Network.
+for running end-to-end tests on neura Network.
 It is used for testing chain upgrades,
-as it allows for initializing multiple Haqq Network chains with different versions.
+as it allows for initializing multiple neura Network chains with different versions.
 
 - [End-to-End Testing Suite](#end-to-end-testing-suite)
     - [Quick Start](#quick-start)
@@ -34,23 +34,23 @@ This logic utilizes parameters that can be set manually(if necessary):
 # after upgrading
 E2E_SKIP_CLEANUP := false
 
-# version(s) of initial Haqq node(s) that will be upgraded, tag e.g. 'v1.5.0'
+# version(s) of initial neura node(s) that will be upgraded, tag e.g. 'v1.5.0'
 # to use multiple upgrades separate the versions with a forward slash, e.g.
 # 'v1.6.0/v1.6.1-rc1'
 INITIAL_VERSION
 
-# version of upgraded Haqq node that will replace the initial node, tag e.g.
+# version of upgraded neura node that will replace the initial node, tag e.g.
 # 'v1.6.0'
 TARGET_VERSION
 
 # mount point for the upgraded node container, to mount new node version to
-# previous node state folder. By default this is './build/.haqqd:/root/.haqqd'
+# previous node state folder. By default this is './build/.neurad:/root/.neurad'
 # More info at https://docs.docker.com/engine/reference/builder/#volume
 MOUNT_PATH
 
-# '--chain-id' Haqq cli parameter, used to start nodes with a specific
+# '--chain-id' neura cli parameter, used to start nodes with a specific
 # chain-id and submit proposals
-# By default this is 'haqq_11235-1'
+# By default this is 'neura_11235-1'
 CHAIN_ID
 ```
 
@@ -65,7 +65,7 @@ make test-e2e E2E_SKIP_CLEANUP=true INITIAL_VERSION=<tag> TARGET_VERSION=<tag>
 
 Testing a chain upgrade is a multi-step process:
 
-1. Build a docker image for the Haqq target version
+1. Build a docker image for the neura target version
 (local repo by default, if no explicit `TARGET_VERSION` provided as argument)
 (e.g. `v1.6.0`)
 2. Run tests
@@ -73,7 +73,7 @@ Testing a chain upgrade is a multi-step process:
 4. The node will submit, deposit and vote for an upgrade proposal
 for upgrading to the `TARGET_VERSION`.
 5. After block `50` is reached,
-the test suite exports `/.haqqd` folder from the docker container
+the test suite exports `/.neurad` folder from the docker container
 to the local `build/` folder and then purges the container.
 6. Suite will mount the node with `TARGET_VERSION`
 to the local `build/` dir and start the node.
@@ -86,12 +86,12 @@ and will execute the upgrade.
 
 The `e2e` package defines an integration testing suite
 used for full end-to-end testing functionality.
-This package is decoupled from depending on the Haqq codebase.
+This package is decoupled from depending on the neura codebase.
 It initializes the chains for testing via Docker.  
 As a result, the test suite may provide the
-desired Haqq version to Docker containers during the initialization.
+desired neura version to Docker containers during the initialization.
 This design allows for the opportunity of testing chain upgrades
-by providing an older Haqq version to the container,
+by providing an older neura version to the container,
 performing the chain upgrade,
 and running the latest test suite.  
 Here's an overview of the files:
@@ -110,7 +110,7 @@ that utilize the testing suite.
 
 The `e2e` package defines an upgrade `Manager` abstraction.
 Suite will utilize `Manager`'s functions
-to run different versions of Haqq containers,
+to run different versions of neura containers,
 propose, vote, delegate and query nodes.
 
 * `manager.go`: defines core manager logic for running containers,
@@ -126,16 +126,16 @@ responsible for setting node container parameters before run.
 
 If `INITIAL_VERSION` is provided as an argument,
 node container(s) with the corresponding version(s)
-will be pulled from [DockerHub](https://hub.docker.com/r/haqq/haqq/tags).
+will be pulled from [DockerHub](https://hub.docker.com/r/neura/neura/tags).
 If it is not specified,
 the test suite retrieves the second-to-last upgrade version
-from the local codebase (in the `haqq/app/upgrades` folder)
+from the local codebase (in the `neura/app/upgrades` folder)
 according to [Semantic Versioning](https://semver.org/).
 
 If `TARGET_VERSION` is specified,
 the corresponding container will also be pulled from DockerHub.
 When not specified, the test suite will retrieve the latest upgrade version
-from `haqq/app/upgrades`.
+from `neura/app/upgrades`.
 
 ### Testing Results
 
@@ -153,7 +153,7 @@ the logs from the docker container will be printed:
 
 ```log
 Error:  Received unexpected error:
-        can't start haqq node, container exit code: 2
+        can't start neura node, container exit code: 2
 
         [error stream]:
 
@@ -165,7 +165,7 @@ Error:  Received unexpected error:
         github.com/cosmos/cosmos-sdk/baseapp.SetMinGasPrices({0xc0013563e7?, ...
             github.com/cosmos/cosmos-sdk@v0.46.5/baseapp/options.go:29 +0xd9
         main.appCreator.newApp({{{0x3399b40, 0xc000ec1db8}, {0x33ac0f8, 0xc00...
-            github.com/avenbreaks/neurastone/cmd/haqqd/root.go:243 +0x2ca
+            github.com/avenbreaks/neurastone/cmd/neurad/root.go:243 +0x2ca
         github.com/avenbreaks/neurastone/server.startInProcess(_, {{0x0, 0x0, 0x0},...
             github.com/avenbreaks/neurastone/server/start.go:304 +0x9c5
         github.com/avenbreaks/neurastone/server.StartCmd.func2(0xc001620600?, {0xc0...
@@ -181,7 +181,7 @@ Error:  Received unexpected error:
         github.com/cosmos/cosmos-sdk/server/cmd.Execute(0x2170d50?, {0x26d961...
             github.com/cosmos/cosmos-sdk@v0.46.5/server/cmd/execute.go:36 +0x...
         main.main()
-            github.com/avenbreaks/neurastone/cmd/haqqd/main.go:20 +0x45
+            github.com/avenbreaks/neurastone/cmd/neurad/main.go:20 +0x45
 
 
         [output stream]:
@@ -201,8 +201,8 @@ Container names will be listed as follows:
 
 ```log
 CONTAINER ID   IMAGE
-9307f5485323   haqq:local    <-- upgraded node
-f41c97d6ca21   haqq:v1.5.0   <-- initial node
+9307f5485323   neura:local    <-- upgraded node
+f41c97d6ca21   neura:v1.5.0   <-- initial node
 ```
 
 To access containers logs directly, run:

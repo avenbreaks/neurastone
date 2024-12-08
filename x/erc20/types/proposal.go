@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 )
 
 // constants
@@ -118,7 +118,7 @@ func ValidateErc20Denom(denom string) error {
 		return fmt.Errorf("invalid denom. %s denomination should be prefixed with the format 'erc20/", denom)
 	}
 
-	return haqqtypes.ValidateAddress(denomSplit[1])
+	return neuratypes.ValidateAddress(denomSplit[1])
 }
 
 // NewRegisterERC20Proposal returns new instance of RegisterERC20Proposal
@@ -141,7 +141,7 @@ func (*RegisterERC20Proposal) ProposalType() string {
 // ValidateBasic performs a stateless check of the proposal fields
 func (rtbp *RegisterERC20Proposal) ValidateBasic() error {
 	for _, address := range rtbp.Erc20Addresses {
-		if err := haqqtypes.ValidateAddress(address); err != nil {
+		if err := neuratypes.ValidateAddress(address); err != nil {
 			return errorsmod.Wrap(err, "ERC20 address")
 		}
 	}
@@ -170,7 +170,7 @@ func (*ToggleTokenConversionProposal) ProposalType() string {
 func (ttcp *ToggleTokenConversionProposal) ValidateBasic() error {
 	// check if the token is a hex address, if not, check if it is a valid SDK
 	// denom
-	if err := haqqtypes.ValidateAddress(ttcp.Token); err != nil {
+	if err := neuratypes.ValidateAddress(ttcp.Token); err != nil {
 		if err := sdk.ValidateDenom(ttcp.Token); err != nil {
 			return err
 		}

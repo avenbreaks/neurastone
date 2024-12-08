@@ -33,7 +33,7 @@ import (
 	"github.com/avenbreaks/neurastone/app"
 	clientkeys "github.com/avenbreaks/neurastone/client/keys"
 	"github.com/avenbreaks/neurastone/crypto/hd"
-	haqqkr "github.com/avenbreaks/neurastone/crypto/keyring"
+	neurakr "github.com/avenbreaks/neurastone/crypto/keyring"
 	"github.com/avenbreaks/neurastone/tests/integration/ledger/mocks"
 	utiltx "github.com/avenbreaks/neurastone/testutil/tx"
 	"github.com/avenbreaks/neurastone/utils"
@@ -45,7 +45,7 @@ var s *LedgerTestSuite
 type LedgerTestSuite struct {
 	suite.Suite
 
-	app *app.Haqq
+	app *app.neura
 	ctx sdk.Context
 
 	ledger       *mocks.SECP256K1
@@ -81,7 +81,7 @@ func (suite *LedgerTestSuite) SetupTest() {
 	suite.accAddr = sdk.AccAddress(ethAddr.Bytes())
 }
 
-func (suite *LedgerTestSuite) SetupHaqqApp() {
+func (suite *LedgerTestSuite) SetupneuraApp() {
 	consAddress := sdk.ConsAddress(utiltx.GenerateAddress().Bytes())
 
 	// init app
@@ -144,7 +144,7 @@ func (suite *LedgerTestSuite) NewKeyringAndCtxs(krHome string, input io.Reader, 
 	return kr, initClientCtx, ctx
 }
 
-func (suite *LedgerTestSuite) haqqAddKeyCmd() *cobra.Command {
+func (suite *LedgerTestSuite) neuraAddKeyCmd() *cobra.Command {
 	cmd := keys.AddKeyCommand()
 
 	algoFlag := cmd.Flag(flags.FlagKeyType)
@@ -169,12 +169,12 @@ func (suite *LedgerTestSuite) haqqAddKeyCmd() *cobra.Command {
 
 func (suite *LedgerTestSuite) MockKeyringOption() keyring.Option {
 	return func(options *keyring.Options) {
-		options.SupportedAlgos = haqqkr.SupportedAlgorithms
-		options.SupportedAlgosLedger = haqqkr.SupportedAlgorithmsLedger
+		options.SupportedAlgos = neurakr.SupportedAlgorithms
+		options.SupportedAlgosLedger = neurakr.SupportedAlgorithmsLedger
 		options.LedgerDerivation = func() (cosmosledger.SECP256K1, error) { return suite.ledger, nil }
-		options.LedgerCreateKey = haqqkr.CreatePubkey
-		options.LedgerAppName = haqqkr.AppName
-		options.LedgerSigSkipDERConv = haqqkr.SkipDERConversion
+		options.LedgerCreateKey = neurakr.CreatePubkey
+		options.LedgerAppName = neurakr.AppName
+		options.LedgerSigSkipDERConv = neurakr.SkipDERConversion
 	}
 }
 

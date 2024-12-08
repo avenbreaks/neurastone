@@ -12,12 +12,12 @@ import (
 // makes the App public for easier testing.
 type UnitTestNetwork struct {
 	IntegrationNetwork
-	App *app.Haqq
+	App *app.neura
 }
 
 var _ Network = (*UnitTestNetwork)(nil)
 
-// NewUnitTestNetwork configures and initializes a new Haqq Network instance with
+// NewUnitTestNetwork configures and initializes a new neura Network instance with
 // the given configuration options. If no configuration options are provided
 // it uses the default configuration.
 //

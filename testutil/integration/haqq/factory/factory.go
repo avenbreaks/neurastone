@@ -20,8 +20,8 @@ import (
 	"github.com/avenbreaks/neurastone/precompiles/testutil"
 	"github.com/avenbreaks/neurastone/server/config"
 	commonfactory "github.com/avenbreaks/neurastone/testutil/integration/common/factory"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/grpc"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/grpc"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
 	"github.com/avenbreaks/neurastone/types"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )

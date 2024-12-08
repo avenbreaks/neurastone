@@ -94,7 +94,7 @@ func (p Precompile) RequiredGas(input []byte) uint64 {
 	}
 
 	// TODO: these values were obtained from Remix using the ERC20.sol from OpenZeppelin.
-	// We should execute the transactions using the ERC20MinterBurnerDecimals.sol from Haqq testnet
+	// We should execute the transactions using the ERC20MinterBurnerDecimals.sol from neura testnet
 	// to ensure parity in the values.
 	switch method.Name {
 	// ERC-20 transactions

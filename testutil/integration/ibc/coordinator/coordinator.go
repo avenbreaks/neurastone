@@ -8,7 +8,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 
-	haqqibctesting "github.com/avenbreaks/neurastone/ibc/testing"
+	neuraibctesting "github.com/avenbreaks/neurastone/ibc/testing"
 	"github.com/avenbreaks/neurastone/testutil/integration/common/network"
 	ibcchain "github.com/avenbreaks/neurastone/testutil/integration/ibc/chain"
 )
@@ -111,8 +111,8 @@ func (c *IntegrationCoordinator) Setup(a, b string) IBCConnection {
 	chainA := c.coord.GetChain(a)
 	chainB := c.coord.GetChain(b)
 
-	path := haqqibctesting.NewTransferPath(chainA, chainB)
-	haqqibctesting.SetupPath(c.coord, path)
+	path := neuraibctesting.NewTransferPath(chainA, chainB)
+	neuraibctesting.SetupPath(c.coord, path)
 
 	return IBCConnection{
 		EndpointA: Endpoint{

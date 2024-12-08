@@ -262,12 +262,12 @@ func WriteFile(name string, dir string, contents []byte) error {
 	return tmos.WriteFile(file, contents, 0o644)
 }
 
-func HaqqNetworkConfig() Config {
+func neuraNetworkConfig() Config {
 	defaultConfig := DefaultConfig()
 	defaultConfig.BondDenom = "aISLM"
 	defaultConfig.MinGasPrices = "0.000006aISLM"
 	defaultConfig.TimeoutCommit = time.Nanosecond
-	defaultConfig.ChainID = "haqq_11235-1"
+	defaultConfig.ChainID = "neura_11235-1"
 
 	// some params for coinomics module
 	defaultConfig.GenesisState[coinomicstypes.ModuleName] = []byte("{\"params\":{\"mint_denom\":\"aISLM\",\"blocks_per_era\":\"100\",\"enable_coinomics\":true},\"inflation\":\"0.000000000000000000\",\"era\":\"0\",\"era_started_at_block\":\"0\",\"era_target_mint\":{\"denom\":\"aISLM\",\"amount\":\"0\"},\"era_closing_supply\":{\"denom\":\"aISLM\",\"amount\":\"0\"},\"max_supply\":{\"denom\":\"aISLM\",\"amount\":\"100000000000000000000000000000\"}}")
@@ -275,11 +275,11 @@ func HaqqNetworkConfig() Config {
 	return defaultConfig
 }
 
-func HaqqNetworkConfigCoinomicsDisabled() Config {
+func neuraNetworkConfigCoinomicsDisabled() Config {
 	defaultConfig := DefaultConfig()
 	defaultConfig.BondDenom = "aISLM"
 	defaultConfig.MinGasPrices = "0.000006aISLM"
-	defaultConfig.ChainID = "haqq_11235-1"
+	defaultConfig.ChainID = "neura_11235-1"
 
 	// some params for coinomics module
 	defaultConfig.GenesisState[coinomicstypes.ModuleName] = []byte("{\"params\":{\"mint_denom\":\"aISLM\",\"blocks_per_era\":\"100\",\"enable_coinomics\":false},\"inflation\":\"0.000000000000000000\",\"era\":\"0\",\"era_started_at_block\":\"0\",\"era_target_mint\":{\"denom\":\"aISLM\",\"amount\":\"0\"},\"era_closing_supply\":{\"denom\":\"aISLM\",\"amount\":\"0\"},\"max_supply\":{\"denom\":\"aISLM\",\"amount\":\"100000000000000000000000000000\"}}")

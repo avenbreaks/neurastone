@@ -12,7 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/x/evm/types"
 )
 
@@ -20,7 +20,7 @@ func SetupContract(b *testing.B) (*KeeperTestSuite, common.Address) {
 	suite := KeeperTestSuite{}
 	suite.SetupTestWithT(b)
 
-	amt := sdk.Coins{haqqtypes.NewIslmCoinInt64(1000000000000000000)}
+	amt := sdk.Coins{neuratypes.NewIslmCoinInt64(1000000000000000000)}
 	err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, amt)
 	require.NoError(b, err)
 	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, suite.address.Bytes(), amt)
@@ -36,7 +36,7 @@ func SetupTestMessageCall(b *testing.B) (*KeeperTestSuite, common.Address) {
 	suite := KeeperTestSuite{}
 	suite.SetupTestWithT(b)
 
-	amt := sdk.Coins{haqqtypes.NewIslmCoinInt64(1000000000000000000)}
+	amt := sdk.Coins{neuratypes.NewIslmCoinInt64(1000000000000000000)}
 	err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, amt)
 	require.NoError(b, err)
 	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, suite.address.Bytes(), amt)

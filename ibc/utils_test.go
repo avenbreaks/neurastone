@@ -16,7 +16,7 @@ import (
 
 func init() {
 	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("haqq", "haqqpub")
+	cfg.SetBech32PrefixForAccount("neura", "neurapub")
 }
 
 func TestGetTransferSenderRecipient(t *testing.T) {
@@ -57,7 +57,7 @@ func TestGetTransferSenderRecipient(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1",
-						Receiver: "haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+						Receiver: "neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 						Amount:   "123456",
 					},
 				),
@@ -71,7 +71,7 @@ func TestGetTransferSenderRecipient(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1tjdjfavsy956d25hvhs3p0nw9a7pfghqegfjmu",
-						Receiver: "haqq1",
+						Receiver: "neura1",
 						Amount:   "123456",
 					},
 				),
@@ -80,48 +80,48 @@ func TestGetTransferSenderRecipient(t *testing.T) {
 			true,
 		},
 		{
-			"valid - cosmos sender, haqq recipient",
+			"valid - cosmos sender, neura recipient",
 			channeltypes.Packet{
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1tjdjfavsy956d25hvhs3p0nw9a7pfghqegfjmu",
-						Receiver: "haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+						Receiver: "neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 						Amount:   "123456",
 					},
 				),
 			},
-			"haqq1tjdjfavsy956d25hvhs3p0nw9a7pfghqm0up92",
-			"haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+			"neura1tjdjfavsy956d25hvhs3p0nw9a7pfghqm0up92",
+			"neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 			false,
 		},
 		{
-			"valid - haqq sender, cosmos recipient",
+			"valid - neura sender, cosmos recipient",
 			channeltypes.Packet{
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
-						Sender:   "haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+						Sender:   "neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 						Receiver: "cosmos1tjdjfavsy956d25hvhs3p0nw9a7pfghqegfjmu",
 						Amount:   "123456",
 					},
 				),
 			},
-			"haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
-			"haqq1tjdjfavsy956d25hvhs3p0nw9a7pfghqm0up92",
+			"neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+			"neura1tjdjfavsy956d25hvhs3p0nw9a7pfghqm0up92",
 			false,
 		},
 		{
-			"valid - osmosis sender, haqq recipient",
+			"valid - osmosis sender, neura recipient",
 			channeltypes.Packet{
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "osmo1tjdjfavsy956d25hvhs3p0nw9a7pfghq3n6zdw",
-						Receiver: "haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+						Receiver: "neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 						Amount:   "123456",
 					},
 				),
 			},
-			"haqq1tjdjfavsy956d25hvhs3p0nw9a7pfghqm0up92",
-			"haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+			"neura1tjdjfavsy956d25hvhs3p0nw9a7pfghqm0up92",
+			"neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 			false,
 		},
 	}
@@ -165,7 +165,7 @@ func TestGetTransferAmount(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1tjdjfavsy956d25hvhs3p0nw9a7pfghqegfjmu",
-						Receiver: "haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+						Receiver: "neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 						Amount:   "",
 					},
 				),
@@ -179,7 +179,7 @@ func TestGetTransferAmount(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1tjdjfavsy956d25hvhs3p0nw9a7pfghqegfjmu",
-						Receiver: "haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+						Receiver: "neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 						Amount:   "test",
 					},
 				),
@@ -193,7 +193,7 @@ func TestGetTransferAmount(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1tjdjfavsy956d25hvhs3p0nw9a7pfghqegfjmu",
-						Receiver: "haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+						Receiver: "neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 						Amount:   "10000",
 					},
 				),

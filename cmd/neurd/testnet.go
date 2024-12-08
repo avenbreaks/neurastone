@@ -37,7 +37,7 @@ import (
 
 	cmdcfg "github.com/avenbreaks/neurastone/cmd/config"
 	"github.com/avenbreaks/neurastone/crypto/hd"
-	haqqkr "github.com/avenbreaks/neurastone/crypto/keyring"
+	neurakr "github.com/avenbreaks/neurastone/crypto/keyring"
 	"github.com/avenbreaks/neurastone/server/config"
 	srvflags "github.com/avenbreaks/neurastone/server/flags"
 	"github.com/avenbreaks/neurastone/testutil/network"
@@ -208,7 +208,7 @@ func initTestnetFiles(
 	args initArgs,
 ) error {
 	if args.chainID == "" {
-		args.chainID = fmt.Sprintf("haqq_%d-1", tmrand.Int63n(9999999999999)+1)
+		args.chainID = fmt.Sprintf("neura_%d-1", tmrand.Int63n(9999999999999)+1)
 	}
 
 	nodeIDs := make([]string, args.numValidators)
@@ -260,7 +260,7 @@ func initTestnetFiles(
 		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
 		genFiles = append(genFiles, nodeConfig.GenesisFile())
 
-		kb, err := keyring.New(sdk.KeyringServiceName(), args.keyringBackend, nodeDir, inBuf, clientCtx.Codec, haqqkr.Option())
+		kb, err := keyring.New(sdk.KeyringServiceName(), args.keyringBackend, nodeDir, inBuf, clientCtx.Codec, neurakr.Option())
 		if err != nil {
 			return err
 		}

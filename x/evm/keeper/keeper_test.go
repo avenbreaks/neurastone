@@ -8,7 +8,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
 
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/x/evm/keeper"
 	"github.com/avenbreaks/neurastone/x/evm/statedb"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
@@ -28,14 +28,14 @@ func (suite *KeeperTestSuite) TestWithChainID() {
 			true,
 		},
 		{
-			"success - Haqq mainnet chain ID",
-			"haqq_11235-1",
+			"success - neura mainnet chain ID",
+			"neura_11235-1",
 			11235,
 			false,
 		},
 		{
-			"success - Haqq testnet chain ID",
-			"haqq_54211-3",
+			"success - neura testnet chain ID",
+			"neura_54211-3",
 			54211,
 			false,
 		},
@@ -116,7 +116,7 @@ func (suite *KeeperTestSuite) TestGetAccountStorage() {
 			tc.malleate()
 			i := 0
 			suite.app.AccountKeeper.IterateAccounts(suite.ctx, func(account authtypes.AccountI) bool {
-				ethAccount, ok := account.(haqqtypes.EthAccountI)
+				ethAccount, ok := account.(neuratypes.EthAccountI)
 				if !ok {
 					// ignore non EthAccounts
 					return false

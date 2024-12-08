@@ -15,7 +15,7 @@ import (
 	"github.com/avenbreaks/neurastone/contracts"
 	"github.com/avenbreaks/neurastone/tests"
 	"github.com/avenbreaks/neurastone/testutil"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	erc20types "github.com/avenbreaks/neurastone/x/erc20/types"
 	"github.com/avenbreaks/neurastone/x/liquidvesting/types"
 	vestingtypes "github.com/avenbreaks/neurastone/x/vesting/types"
@@ -269,7 +269,7 @@ func (suite *KeeperTestSuite) TestLiquidate() {
 				pairResp, err := s.app.Erc20Keeper.TokenPair(s.ctx, &erc20types.QueryTokenPairRequest{Token: types.DenomBaseNameFromID(0)})
 				s.Require().NoError(err)
 				s.Require().True(pairResp.TokenPair.Enabled)
-				ethAccTo, isEthAccount := accIto.(*haqqtypes.EthAccount)
+				ethAccTo, isEthAccount := accIto.(*neuratypes.EthAccount)
 				s.Require().True(isEthAccount)
 				balanceOfLiquidTokeErc20Pair := s.app.Erc20Keeper.BalanceOf(
 					s.ctx,
@@ -330,7 +330,7 @@ func (suite *KeeperTestSuite) TestMultipleLiquidationsFromOneAccount() {
 	pair0Resp, err := s.app.Erc20Keeper.TokenPair(s.ctx, &erc20types.QueryTokenPairRequest{Token: types.DenomBaseNameFromID(0)})
 	s.Require().NoError(err)
 	s.Require().True(pair0Resp.TokenPair.Enabled)
-	ethAccTo, isEthAccount := accIto.(*haqqtypes.EthAccount)
+	ethAccTo, isEthAccount := accIto.(*neuratypes.EthAccount)
 	s.Require().True(isEthAccount)
 	balanceOfLiquidTokeErc20Pair0 := s.app.Erc20Keeper.BalanceOf(
 		s.ctx,
@@ -438,12 +438,12 @@ func (suite *KeeperTestSuite) TestRedeem() {
 					LockupPeriods: lockupPeriods,
 				})
 				// create accounts
-				acc1 := &haqqtypes.EthAccount{
+				acc1 := &neuratypes.EthAccount{
 					BaseAccount: authtypes.NewBaseAccountWithAddress(addr1),
 					CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 				}
 				s.app.AccountKeeper.SetAccount(s.ctx, acc1)
-				acc2 := &haqqtypes.EthAccount{
+				acc2 := &neuratypes.EthAccount{
 					BaseAccount: authtypes.NewBaseAccountWithAddress(addr2),
 					CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 				}
@@ -482,12 +482,12 @@ func (suite *KeeperTestSuite) TestRedeem() {
 					LockupPeriods: lockupPeriods,
 				})
 				// create accounts
-				acc1 := &haqqtypes.EthAccount{
+				acc1 := &neuratypes.EthAccount{
 					BaseAccount: authtypes.NewBaseAccountWithAddress(addr1),
 					CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 				}
 				s.app.AccountKeeper.SetAccount(s.ctx, acc1)
-				acc2 := &haqqtypes.EthAccount{
+				acc2 := &neuratypes.EthAccount{
 					BaseAccount: authtypes.NewBaseAccountWithAddress(addr2),
 					CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 				}

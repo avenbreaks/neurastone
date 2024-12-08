@@ -10,10 +10,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking/keeper"
 )
 
-var ErrCommunitySpendingComingLater = sdkerrors.Register("haqq-ante", 6001, "community fund spend coming later")
+var ErrCommunitySpendingComingLater = sdkerrors.Register("neura-ante", 6001, "community fund spend coming later")
 
 //nolint:all
-func NewHaqqAnteHandlerDecorator(_ keeper.Keeper, h types.AnteHandler) types.AnteHandler {
+func NewneuraAnteHandlerDecorator(_ keeper.Keeper, h types.AnteHandler) types.AnteHandler {
 	return func(ctx types.Context, tx types.Tx, simulate bool) (newCtx types.Context, err error) {
 		msgs := tx.GetMsgs()
 

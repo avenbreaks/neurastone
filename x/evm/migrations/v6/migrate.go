@@ -56,7 +56,7 @@ func MigrateStore(
 	params.ActivePrecompiles = paramsV5.ActivePrecompiles
 	params.EVMChannels = types.DefaultEVMChannels
 
-	// DefaultEVMChannels are for Haqq mainnet
+	// DefaultEVMChannels are for neura mainnet
 	// leave empty for testnet
 	if ctx.ChainID() == utils.TestEdge2ChainID+"-3" {
 		params.EVMChannels = []string{}

@@ -46,10 +46,10 @@ func TestCheckLegacyProposal(t *testing.T) {
 	}
 }
 
-// TestHaqqVersionsLess tests the HaqqVersions type's Less method with
+// TestneuraVersionsLess tests the neuraVersions type's Less method with
 // different version strings
-func TestHaqqVersionsLess(t *testing.T) {
-	var version HaqqVersions
+func TestneuraVersionsLess(t *testing.T) {
+	var version neuraVersions
 
 	testCases := []struct {
 		Name string
@@ -76,18 +76,18 @@ func TestHaqqVersionsLess(t *testing.T) {
 	}
 }
 
-// TestHaqqVersionsSwap tests the HaqqVersions type's Swap method
-func TestHaqqVersionsSwap(t *testing.T) {
-	var version HaqqVersions
+// TestneuraVersionsSwap tests the neuraVersions type's Swap method
+func TestneuraVersionsSwap(t *testing.T) {
+	var version neuraVersions
 	value := "v9.1.0"
 	version = []string{value, "v10.0.0"}
 	version.Swap(0, 1)
 	require.Equal(t, value, version[1], "expected: %v, got: %v", value, version[1])
 }
 
-// TestHaqqVersionsLen tests the HaqqVersions type's Len method
-func TestHaqqVersionsLen(t *testing.T) {
-	var version HaqqVersions = []string{"v9.1.0", "v10.0.0"}
+// TestneuraVersionsLen tests the neuraVersions type's Len method
+func TestneuraVersionsLen(t *testing.T) {
+	var version neuraVersions = []string{"v9.1.0", "v10.0.0"}
 	require.Equal(t, 2, version.Len(), "expected: %v, got: %v", 2, version.Len())
 }
 

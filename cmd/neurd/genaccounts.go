@@ -20,7 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 
-	haqqkr "github.com/avenbreaks/neurastone/crypto/keyring"
+	neurakr "github.com/avenbreaks/neurastone/crypto/keyring"
 	"github.com/avenbreaks/neurastone/types"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 	vestingcli "github.com/avenbreaks/neurastone/x/vesting/client/cli"
@@ -64,7 +64,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 						clientCtx.HomeDir,
 						inBuf,
 						clientCtx.Codec,
-						haqqkr.Option(),
+						neurakr.Option(),
 					)
 					if err != nil {
 						return err

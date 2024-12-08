@@ -18,13 +18,13 @@ var (
 
 // RegisterLegacyAminoCodec registers all the necessary types and interfaces for the dao module.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	legacy.RegisterAminoMsg(cdc, &MsgFund{}, "haqq/ucdao/MsgFund")
-	legacy.RegisterAminoMsg(cdc, &MsgFundLegacy{}, "haqq/dao/MsgFund")
-	legacy.RegisterAminoMsg(cdc, &MsgTransferOwnership{}, "haqq/ucdao/MsgTransferOwnership")
-	legacy.RegisterAminoMsg(cdc, &MsgTransferOwnershipWithRatio{}, "haqq/ucdao/MsgTransferWithRatio")
-	legacy.RegisterAminoMsg(cdc, &MsgTransferOwnershipWithAmount{}, "haqq/ucdao/MsgTransferWithAmount")
+	legacy.RegisterAminoMsg(cdc, &MsgFund{}, "neura/ucdao/MsgFund")
+	legacy.RegisterAminoMsg(cdc, &MsgFundLegacy{}, "neura/dao/MsgFund")
+	legacy.RegisterAminoMsg(cdc, &MsgTransferOwnership{}, "neura/ucdao/MsgTransferOwnership")
+	legacy.RegisterAminoMsg(cdc, &MsgTransferOwnershipWithRatio{}, "neura/ucdao/MsgTransferWithRatio")
+	legacy.RegisterAminoMsg(cdc, &MsgTransferOwnershipWithAmount{}, "neura/ucdao/MsgTransferWithAmount")
 
-	cdc.RegisterConcrete(Params{}, "haqq/x/ucdao/Params", nil)
+	cdc.RegisterConcrete(Params{}, "neura/x/ucdao/Params", nil)
 }
 
 // RegisterInterfaces registers the interfaces types with the Interface Registry.

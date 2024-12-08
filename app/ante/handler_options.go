@@ -20,7 +20,7 @@ import (
 	vestingtypes "github.com/avenbreaks/neurastone/x/vesting/types"
 )
 
-// HandlerOptions defines the list of module keepers required to run the Haqq AnteHandler decorators.
+// HandlerOptions defines the list of module keepers required to run the neura AnteHandler decorators.
 type HandlerOptions struct {
 	Cdc                    codec.BinaryCodec
 	AccountKeeper          evmtypes.AccountKeeper

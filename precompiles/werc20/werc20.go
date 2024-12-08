@@ -72,7 +72,7 @@ func (p Precompile) Address() common.Address {
 // RequiredGas calculates the contract gas use.
 func (p Precompile) RequiredGas(input []byte) uint64 {
 	// TODO: these values were obtained from Remix using the WEVMOS9.sol.
-	// We should execute the transactions from Haqq testnet
+	// We should execute the transactions from neura testnet
 	// to ensure parity in the values.
 
 	// If there is no method ID, then it's the fallback or receive case

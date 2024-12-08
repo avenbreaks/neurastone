@@ -17,8 +17,8 @@ import (
 	"github.com/avenbreaks/neurastone/precompiles/erc20"
 	"github.com/avenbreaks/neurastone/precompiles/testutil"
 	commonfactory "github.com/avenbreaks/neurastone/testutil/integration/common/factory"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/factory"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/keyring"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/factory"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/keyring"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )
 

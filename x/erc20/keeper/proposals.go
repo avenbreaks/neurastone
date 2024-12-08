@@ -78,7 +78,7 @@ func (k Keeper) RegisterERC20(
 	return &pair, nil
 }
 
-// CreateCoinMetadata generates the metadata to represent the ERC20 token on Haqq Network
+// CreateCoinMetadata generates the metadata to represent the ERC20 token on neura Network
 func (k Keeper) CreateCoinMetadata(
 	ctx sdk.Context,
 	contract common.Address,

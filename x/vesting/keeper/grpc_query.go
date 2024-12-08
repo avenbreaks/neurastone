@@ -64,7 +64,7 @@ func (k Keeper) TotalLocked(
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	isEnabled, isSet := os.LookupEnv("HAQQ_ENABLE_VESTING_STATS")
+	isEnabled, isSet := os.LookupEnv("neura_ENABLE_VESTING_STATS")
 	if !isSet {
 		isEnabled = "false"
 	}

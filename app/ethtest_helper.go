@@ -28,7 +28,7 @@ import (
 )
 
 // EthDefaultConsensusParams defines the default Tendermint consensus params used in
-// HaqqApp testing.
+// neuraApp testing.
 var EthDefaultConsensusParams = &tmtypes.ConsensusParams{
 	Block: &tmtypes.BlockParams{
 		MaxBytes: 200000,
@@ -46,15 +46,15 @@ var EthDefaultConsensusParams = &tmtypes.ConsensusParams{
 	},
 }
 
-// EthSetup initializes a new HaqqApp. A Nop logger is set in HaqqApp.
-func EthSetup(isCheckTx bool, patchGenesis func(*Haqq, types.GenesisState) types.GenesisState) *Haqq {
+// EthSetup initializes a new neuraApp. A Nop logger is set in neuraApp.
+func EthSetup(isCheckTx bool, patchGenesis func(*neura, types.GenesisState) types.GenesisState) *neura {
 	return EthSetupWithDB(isCheckTx, patchGenesis, dbm.NewMemDB())
 }
 
-// EthSetupWithDB initializes a new HaqqApp. A Nop logger is set in HaqqApp.
-func EthSetupWithDB(isCheckTx bool, patchGenesis func(*Haqq, types.GenesisState) types.GenesisState, db dbm.DB) *Haqq {
+// EthSetupWithDB initializes a new neuraApp. A Nop logger is set in neuraApp.
+func EthSetupWithDB(isCheckTx bool, patchGenesis func(*neura, types.GenesisState) types.GenesisState, db dbm.DB) *neura {
 	chainID := utils.TestEdge2ChainID + "-3"
-	app := NewHaqq(log.NewNopLogger(),
+	app := Newneura(log.NewNopLogger(),
 		db,
 		nil,
 		true,

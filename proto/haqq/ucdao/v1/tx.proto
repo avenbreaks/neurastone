@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package haqq.ucdao.v1;
+package neura.ucdao.v1;
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
@@ -32,7 +32,7 @@ service Msg {
 // MsgFund allows an account to directly fund the ucdao.
 message MsgFund {
   option (cosmos.msg.v1.signer) = "depositor";
-  option (amino.name)           = "haqq/ucdao/MsgFund";
+  option (amino.name)           = "neura/ucdao/MsgFund";
 
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
@@ -48,7 +48,7 @@ message MsgFund {
 // MsgFundLegacy allows an access history data from storage. Solves the problem of module renaming.
 message MsgFundLegacy {
   option (cosmos.msg.v1.signer) = "depositor";
-  option (amino.name)           = "haqq/dao/MsgFund";
+  option (amino.name)           = "neura/dao/MsgFund";
 
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
@@ -67,7 +67,7 @@ message MsgFundResponse {}
 // MsgTransferOwnership allows an account transfer the ownership of shares to another account.
 message MsgTransferOwnership {
   option (cosmos.msg.v1.signer) = "owner";
-  option (amino.name)           = "haqq/ucdao/MsgTransferOwnership";
+  option (amino.name)           = "neura/ucdao/MsgTransferOwnership";
 
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
@@ -85,7 +85,7 @@ message MsgTransferOwnershipResponse {}
 // MsgTransferOwnershipWithRatio allows an account transfer the ownership of shares to another account with ratio.
 message MsgTransferOwnershipWithRatio {
   option (cosmos.msg.v1.signer) = "owner";
-  option (amino.name)           = "haqq/ucdao/MsgTransferWithRatio";
+  option (amino.name)           = "neura/ucdao/MsgTransferWithRatio";
 
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
@@ -109,7 +109,7 @@ message MsgTransferOwnershipWithRatioResponse {
 // with certain amount of coins.
 message MsgTransferOwnershipWithAmount {
   option (cosmos.msg.v1.signer) = "owner";
-  option (amino.name)           = "haqq/ucdao/MsgTransferWithAmount";
+  option (amino.name)           = "neura/ucdao/MsgTransferWithAmount";
 
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;

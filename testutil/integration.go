@@ -20,7 +20,7 @@ import (
 // event.
 func SubmitProposal(
 	ctx sdk.Context,
-	appHaqq *app.Haqq,
+	appneura *app.neura,
 	pk *ethsecp256k1.PrivKey,
 	content govv1beta1.Content,
 	eventNum int,
@@ -33,7 +33,7 @@ func SubmitProposal(
 	if err != nil {
 		return id, err
 	}
-	res, err := DeliverTx(ctx, appHaqq, pk, nil, signing.SignMode_SIGN_MODE_DIRECT, msg)
+	res, err := DeliverTx(ctx, appneura, pk, nil, signing.SignMode_SIGN_MODE_DIRECT, msg)
 	if err != nil {
 		return id, err
 	}
@@ -49,7 +49,7 @@ func SubmitProposal(
 // Delegate delivers a delegate tx
 func Delegate(
 	ctx sdk.Context,
-	appHaqq *app.Haqq,
+	appneura *app.neura,
 	priv *ethsecp256k1.PrivKey,
 	delegateAmount sdk.Coin,
 	validator stakingtypes.Validator,
@@ -62,13 +62,13 @@ func Delegate(
 	}
 
 	delegateMsg := stakingtypes.NewMsgDelegate(accountAddress, val, delegateAmount)
-	return DeliverTx(ctx, appHaqq, priv, nil, signing.SignMode_SIGN_MODE_DIRECT, delegateMsg)
+	return DeliverTx(ctx, appneura, priv, nil, signing.SignMode_SIGN_MODE_DIRECT, delegateMsg)
 }
 
 // Vote delivers a vote tx with the VoteOption "yes"
 func Vote(
 	ctx sdk.Context,
-	appHaqq *app.Haqq,
+	appneura *app.neura,
 	priv *ethsecp256k1.PrivKey,
 	proposalID uint64,
 	voteOption govv1beta1.VoteOption,
@@ -76,5 +76,5 @@ func Vote(
 	accountAddress := sdk.AccAddress(priv.PubKey().Address().Bytes())
 
 	voteMsg := govv1beta1.NewMsgVote(accountAddress, proposalID, voteOption)
-	return DeliverTx(ctx, appHaqq, priv, nil, signing.SignMode_SIGN_MODE_DIRECT, voteMsg)
+	return DeliverTx(ctx, appneura, priv, nil, signing.SignMode_SIGN_MODE_DIRECT, voteMsg)
 }

@@ -16,7 +16,7 @@ import (
 	cmn "github.com/avenbreaks/neurastone/precompiles/common"
 	"github.com/avenbreaks/neurastone/precompiles/staking"
 	"github.com/avenbreaks/neurastone/precompiles/testutil"
-	haqqtestutil "github.com/avenbreaks/neurastone/testutil"
+	neuratestutil "github.com/avenbreaks/neurastone/testutil"
 	testutiltx "github.com/avenbreaks/neurastone/testutil/tx"
 )
 
@@ -218,7 +218,7 @@ func (s *PrecompileTestSuite) TestApprove() {
 			func(_ *vm.Contract) []interface{} {
 				// Commit block (otherwise test logic will not be executed correctly, i.e. somehow unbonding does not take effect)
 				var err error
-				s.ctx, err = haqqtestutil.Commit(s.ctx, s.app, time.Second, nil)
+				s.ctx, err = neuratestutil.Commit(s.ctx, s.app, time.Second, nil)
 				s.Require().NoError(err, "failed to commit block")
 
 				// Jail a validator
@@ -234,7 +234,7 @@ func (s *PrecompileTestSuite) TestApprove() {
 				s.Require().Equal(math.NewInt(1e18), amount, "expected different amount of tokens to be unbonded")
 
 				// Commit block and update time to one year later
-				s.ctx, err = haqqtestutil.Commit(s.ctx, s.app, time.Hour*24*365, nil)
+				s.ctx, err = neuratestutil.Commit(s.ctx, s.app, time.Hour*24*365, nil)
 				s.Require().NoError(err, "failed to commit block")
 
 				return []interface{}{

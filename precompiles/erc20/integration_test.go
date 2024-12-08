@@ -21,11 +21,11 @@ import (
 	"github.com/avenbreaks/neurastone/precompiles/erc20"
 	"github.com/avenbreaks/neurastone/precompiles/erc20/testdata"
 	"github.com/avenbreaks/neurastone/precompiles/testutil"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/factory"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/grpc"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/keyring"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/utils"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/factory"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/grpc"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/keyring"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/utils"
 	utiltx "github.com/avenbreaks/neurastone/testutil/tx"
 	erc20types "github.com/avenbreaks/neurastone/x/erc20/types"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
@@ -55,7 +55,7 @@ func (is *IntegrationTestSuite) SetupTest() {
 	gh := grpc.NewIntegrationHandler(nw)
 	tf := factory.New(nw, gh)
 
-	// Set up min deposit in Haqq Network
+	// Set up min deposit in neura Network
 	params, err := gh.GetGovParams("deposit")
 	Expect(err).ToNot(HaveOccurred(), "failed to get gov params")
 	Expect(params).ToNot(BeNil(), "returned gov params are nil")

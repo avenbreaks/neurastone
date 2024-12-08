@@ -15,8 +15,8 @@ var (
 
 const (
 	// Amino names
-	liquidate = "haqq/MsgLiquidate"
-	redeem    = "haqq/MsgRedeem"
+	liquidate = "neura/MsgLiquidate"
+	redeem    = "neura/MsgRedeem"
 )
 
 // NOTE: This is required for the GetSignBytes function

@@ -39,7 +39,7 @@ func NewICS4Wrapper(w porttypes.ICS4Wrapper) IBCMiddleware {
 
 // IsAllowedAddress checks if given address is allowed to make IBC transfers
 //
-// Allow only team addresses to ibc-transfer coins outside the Haqq network.
+// Allow only team addresses to ibc-transfer coins outside the neura network.
 //
 // This is required until listing happens so that:
 //   - team is able to transfer ISLM to Gravity Bridge and create a ERC-20 wrap
@@ -54,17 +54,17 @@ func (im IBCMiddleware) IsAllowedAddress(chainID, addr string) bool {
 	if utils.IsMainNetwork(chainID) {
 		wl = map[string]bool{
 			// Put here MainNet addresses
-			"haqq1uu7epkq75j2qzqvlyzfkljc8h277gz7kxqah0v": true,
+			"neura1uu7epkq75j2qzqvlyzfkljc8h277gz7kxqah0v": true,
 		}
 	}
 
 	if utils.IsTestEdge1Network(chainID) {
 		wl = map[string]bool{
 			// Put here TestEdge addresses
-			"haqq1dz25tp2llzus5mpy0h5nzxzw8r233r8egsjr5v": true,
-			"haqq1zmh0d60prm7sqjpayurnsnlw85xrpy73av48ak": true,
-			"haqq1zqc0juh5psyek9d4asc828fs3k48ed5xaje3lj": true,
-			"haqq15gl76py2lqqrlawzs0afkmh9k7kxc6wmvcqqlm": true,
+			"neura1dz25tp2llzus5mpy0h5nzxzw8r233r8egsjr5v": true,
+			"neura1zmh0d60prm7sqjpayurnsnlw85xrpy73av48ak": true,
+			"neura1zqc0juh5psyek9d4asc828fs3k48ed5xaje3lj": true,
+			"neura15gl76py2lqqrlawzs0afkmh9k7kxc6wmvcqqlm": true,
 		}
 	}
 

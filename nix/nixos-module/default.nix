@@ -1,7 +1,7 @@
 { ... }:
 {
   imports = [
-    ./haqqd-service.nix
+    ./neurad-service.nix
     ./grafana-agent.nix
     ./delete-old-backups.nix
   ];

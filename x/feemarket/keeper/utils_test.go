@@ -28,7 +28,7 @@ import (
 	"github.com/avenbreaks/neurastone/encoding"
 	"github.com/avenbreaks/neurastone/testutil"
 	utiltx "github.com/avenbreaks/neurastone/testutil/tx"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/utils"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 	"github.com/avenbreaks/neurastone/x/feemarket/types"
@@ -48,7 +48,7 @@ func (suite *KeeperTestSuite) SetupApp(checkTx bool) {
 	suite.consAddress = sdk.ConsAddress(priv.PubKey().Address())
 
 	header := testutil.NewHeader(
-		1, time.Now().UTC(), "haqq_54211-3", suite.consAddress, nil, nil,
+		1, time.Now().UTC(), "neura_54211-3", suite.consAddress, nil, nil,
 	)
 
 	suite.ctx = suite.app.BaseApp.NewContext(checkTx, header)
@@ -57,7 +57,7 @@ func (suite *KeeperTestSuite) SetupApp(checkTx bool) {
 	types.RegisterQueryServer(queryHelper, suite.app.FeeMarketKeeper)
 	suite.queryClient = types.NewQueryClient(queryHelper)
 
-	acc := &haqqtypes.EthAccount{
+	acc := &neuratypes.EthAccount{
 		BaseAccount: authtypes.NewBaseAccount(sdk.AccAddress(suite.address.Bytes()), nil, 0, 0),
 		CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 	}
@@ -146,7 +146,7 @@ func setupChain(localMinGasPricesStr string) {
 	// validator-specific min-gas-prices setting
 	chainID := utils.TestEdge2ChainID + "-3"
 	db := dbm.NewMemDB()
-	newapp := app.NewHaqq(
+	newapp := app.Newneura(
 		log.NewNopLogger(),
 		db,
 		nil,

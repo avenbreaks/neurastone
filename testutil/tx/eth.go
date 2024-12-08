@@ -26,13 +26,13 @@ import (
 // It returns the signed transaction and an error
 func PrepareEthTx(
 	txCfg client.TxConfig,
-	appHaqq *app.Haqq,
+	appneura *app.neura,
 	priv cryptotypes.PrivKey,
 	msgs ...sdk.Msg,
 ) (authsigning.Tx, error) {
 	txBuilder := txCfg.NewTxBuilder()
 
-	signer := ethtypes.LatestSignerForChainID(appHaqq.EvmKeeper.ChainID())
+	signer := ethtypes.LatestSignerForChainID(appneura.EvmKeeper.ChainID())
 	txFee := sdk.Coins{}
 	txGasLimit := uint64(0)
 
@@ -89,7 +89,7 @@ func PrepareEthTx(
 // Should this not be the case, just pass in zero.
 func CreateEthTx(
 	ctx sdk.Context,
-	appHaqq *app.Haqq,
+	appneura *app.neura,
 	privKey cryptotypes.PrivKey,
 	from sdk.AccAddress,
 	dest sdk.AccAddress,
@@ -98,17 +98,17 @@ func CreateEthTx(
 ) (*evmtypes.MsgEthereumTx, error) {
 	toAddr := common.BytesToAddress(dest.Bytes())
 	fromAddr := common.BytesToAddress(from.Bytes())
-	chainID := appHaqq.EvmKeeper.ChainID()
+	chainID := appneura.EvmKeeper.ChainID()
 
 	// When we send multiple Ethereum Tx's in one Cosmos Tx, we need to increment the nonce for each one.
-	nonce := appHaqq.EvmKeeper.GetNonce(ctx, fromAddr) + uint64(nonceIncrement)
+	nonce := appneura.EvmKeeper.GetNonce(ctx, fromAddr) + uint64(nonceIncrement)
 	evmTxParams := &evmtypes.EvmTxArgs{
 		ChainID:   chainID,
 		Nonce:     nonce,
 		To:        &toAddr,
 		Amount:    amount,
 		GasLimit:  100000,
-		GasFeeCap: appHaqq.FeeMarketKeeper.GetBaseFee(ctx),
+		GasFeeCap: appneura.FeeMarketKeeper.GetBaseFee(ctx),
 		GasTipCap: big.NewInt(1),
 		Accesses:  &ethtypes.AccessList{},
 	}
@@ -117,7 +117,7 @@ func CreateEthTx(
 
 	// If we are creating multiple eth Tx's with different senders, we need to sign here rather than later.
 	if privKey != nil {
-		signer := ethtypes.LatestSignerForChainID(appHaqq.EvmKeeper.ChainID())
+		signer := ethtypes.LatestSignerForChainID(appneura.EvmKeeper.ChainID())
 		err := msgEthereumTx.Sign(signer, NewSigner(privKey))
 		if err != nil {
 			return nil, err

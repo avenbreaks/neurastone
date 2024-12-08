@@ -6,10 +6,10 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	erc20precompile "github.com/avenbreaks/neurastone/precompiles/erc20"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/factory"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/grpc"
-	testkeyring "github.com/avenbreaks/neurastone/testutil/integration/haqq/keyring"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/factory"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/grpc"
+	testkeyring "github.com/avenbreaks/neurastone/testutil/integration/neura/keyring"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
 )
 
 var s *PrecompileTestSuite

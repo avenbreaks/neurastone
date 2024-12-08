@@ -24,7 +24,7 @@ import (
 	"github.com/avenbreaks/neurastone/encoding"
 	"github.com/avenbreaks/neurastone/testutil"
 	utiltx "github.com/avenbreaks/neurastone/testutil/tx"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/utils"
 	epochstypes "github.com/avenbreaks/neurastone/x/epochs/types"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
@@ -36,7 +36,7 @@ type UpgradeTestSuite struct {
 	suite.Suite
 
 	ctx     sdk.Context
-	app     *app.Haqq
+	app     *app.neura
 	t       require.TestingT
 	chainID string
 	// account
@@ -104,7 +104,7 @@ func (suite *UpgradeTestSuite) DoSetupTest(t require.TestingT) {
 		suite.app.EpochsKeeper.SetEpochInfo(suite.ctx, epoch)
 	}
 
-	acc := &haqqtypes.EthAccount{
+	acc := &neuratypes.EthAccount{
 		BaseAccount: authtypes.NewBaseAccount(suite.accAddress, nil, 0, 0),
 		CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 	}

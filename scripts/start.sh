@@ -18,7 +18,7 @@ KEY="mykey"
 CHAINID="evmos_9000-1"
 MONIKER="mymoniker"
 
-## default port prefixes for haqqd
+## default port prefixes for neurad
 NODE_P2P_PORT="2660"
 NODE_PORT="2663"
 NODE_RPC_PORT="2666"
@@ -47,7 +47,7 @@ done
 
 set -euxo pipefail
 
-DATA_DIR=$(mktemp -d -t haqq-datadir.XXXXX)
+DATA_DIR=$(mktemp -d -t neura-datadir.XXXXX)
 
 if [[ ! "$DATA_DIR" ]]; then
     echo "Could not create $DATA_DIR"

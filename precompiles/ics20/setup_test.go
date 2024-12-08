@@ -21,7 +21,7 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/avenbreaks/neurastone/app"
-	haqqibctesting "github.com/avenbreaks/neurastone/ibc/testing"
+	neuraibctesting "github.com/avenbreaks/neurastone/ibc/testing"
 	"github.com/avenbreaks/neurastone/precompiles/ics20"
 	"github.com/avenbreaks/neurastone/x/evm/statedb"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
@@ -33,7 +33,7 @@ type PrecompileTestSuite struct {
 	suite.Suite
 
 	ctx           sdk.Context
-	app           *app.Haqq
+	app           *app.neura
 	address       common.Address
 	differentAddr common.Address
 	validators    []stakingtypes.Validator
@@ -49,7 +49,7 @@ type PrecompileTestSuite struct {
 	coordinator    *ibctesting.Coordinator
 	chainA         *ibctesting.TestChain
 	chainB         *ibctesting.TestChain
-	transferPath   *haqqibctesting.Path
+	transferPath   *neuraibctesting.Path
 	queryClientEVM evmtypes.QueryClient
 
 	defaultExpirationDuration time.Time

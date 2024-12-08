@@ -28,16 +28,16 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"golang.org/x/exp/slices"
 
-	haqqapp "github.com/avenbreaks/neurastone/app"
+	neuraapp "github.com/avenbreaks/neurastone/app"
 	"github.com/avenbreaks/neurastone/crypto/ethsecp256k1"
 	"github.com/avenbreaks/neurastone/precompiles/authorization"
 	cmn "github.com/avenbreaks/neurastone/precompiles/common"
 	"github.com/avenbreaks/neurastone/precompiles/staking"
 	"github.com/avenbreaks/neurastone/precompiles/testutil"
 	"github.com/avenbreaks/neurastone/precompiles/testutil/contracts"
-	haqqtestutil "github.com/avenbreaks/neurastone/testutil"
+	neuratestutil "github.com/avenbreaks/neurastone/testutil"
 	testutiltx "github.com/avenbreaks/neurastone/testutil/tx"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/utils"
 	coinomicstypes "github.com/avenbreaks/neurastone/x/coinomics/types"
 	"github.com/avenbreaks/neurastone/x/evm/statedb"
@@ -49,13 +49,13 @@ import (
 // stipend to pay EVM tx fees
 var accountGasCoverage = sdk.NewCoins(sdk.NewCoin(utils.BaseDenom, math.NewInt(1e16)))
 
-// SetupWithGenesisValSet initializes a new HaqqApp with a validator set and genesis accounts
+// SetupWithGenesisValSet initializes a new neuraApp with a validator set and genesis accounts
 // that also act as delegators. For simplicity, each validator is bonded with a delegation
 // of one consensus engine unit (10^6) in the default token of the simapp from first genesis
 // account. A Nop logger is set in SimApp.
 func (s *PrecompileTestSuite) SetupWithGenesisValSet(valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) {
-	appI, genesisState := haqqapp.SetupTestingApp(cmn.DefaultChainID)()
-	app, ok := appI.(*haqqapp.Haqq)
+	appI, genesisState := neuraapp.SetupTestingApp(cmn.DefaultChainID)()
+	app, ok := appI.(*neuraapp.neura)
 	s.Require().True(ok)
 
 	// set genesis accounts
@@ -65,7 +65,7 @@ func (s *PrecompileTestSuite) SetupWithGenesisValSet(valSet *tmtypes.ValidatorSe
 	validators := make([]stakingtypes.Validator, 0, len(valSet.Validators))
 	delegations := make([]stakingtypes.Delegation, 0, len(valSet.Validators))
 
-	bondAmt := sdk.TokensFromConsensusPower(1, haqqtypes.PowerReduction)
+	bondAmt := sdk.TokensFromConsensusPower(1, neuratypes.PowerReduction)
 
 	for _, val := range valSet.Validators {
 		pk, err := cryptocodec.FromTmPubKeyInterface(val.PubKey)
@@ -120,7 +120,7 @@ func (s *PrecompileTestSuite) SetupWithGenesisValSet(valSet *tmtypes.ValidatorSe
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
 	s.Require().NoError(err)
 
-	header := haqqtestutil.NewHeader(
+	header := neuratestutil.NewHeader(
 		2,
 		time.Now().UTC(),
 		cmn.DefaultChainID,
@@ -134,7 +134,7 @@ func (s *PrecompileTestSuite) SetupWithGenesisValSet(valSet *tmtypes.ValidatorSe
 		abci.RequestInitChain{
 			ChainId:         cmn.DefaultChainID,
 			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: haqqapp.DefaultConsensusParams,
+			ConsensusParams: neuraapp.DefaultConsensusParams,
 			AppStateBytes:   stateBytes,
 		},
 	)
@@ -173,12 +173,12 @@ func (s *PrecompileTestSuite) DoSetupTest() {
 
 	baseAcc := authtypes.NewBaseAccount(priv.PubKey().Address().Bytes(), priv.PubKey(), 0, 0)
 
-	acc := &haqqtypes.EthAccount{
+	acc := &neuratypes.EthAccount{
 		BaseAccount: baseAcc,
 		CodeHash:    common.BytesToHash(evmtypes.EmptyCodeHash).Hex(),
 	}
 
-	amount := sdk.TokensFromConsensusPower(5, haqqtypes.PowerReduction)
+	amount := sdk.TokensFromConsensusPower(5, neuratypes.PowerReduction)
 
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
@@ -366,7 +366,7 @@ func (s *PrecompileTestSuite) SetupApprovalWithContractCalls(approvalArgs contra
 
 // DeployContract deploys a contract that calls the staking precompile's methods for testing purposes.
 func (s *PrecompileTestSuite) DeployContract(contract evmtypes.CompiledContract) (addr common.Address, err error) {
-	addr, err = haqqtestutil.DeployContract(
+	addr, err = neuratestutil.DeployContract(
 		s.ctx,
 		s.app,
 		s.privKey,
@@ -384,7 +384,7 @@ func (s *PrecompileTestSuite) NextBlock() {
 // NextBlock commits the current block and sets up the next block.
 func (s *PrecompileTestSuite) NextBlockAfter(t time.Duration) {
 	var err error
-	s.ctx, err = haqqtestutil.CommitAndCreateNewCtx(s.ctx, s.app, t, nil)
+	s.ctx, err = neuratestutil.CommitAndCreateNewCtx(s.ctx, s.app, t, nil)
 	Expect(err).To(BeNil(), "failed to commit block")
 }
 
@@ -538,7 +538,7 @@ func (s *PrecompileTestSuite) CheckValidatorOutput(valOut staking.ValidatorInfo)
 // setupVestingAccount is a helper function used in integraiton tests to setup a vesting account
 // using the TestVestingSchedule. Also, funds the account with extra funds to pay for transaction fees
 func (s *PrecompileTestSuite) setupVestingAccount(funder, vestAcc sdk.AccAddress) *vestingtypes.ClawbackVestingAccount {
-	vestingAmtTotal := haqqtestutil.TestVestingSchedule.TotalVestingCoins
+	vestingAmtTotal := neuratestutil.TestVestingSchedule.TotalVestingCoins
 
 	vestingStart := s.ctx.BlockTime()
 	baseAccount := authtypes.NewBaseAccountWithAddress(vestAcc.Bytes())
@@ -548,12 +548,12 @@ func (s *PrecompileTestSuite) setupVestingAccount(funder, vestAcc sdk.AccAddress
 		funder,
 		vestingAmtTotal,
 		vestingStart,
-		haqqtestutil.TestVestingSchedule.LockupPeriods,
-		haqqtestutil.TestVestingSchedule.VestingPeriods,
+		neuratestutil.TestVestingSchedule.LockupPeriods,
+		neuratestutil.TestVestingSchedule.VestingPeriods,
 		&codeHash,
 	)
 
-	err := haqqtestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), vestingAmtTotal)
+	err := neuratestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), vestingAmtTotal)
 	Expect(err).To(BeNil())
 	acc := s.app.AccountKeeper.NewAccount(s.ctx, clawbackAccount)
 	s.app.AccountKeeper.SetAccount(s.ctx, acc)
@@ -563,7 +563,7 @@ func (s *PrecompileTestSuite) setupVestingAccount(funder, vestAcc sdk.AccAddress
 	Expect(vestingAmtTotal).To(Equal(lockedUp))
 
 	// Grant gas stipend to cover EVM fees
-	err = haqqtestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), accountGasCoverage)
+	err = neuratestutil.FundAccount(s.ctx, s.app.BankKeeper, clawbackAccount.GetAddress(), accountGasCoverage)
 	Expect(err).To(BeNil())
 	granteeBalance := s.app.BankKeeper.GetBalance(s.ctx, clawbackAccount.GetAddress(), s.bondDenom)
 	Expect(granteeBalance).To(Equal(accountGasCoverage[0].Add(vestingAmtTotal[0])))

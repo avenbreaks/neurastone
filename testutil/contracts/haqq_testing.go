@@ -8,20 +8,20 @@ import (
 )
 
 var (
-	//go:embed compiled_contracts/haqq_testing.json
-	HaqqTestingJSON []byte // nolint: golint
+	//go:embed compiled_contracts/neura_testing.json
+	neuraTestingJSON []byte // nolint: golint
 
-	// HaqqTestingContract is the compiled dummy contract
-	HaqqTestingContract evmtypes.CompiledContract
+	// neuraTestingContract is the compiled dummy contract
+	neuraTestingContract evmtypes.CompiledContract
 )
 
 func init() {
-	err := json.Unmarshal(HaqqTestingJSON, &HaqqTestingContract)
+	err := json.Unmarshal(neuraTestingJSON, &neuraTestingContract)
 	if err != nil {
 		panic(err)
 	}
 
-	if len(HaqqTestingContract.Bin) == 0 {
+	if len(neuraTestingContract.Bin) == 0 {
 		panic("load contract failed")
 	}
 }

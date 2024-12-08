@@ -140,48 +140,48 @@ func (suite *KeeperTestSuite) DoSetupTest(t require.TestingT) {
 func (suite *KeeperTestSuite) SetupIBCTest() {
 	// initializes 3 test chains
 	suite.coordinator = ibctesting.NewCoordinator(suite.T(), 1, 2)
-	suite.HaqqChain = suite.coordinator.GetChain(ibcgotesting.GetChainID(1))
+	suite.neuraChain = suite.coordinator.GetChain(ibcgotesting.GetChainID(1))
 	suite.IBCOsmosisChain = suite.coordinator.GetChain(ibcgotesting.GetChainID(2))
 	suite.IBCCosmosChain = suite.coordinator.GetChain(ibcgotesting.GetChainID(3))
-	suite.coordinator.CommitNBlocks(suite.HaqqChain, 2)
+	suite.coordinator.CommitNBlocks(suite.neuraChain, 2)
 	suite.coordinator.CommitNBlocks(suite.IBCOsmosisChain, 2)
 	suite.coordinator.CommitNBlocks(suite.IBCCosmosChain, 2)
 
-	s.app = suite.HaqqChain.App.(*app.Haqq)
-	evmParams := s.app.EvmKeeper.GetParams(s.HaqqChain.GetContext())
+	s.app = suite.neuraChain.App.(*app.neura)
+	evmParams := s.app.EvmKeeper.GetParams(s.neuraChain.GetContext())
 	evmParams.EvmDenom = utils.BaseDenom
-	err := s.app.EvmKeeper.SetParams(s.HaqqChain.GetContext(), evmParams)
+	err := s.app.EvmKeeper.SetParams(s.neuraChain.GetContext(), evmParams)
 	suite.Require().NoError(err)
 
-	// s.app.FeeMarketKeeper.SetBaseFee(s.HaqqChain.GetContext(), big.NewInt(1))
+	// s.app.FeeMarketKeeper.SetBaseFee(s.neuraChain.GetContext(), big.NewInt(1))
 
 	// Set block proposer once, so its carried over on the ibc-go-testing suite
-	validators := s.app.StakingKeeper.GetValidators(suite.HaqqChain.GetContext(), 2)
+	validators := s.app.StakingKeeper.GetValidators(suite.neuraChain.GetContext(), 2)
 	cons, err := validators[0].GetConsAddr()
 	suite.Require().NoError(err)
-	suite.HaqqChain.CurrentHeader.ProposerAddress = cons.Bytes()
+	suite.neuraChain.CurrentHeader.ProposerAddress = cons.Bytes()
 
-	err = s.app.StakingKeeper.SetValidatorByConsAddr(suite.HaqqChain.GetContext(), validators[0])
+	err = s.app.StakingKeeper.SetValidatorByConsAddr(suite.neuraChain.GetContext(), validators[0])
 	suite.Require().NoError(err)
 
-	_, err = s.app.EvmKeeper.GetCoinbaseAddress(suite.HaqqChain.GetContext(), sdk.ConsAddress(suite.HaqqChain.CurrentHeader.ProposerAddress))
+	_, err = s.app.EvmKeeper.GetCoinbaseAddress(suite.neuraChain.GetContext(), sdk.ConsAddress(suite.neuraChain.CurrentHeader.ProposerAddress))
 	suite.Require().NoError(err)
-	// Mint coins locked on the Haqq Network account generated with secp.
+	// Mint coins locked on the neura Network account generated with secp.
 	amt, ok := sdkmath.NewIntFromString("1000000000000000000000")
 	suite.Require().True(ok)
 	coinIslm := sdk.NewCoin(utils.BaseDenom, amt)
 	coins := sdk.NewCoins(coinIslm)
-	err = s.app.BankKeeper.MintCoins(suite.HaqqChain.GetContext(), coinomicstypes.ModuleName, coins)
+	err = s.app.BankKeeper.MintCoins(suite.neuraChain.GetContext(), coinomicstypes.ModuleName, coins)
 	suite.Require().NoError(err)
-	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(suite.HaqqChain.GetContext(), coinomicstypes.ModuleName, suite.HaqqChain.SenderAccount.GetAddress(), coins)
+	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(suite.neuraChain.GetContext(), coinomicstypes.ModuleName, suite.neuraChain.SenderAccount.GetAddress(), coins)
 	suite.Require().NoError(err)
 
 	// we need some coins in the bankkeeper to be able to register the coins later
 	coins = sdk.NewCoins(sdk.NewCoin(teststypes.UosmoIbcdenom, sdkmath.NewInt(100)))
-	err = s.app.BankKeeper.MintCoins(s.HaqqChain.GetContext(), types.ModuleName, coins)
+	err = s.app.BankKeeper.MintCoins(s.neuraChain.GetContext(), types.ModuleName, coins)
 	s.Require().NoError(err)
 	coins = sdk.NewCoins(sdk.NewCoin(teststypes.UatomIbcdenom, sdkmath.NewInt(100)))
-	err = s.app.BankKeeper.MintCoins(s.HaqqChain.GetContext(), types.ModuleName, coins)
+	err = s.app.BankKeeper.MintCoins(s.neuraChain.GetContext(), types.ModuleName, coins)
 	s.Require().NoError(err)
 
 	// Mint coins on the osmosis side which we'll use to unlock our aISLM
@@ -215,24 +215,24 @@ func (suite *KeeperTestSuite) SetupIBCTest() {
 
 	params := types.DefaultParams()
 	params.EnableErc20 = true
-	err = s.app.Erc20Keeper.SetParams(suite.HaqqChain.GetContext(), params)
+	err = s.app.Erc20Keeper.SetParams(suite.neuraChain.GetContext(), params)
 	suite.Require().NoError(err)
 
-	suite.pathOsmosisHaqq = ibctesting.NewTransferPath(suite.IBCOsmosisChain, suite.HaqqChain) // clientID, connectionID, channelID empty
-	suite.pathCosmosHaqq = ibctesting.NewTransferPath(suite.IBCCosmosChain, suite.HaqqChain)
+	suite.pathOsmosisneura = ibctesting.NewTransferPath(suite.IBCOsmosisChain, suite.neuraChain) // clientID, connectionID, channelID empty
+	suite.pathCosmosneura = ibctesting.NewTransferPath(suite.IBCCosmosChain, suite.neuraChain)
 	suite.pathOsmosisCosmos = ibctesting.NewTransferPath(suite.IBCCosmosChain, suite.IBCOsmosisChain)
-	ibctesting.SetupPath(suite.coordinator, suite.pathOsmosisHaqq) // clientID, connectionID, channelID filled
-	ibctesting.SetupPath(suite.coordinator, suite.pathCosmosHaqq)
+	ibctesting.SetupPath(suite.coordinator, suite.pathOsmosisneura) // clientID, connectionID, channelID filled
+	ibctesting.SetupPath(suite.coordinator, suite.pathCosmosneura)
 	ibctesting.SetupPath(suite.coordinator, suite.pathOsmosisCosmos)
-	suite.Require().Equal("07-tendermint-0", suite.pathOsmosisHaqq.EndpointA.ClientID)
-	suite.Require().Equal("connection-0", suite.pathOsmosisHaqq.EndpointA.ConnectionID)
-	suite.Require().Equal("channel-0", suite.pathOsmosisHaqq.EndpointA.ChannelID)
+	suite.Require().Equal("07-tendermint-0", suite.pathOsmosisneura.EndpointA.ClientID)
+	suite.Require().Equal("connection-0", suite.pathOsmosisneura.EndpointA.ConnectionID)
+	suite.Require().Equal("channel-0", suite.pathOsmosisneura.EndpointA.ChannelID)
 
 	coinIslm = sdk.NewCoin(utils.BaseDenom, sdkmath.NewInt(1000000000000000000))
 	coins = sdk.NewCoins(coinIslm)
-	err = s.app.BankKeeper.MintCoins(suite.HaqqChain.GetContext(), types.ModuleName, coins)
+	err = s.app.BankKeeper.MintCoins(suite.neuraChain.GetContext(), types.ModuleName, coins)
 	suite.Require().NoError(err)
-	err = s.app.BankKeeper.SendCoinsFromModuleToModule(suite.HaqqChain.GetContext(), types.ModuleName, authtypes.FeeCollectorName, coins)
+	err = s.app.BankKeeper.SendCoinsFromModuleToModule(suite.neuraChain.GetContext(), types.ModuleName, authtypes.FeeCollectorName, coins)
 	suite.Require().NoError(err)
 }
 
@@ -352,12 +352,12 @@ func (suite *KeeperTestSuite) DeployContractDirectBalanceManipulation() (common.
 }
 
 // DeployContractToChain deploys the ERC20MinterBurnerDecimalsContract
-// to the Haqq Network chain (used on IBC tests)
+// to the neura Network chain (used on IBC tests)
 func (suite *KeeperTestSuite) DeployContractToChain(name, symbol string, decimals uint8) (common.Address, error) {
 	return testutil.DeployContract(
-		s.HaqqChain.GetContext(),
-		s.HaqqChain.App.(*app.Haqq),
-		suite.HaqqChain.SenderPrivKey,
+		s.neuraChain.GetContext(),
+		s.neuraChain.App.(*app.neura),
+		suite.neuraChain.SenderPrivKey,
 		suite.queryClientEvm,
 		contracts.ERC20MinterBurnerDecimalsContract,
 		name, symbol, decimals,

@@ -47,7 +47,7 @@ func (s *PrecompileTestSuite) TestSetWithdrawAddressEvent() {
 				err := cmn.UnpackLog(s.precompile.ABI, &setWithdrawerAddrEvent, distribution.EventTypeSetWithdrawAddress, *log)
 				s.Require().NoError(err)
 				s.Require().Equal(s.address, setWithdrawerAddrEvent.Caller)
-				s.Require().Equal(sdk.MustBech32ifyAddressBytes("haqq", s.address.Bytes()), setWithdrawerAddrEvent.WithdrawerAddress)
+				s.Require().Equal(sdk.MustBech32ifyAddressBytes("neura", s.address.Bytes()), setWithdrawerAddrEvent.WithdrawerAddress)
 			},
 			20000,
 			false,

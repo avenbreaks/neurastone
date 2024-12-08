@@ -18,15 +18,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	haqqcontracts "github.com/avenbreaks/neurastone/contracts"
-	haqqibctesting "github.com/avenbreaks/neurastone/ibc/testing"
+	neuracontracts "github.com/avenbreaks/neurastone/contracts"
+	neuraibctesting "github.com/avenbreaks/neurastone/ibc/testing"
 	"github.com/avenbreaks/neurastone/precompiles/authorization"
 	cmn "github.com/avenbreaks/neurastone/precompiles/common"
 	"github.com/avenbreaks/neurastone/precompiles/erc20"
 	"github.com/avenbreaks/neurastone/precompiles/ics20"
 	"github.com/avenbreaks/neurastone/precompiles/testutil"
 	"github.com/avenbreaks/neurastone/precompiles/testutil/contracts"
-	haqqtestutil "github.com/avenbreaks/neurastone/testutil"
+	neuratestutil "github.com/avenbreaks/neurastone/testutil"
 	teststypes "github.com/avenbreaks/neurastone/types/tests"
 	"github.com/avenbreaks/neurastone/utils"
 	coinomicstypes "github.com/avenbreaks/neurastone/x/coinomics/types"
@@ -481,7 +481,7 @@ var _ = Describe("IBCTransfer Precompile", func() {
 
 				// To submit a timeoutMsg, the TimeoutPacket function
 				// uses a default fee amount
-				timeoutMsgFee := math.NewInt(haqqibctesting.DefaultFeeAmt * 2)
+				timeoutMsgFee := math.NewInt(neuraibctesting.DefaultFeeAmt * 2)
 				fees = fees.Add(timeoutMsgFee)
 
 				finalBalance = s.app.BankKeeper.GetBalance(s.chainA.GetContext(), s.address.Bytes(), s.bondDenom)
@@ -492,7 +492,7 @@ var _ = Describe("IBCTransfer Precompile", func() {
 				// initialBalance := s.app.BankKeeper.GetBalance(s.chainA.GetContext(), s.address.Bytes(), s.bondDenom)
 
 				// fund senders account
-				err := haqqtestutil.FundAccountWithBaseDenom(s.chainA.GetContext(), s.app.BankKeeper, s.differentAddr.Bytes(), amt)
+				err := neuratestutil.FundAccountWithBaseDenom(s.chainA.GetContext(), s.app.BankKeeper, s.differentAddr.Bytes(), amt)
 				Expect(err).To(BeNil())
 				senderInitialBalance := s.app.BankKeeper.GetBalance(s.chainA.GetContext(), s.differentAddr.Bytes(), s.bondDenom)
 				Expect(senderInitialBalance.Amount).To(Equal(math.NewInt(amt)))
@@ -550,7 +550,7 @@ var _ = Describe("IBCTransfer Precompile", func() {
 				Expect(err).To(BeNil())
 
 				// fund the account from which funds will be sent
-				err = haqqtestutil.FundAccountWithBaseDenom(s.chainA.GetContext(), s.app.BankKeeper, s.differentAddr.Bytes(), amt)
+				err = neuratestutil.FundAccountWithBaseDenom(s.chainA.GetContext(), s.app.BankKeeper, s.differentAddr.Bytes(), amt)
 				Expect(err).To(BeNil())
 				senderInitialBalance := s.app.BankKeeper.GetBalance(s.chainA.GetContext(), s.differentAddr.Bytes(), s.bondDenom)
 				Expect(senderInitialBalance.Amount).To(Equal(math.NewInt(amt)))
@@ -648,7 +648,7 @@ var _ = Describe("IBCTransfer Precompile", func() {
 					// check Erc20 balance was reduced by sent amount
 					balance := s.app.Erc20Keeper.BalanceOf(
 						s.chainA.GetContext(),
-						haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI,
+						neuracontracts.ERC20MinterBurnerDecimalsContract.ABI,
 						erc20Addr,
 						s.address,
 					)
@@ -659,7 +659,7 @@ var _ = Describe("IBCTransfer Precompile", func() {
 					// mint some ERC20 to the sender's account
 					defaultERC20CallArgs := contracts.CallArgs{
 						ContractAddr: erc20Addr,
-						ContractABI:  haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI,
+						ContractABI:  neuracontracts.ERC20MinterBurnerDecimalsContract.ABI,
 						PrivKey:      s.privKey,
 						GasPrice:     gasPrice,
 					}
@@ -670,7 +670,7 @@ var _ = Describe("IBCTransfer Precompile", func() {
 						WithArgs(s.differentAddr, defaultCmnCoins[0].Amount)
 
 					mintCheck := testutil.LogCheckArgs{
-						ABIEvents: haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI.Events,
+						ABIEvents: neuracontracts.ERC20MinterBurnerDecimalsContract.ABI.Events,
 						ExpEvents: []string{erc20.EventTypeTransfer}, // upon minting the tokens are sent to the receiving address
 						ExpPass:   true,
 					}
@@ -700,7 +700,7 @@ var _ = Describe("IBCTransfer Precompile", func() {
 					// check funds were not transferred
 					balance := s.app.Erc20Keeper.BalanceOf(
 						s.chainA.GetContext(),
-						haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI,
+						neuracontracts.ERC20MinterBurnerDecimalsContract.ABI,
 						erc20Addr,
 						s.differentAddr,
 					)
@@ -744,7 +744,7 @@ var _ = Describe("IBCTransfer Precompile", func() {
 					// check Erc20 balance was reduced by sent amount (escrowed on ibc escrow account)
 					balance := s.app.Erc20Keeper.BalanceOf(
 						s.chainA.GetContext(),
-						haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI,
+						neuracontracts.ERC20MinterBurnerDecimalsContract.ABI,
 						erc20Addr,
 						s.address,
 					)
@@ -776,7 +776,7 @@ var _ = Describe("IBCTransfer Precompile", func() {
 					// check escrowed funds are refunded to sender
 					finalERC20balance := s.app.Erc20Keeper.BalanceOf(
 						s.chainA.GetContext(),
-						haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI,
+						neuracontracts.ERC20MinterBurnerDecimalsContract.ABI,
 						erc20Addr,
 						s.address,
 					)
@@ -822,7 +822,7 @@ var _ = Describe("IBCTransfer Precompile", func() {
 					// check Erc20 balance was reduced by sent amount
 					balance := s.app.Erc20Keeper.BalanceOf(
 						s.chainA.GetContext(),
-						haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI,
+						neuracontracts.ERC20MinterBurnerDecimalsContract.ABI,
 						erc20Addr,
 						s.address,
 					)
@@ -859,7 +859,7 @@ var _ = Describe("IBCTransfer Precompile", func() {
 					// check escrowed funds are refunded to sender
 					finalERC20balance := s.app.Erc20Keeper.BalanceOf(
 						s.chainA.GetContext(),
-						haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI,
+						neuracontracts.ERC20MinterBurnerDecimalsContract.ABI,
 						erc20Addr,
 						s.address,
 					)
@@ -1410,7 +1410,7 @@ var _ = Describe("Calling ICS20 precompile from another contract", func() {
 					// check Erc20 balance remained unchaged by sent amount
 					balance := s.app.Erc20Keeper.BalanceOf(
 						s.chainA.GetContext(),
-						haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI,
+						neuracontracts.ERC20MinterBurnerDecimalsContract.ABI,
 						erc20Addr,
 						s.address,
 					)
@@ -1482,7 +1482,7 @@ var _ = Describe("Calling ICS20 precompile from another contract", func() {
 					// check Erc20 balance was reduced by sent amount
 					balance := s.app.Erc20Keeper.BalanceOf(
 						s.chainA.GetContext(),
-						haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI,
+						neuracontracts.ERC20MinterBurnerDecimalsContract.ABI,
 						erc20Addr,
 						s.address,
 					)
@@ -1505,7 +1505,7 @@ var _ = Describe("Calling ICS20 precompile from another contract", func() {
 			var defaultTransferEvmosArgs contracts.CallArgs
 			BeforeEach(func() {
 				// send some funds to the contract from which the funds will be sent
-				err = haqqtestutil.FundAccountWithBaseDenom(s.chainA.GetContext(), s.app.BankKeeper, contractAddr.Bytes(), amt)
+				err = neuratestutil.FundAccountWithBaseDenom(s.chainA.GetContext(), s.app.BankKeeper, contractAddr.Bytes(), amt)
 				Expect(err).To(BeNil())
 				senderInitialBalance := s.app.BankKeeper.GetBalance(s.chainA.GetContext(), contractAddr.Bytes(), s.bondDenom)
 				Expect(senderInitialBalance.Amount).To(Equal(math.NewInt(amt)))

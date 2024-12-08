@@ -32,18 +32,18 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	haqqapp "github.com/avenbreaks/neurastone/app"
-	haqqcontracts "github.com/avenbreaks/neurastone/contracts"
-	haqqibctesting "github.com/avenbreaks/neurastone/ibc/testing"
+	neuraapp "github.com/avenbreaks/neurastone/app"
+	neuracontracts "github.com/avenbreaks/neurastone/contracts"
+	neuraibctesting "github.com/avenbreaks/neurastone/ibc/testing"
 	"github.com/avenbreaks/neurastone/precompiles/authorization"
 	cmn "github.com/avenbreaks/neurastone/precompiles/common"
 	"github.com/avenbreaks/neurastone/precompiles/erc20"
 	"github.com/avenbreaks/neurastone/precompiles/ics20"
 	"github.com/avenbreaks/neurastone/precompiles/testutil"
 	"github.com/avenbreaks/neurastone/precompiles/testutil/contracts"
-	haqqtestutil "github.com/avenbreaks/neurastone/testutil"
+	neuratestutil "github.com/avenbreaks/neurastone/testutil"
 	testutiltx "github.com/avenbreaks/neurastone/testutil/tx"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/utils"
 	coinomicstypes "github.com/avenbreaks/neurastone/x/coinomics/types"
 	"github.com/avenbreaks/neurastone/x/evm/statedb"
@@ -74,13 +74,13 @@ var (
 	}
 )
 
-// SetupWithGenesisValSet initializes a new HaqqApp with a validator set and genesis accounts
+// SetupWithGenesisValSet initializes a new neuraApp with a validator set and genesis accounts
 // that also act as delegators. For simplicity, each validator is bonded with a delegation
 // of one consensus engine unit (10^6) in the default token of the simapp from first genesis
 // account. A Nop logger is set in SimApp.
 func (s *PrecompileTestSuite) SetupWithGenesisValSet(valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) {
-	appI, genesisState := haqqapp.SetupTestingApp(cmn.DefaultChainID)()
-	app, ok := appI.(*haqqapp.Haqq)
+	appI, genesisState := neuraapp.SetupTestingApp(cmn.DefaultChainID)()
+	app, ok := appI.(*neuraapp.neura)
 	s.Require().True(ok)
 
 	// set genesis accounts
@@ -90,7 +90,7 @@ func (s *PrecompileTestSuite) SetupWithGenesisValSet(valSet *tmtypes.ValidatorSe
 	validators := make([]stakingtypes.Validator, 0, len(valSet.Validators))
 	delegations := make([]stakingtypes.Delegation, 0, len(valSet.Validators))
 
-	bondAmt := sdk.TokensFromConsensusPower(1, haqqtypes.PowerReduction)
+	bondAmt := sdk.TokensFromConsensusPower(1, neuratypes.PowerReduction)
 
 	for _, val := range valSet.Validators {
 		pk, err := cryptocodec.FromTmPubKeyInterface(val.PubKey)
@@ -150,7 +150,7 @@ func (s *PrecompileTestSuite) SetupWithGenesisValSet(valSet *tmtypes.ValidatorSe
 		abci.RequestInitChain{
 			ChainId:         cmn.DefaultChainID,
 			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: haqqapp.DefaultConsensusParams,
+			ConsensusParams: neuraapp.DefaultConsensusParams,
 			AppStateBytes:   stateBytes,
 		},
 	)
@@ -159,7 +159,7 @@ func (s *PrecompileTestSuite) SetupWithGenesisValSet(valSet *tmtypes.ValidatorSe
 	app.Commit()
 
 	// instantiate new header
-	header := haqqtestutil.NewHeader(
+	header := neuratestutil.NewHeader(
 		2,
 		time.Now().UTC(),
 		cmn.DefaultChainID,
@@ -205,7 +205,7 @@ func (s *PrecompileTestSuite) DoSetupTest() {
 		// NOTE: This year has to be updated otherwise the client will be shown as expired
 		CurrentTime: time.Date(time.Now().Year()+1, 1, 2, 0, 0, 0, 0, time.UTC),
 	}
-	// Create 2 Haqq chains
+	// Create 2 neura chains
 	chains[cmn.DefaultChainID] = s.NewTestChainWithValSet(s.coordinator, s.valSet, signersByAddress)
 	// TODO: Figure out if we want to make the second chain keepers accessible to the tests to check the state
 	chainID2 := utils.MainNetChainID + "-2"
@@ -232,12 +232,12 @@ func (s *PrecompileTestSuite) NewTestChainWithValSet(coord *ibctesting.Coordinat
 
 	baseAcc := authtypes.NewBaseAccount(priv.PubKey().Address().Bytes(), priv.PubKey(), 0, 0)
 
-	acc := &haqqtypes.EthAccount{
+	acc := &neuratypes.EthAccount{
 		BaseAccount: baseAcc,
 		CodeHash:    common.BytesToHash(evmtypes.EmptyCodeHash).Hex(),
 	}
 
-	amount := sdk.TokensFromConsensusPower(5, haqqtypes.PowerReduction)
+	amount := sdk.TokensFromConsensusPower(5, neuratypes.PowerReduction)
 
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
@@ -315,7 +315,7 @@ func (s *PrecompileTestSuite) NewPrecompileContract(gas uint64) *vm.Contract {
 }
 
 // NewTransferAuthorizationWithAllocations creates a new allocation for the given grantee and granter and the given coins
-func (s *PrecompileTestSuite) NewTransferAuthorizationWithAllocations(ctx sdk.Context, app *haqqapp.Haqq, grantee, granter common.Address, allocations []transfertypes.Allocation) error {
+func (s *PrecompileTestSuite) NewTransferAuthorizationWithAllocations(ctx sdk.Context, app *neuraapp.neura, grantee, granter common.Address, allocations []transfertypes.Allocation) error {
 	transferAuthz := &transfertypes.TransferAuthorization{Allocations: allocations}
 	if err := transferAuthz.ValidateBasic(); err != nil {
 		return err
@@ -326,7 +326,7 @@ func (s *PrecompileTestSuite) NewTransferAuthorizationWithAllocations(ctx sdk.Co
 }
 
 // NewTransferAuthorization creates a new transfer authorization for the given grantee and granter and the given coins
-func (s *PrecompileTestSuite) NewTransferAuthorization(ctx sdk.Context, app *haqqapp.Haqq, grantee, granter common.Address, path *ibctesting.Path, coins sdk.Coins, allowList []string) error {
+func (s *PrecompileTestSuite) NewTransferAuthorization(ctx sdk.Context, app *neuraapp.neura, grantee, granter common.Address, path *ibctesting.Path, coins sdk.Coins, allowList []string) error {
 	allocations := []transfertypes.Allocation{
 		{
 			SourcePort:    path.EndpointA.ChannelConfig.PortID,
@@ -397,7 +397,7 @@ func (s *PrecompileTestSuite) setupIBCTest() {
 	s.coordinator.CommitNBlocks(s.chainA, 2)
 	s.coordinator.CommitNBlocks(s.chainB, 2)
 
-	s.app = s.chainA.App.(*haqqapp.Haqq)
+	s.app = s.chainA.App.(*neuraapp.neura)
 	evmParams := s.app.EvmKeeper.GetParams(s.chainA.GetContext())
 	evmParams.EvmDenom = utils.BaseDenom
 	err := s.app.EvmKeeper.SetParams(s.chainA.GetContext(), evmParams)
@@ -415,7 +415,7 @@ func (s *PrecompileTestSuite) setupIBCTest() {
 	_, err = s.app.EvmKeeper.GetCoinbaseAddress(s.chainA.GetContext(), sdk.ConsAddress(s.chainA.CurrentHeader.ProposerAddress))
 	s.Require().NoError(err)
 
-	// Mint coins locked on the haqq account generated with secp.
+	// Mint coins locked on the neura account generated with secp.
 	amt, ok := math.NewIntFromString("1000000000000000000000")
 	s.Require().True(ok)
 	coinEvmos := sdk.NewCoin(utils.BaseDenom, amt)
@@ -425,8 +425,8 @@ func (s *PrecompileTestSuite) setupIBCTest() {
 	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(s.chainA.GetContext(), coinomicstypes.ModuleName, s.chainA.SenderAccount.GetAddress(), coins)
 	s.Require().NoError(err)
 
-	s.transferPath = haqqibctesting.NewTransferPath(s.chainA, s.chainB) // clientID, connectionID, channelID empty
-	haqqibctesting.SetupPath(s.coordinator, s.transferPath)             // clientID, connectionID, channelID filled
+	s.transferPath = neuraibctesting.NewTransferPath(s.chainA, s.chainB) // clientID, connectionID, channelID empty
+	neuraibctesting.SetupPath(s.coordinator, s.transferPath)             // clientID, connectionID, channelID filled
 	s.Require().Equal("07-tendermint-0", s.transferPath.EndpointA.ClientID)
 	s.Require().Equal("connection-0", s.transferPath.EndpointA.ConnectionID)
 	s.Require().Equal("channel-0", s.transferPath.EndpointA.ChannelID)
@@ -500,12 +500,12 @@ func (s *PrecompileTestSuite) setupAllocationsForTesting() {
 	}
 }
 
-// TODO upstream this change to haqq (adding gasPrice)
+// TODO upstream this change to neura (adding gasPrice)
 // DeployContract deploys a contract with the provided private key,
 // compiled contract data and constructor arguments
 func DeployContract(
 	ctx sdk.Context,
-	evmosApp *haqqapp.Haqq,
+	evmosApp *neuraapp.neura,
 	priv cryptotypes.PrivKey,
 	gasPrice *big.Int,
 	queryClientEvm evmtypes.QueryClient,
@@ -539,12 +539,12 @@ func DeployContract(
 	})
 	msgEthereumTx.From = from.String()
 
-	res, err := haqqtestutil.DeliverEthTx(evmosApp, priv, msgEthereumTx)
+	res, err := neuratestutil.DeliverEthTx(evmosApp, priv, msgEthereumTx)
 	if err != nil {
 		return common.Address{}, err
 	}
 
-	if _, err := haqqtestutil.CheckEthTxResponse(res, evmosApp.AppCodec()); err != nil {
+	if _, err := neuratestutil.CheckEthTxResponse(res, evmosApp.AppCodec()); err != nil {
 		return common.Address{}, err
 	}
 
@@ -559,7 +559,7 @@ func (s *PrecompileTestSuite) DeployERC20Contract(chain *ibctesting.TestChain, n
 		s.privKey,
 		gasPrice,
 		s.queryClientEVM,
-		haqqcontracts.ERC20MinterBurnerDecimalsContract,
+		neuracontracts.ERC20MinterBurnerDecimalsContract,
 		name,
 		symbol,
 		decimals,
@@ -578,7 +578,7 @@ func (s *PrecompileTestSuite) setupERC20ContractTests(amount *big.Int) common.Ad
 
 	defaultERC20CallArgs := contracts.CallArgs{
 		ContractAddr: erc20Addr,
-		ContractABI:  haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI,
+		ContractABI:  neuracontracts.ERC20MinterBurnerDecimalsContract.ABI,
 		PrivKey:      s.privKey,
 		GasPrice:     gasPrice,
 	}
@@ -589,7 +589,7 @@ func (s *PrecompileTestSuite) setupERC20ContractTests(amount *big.Int) common.Ad
 		WithArgs(s.address, amount)
 
 	mintCheck := testutil.LogCheckArgs{
-		ABIEvents: haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI.Events,
+		ABIEvents: neuracontracts.ERC20MinterBurnerDecimalsContract.ABI.Events,
 		ExpEvents: []string{erc20.EventTypeTransfer}, // upon minting the tokens are sent to the receiving address
 		ExpPass:   true,
 	}
@@ -603,7 +603,7 @@ func (s *PrecompileTestSuite) setupERC20ContractTests(amount *big.Int) common.Ad
 	// unregistered token pairs do not show up in the bank keeper
 	balance := s.app.Erc20Keeper.BalanceOf(
 		s.chainA.GetContext(),
-		haqqcontracts.ERC20MinterBurnerDecimalsContract.ABI,
+		neuracontracts.ERC20MinterBurnerDecimalsContract.ABI,
 		erc20Addr,
 		s.address,
 	)

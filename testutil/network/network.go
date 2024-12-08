@@ -53,7 +53,7 @@ import (
 	"github.com/avenbreaks/neurastone/crypto/hd"
 	"github.com/avenbreaks/neurastone/encoding"
 	"github.com/avenbreaks/neurastone/server/config"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )
 
@@ -74,7 +74,7 @@ type Config struct {
 	TxConfig          client.TxConfig
 	AccountRetriever  client.AccountRetriever
 	AppConstructor    AppConstructor         // the ABCI application constructor
-	GenesisState      haqqtypes.GenesisState // custom gensis state to provide
+	GenesisState      neuratypes.GenesisState // custom gensis state to provide
 	TimeoutCommit     time.Duration          // the consensus commitment timeout
 	AccountTokens     math.Int               // the amount of unique validator tokens (e.g. 1000node0)
 	StakingTokens     math.Int               // the amount of tokens each validator has available to stake
@@ -110,11 +110,11 @@ func DefaultConfig() Config {
 		TimeoutCommit:     3 * time.Second,
 		ChainID:           chainID,
 		NumValidators:     4,
-		BondDenom:         haqqtypes.AttoDenom,
-		MinGasPrices:      fmt.Sprintf("0.000006%s", haqqtypes.AttoDenom),
-		AccountTokens:     sdk.TokensFromConsensusPower(1000000000000000000, haqqtypes.PowerReduction),
-		StakingTokens:     sdk.TokensFromConsensusPower(500000000000000000, haqqtypes.PowerReduction),
-		BondedTokens:      sdk.TokensFromConsensusPower(100000000000000000, haqqtypes.PowerReduction),
+		BondDenom:         neuratypes.AttoDenom,
+		MinGasPrices:      fmt.Sprintf("0.000006%s", neuratypes.AttoDenom),
+		AccountTokens:     sdk.TokensFromConsensusPower(1000000000000000000, neuratypes.PowerReduction),
+		StakingTokens:     sdk.TokensFromConsensusPower(500000000000000000, neuratypes.PowerReduction),
+		BondedTokens:      sdk.TokensFromConsensusPower(100000000000000000, neuratypes.PowerReduction),
 		PruningStrategy:   pruningtypes.PruningOptionNothing,
 		CleanupDir:        true,
 		SigningAlgo:       string(hd.EthSecp256k1Type),
@@ -123,10 +123,10 @@ func DefaultConfig() Config {
 	}
 }
 
-// NewAppConstructor returns a new Haqq AppConstructor
+// NewAppConstructor returns a new neura AppConstructor
 func NewAppConstructor(encodingCfg params.EncodingConfig, chainID string) AppConstructor {
 	return func(val Validator) servertypes.Application {
-		return app.NewHaqq(
+		return app.Newneura(
 			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
 			encodingCfg,
 			simutils.NewAppOptionsWithFlagHome(val.Ctx.Config.RootDir),
@@ -218,7 +218,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 	l.Log("acquiring test network lock")
 	lock.Lock()
 
-	if !haqqtypes.IsValidChainID(cfg.ChainID) {
+	if !neuratypes.IsValidChainID(cfg.ChainID) {
 		return nil, fmt.Errorf("invalid chain-id: %s", cfg.ChainID)
 	}
 
@@ -413,7 +413,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 
 		genFiles = append(genFiles, tmCfg.GenesisFile())
 		genBalances = append(genBalances, banktypes.Balance{Address: addr.String(), Coins: balances.Sort()})
-		genAccounts = append(genAccounts, &haqqtypes.EthAccount{
+		genAccounts = append(genAccounts, &neuratypes.EthAccount{
 			BaseAccount: authtypes.NewBaseAccount(addr, nil, 0, 0),
 			CodeHash:    common.BytesToHash(evmtypes.EmptyCodeHash).Hex(),
 		})
@@ -471,7 +471,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			return nil, err
 		}
 
-		customAppTemplate, _ := config.AppConfig(haqqtypes.AttoDenom)
+		customAppTemplate, _ := config.AppConfig(neuratypes.AttoDenom)
 		srvconfig.SetConfigTemplate(customAppTemplate)
 		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config/app.toml"), appCfg)
 

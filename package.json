@@ -1,9 +1,9 @@
 {
-  "name": "haqq",
+  "name": "neura",
   "version": "0.1.1",
   "main": "index.js",
   "repository": "https://github.com/avenbreaks/neurastone.git",
-  "author": "Haqq Network",
+  "author": "neura Network",
   "license": "Apache-2.0",
   "dependencies": {
     "vuepress": "^1.9.7"

@@ -371,31 +371,31 @@ var _ = Describe("ERC20:", Ordered, func() {
 	)
 })
 
-func submitRegisterCoinProposal(ctx sdk.Context, appHaqq *app.Haqq, pk *ethsecp256k1.PrivKey, metadata []banktypes.Metadata) (id uint64, err error) {
+func submitRegisterCoinProposal(ctx sdk.Context, appneura *app.neura, pk *ethsecp256k1.PrivKey, metadata []banktypes.Metadata) (id uint64, err error) {
 	content := types.NewRegisterCoinProposal("test Coin", "foo", metadata...)
-	return testutil.SubmitProposal(ctx, appHaqq, pk, content, 8)
+	return testutil.SubmitProposal(ctx, appneura, pk, content, 8)
 }
 
-func submitRegisterERC20Proposal(ctx sdk.Context, appHaqq *app.Haqq, pk *ethsecp256k1.PrivKey, addrs []string) (id uint64, err error) {
+func submitRegisterERC20Proposal(ctx sdk.Context, appneura *app.neura, pk *ethsecp256k1.PrivKey, addrs []string) (id uint64, err error) {
 	content := types.NewRegisterERC20Proposal("test token", "foo", addrs...)
-	return testutil.SubmitProposal(ctx, appHaqq, pk, content, 8)
+	return testutil.SubmitProposal(ctx, appneura, pk, content, 8)
 }
 
-func convertCoin(ctx sdk.Context, appHaqq *app.Haqq, pk *ethsecp256k1.PrivKey, coin sdk.Coin, signMode signing.SignMode) {
+func convertCoin(ctx sdk.Context, appneura *app.neura, pk *ethsecp256k1.PrivKey, coin sdk.Coin, signMode signing.SignMode) {
 	addrBz := pk.PubKey().Address().Bytes()
 
 	convertCoinMsg := types.NewMsgConvertCoin(coin, common.BytesToAddress(addrBz), sdk.AccAddress(addrBz))
-	res, err := testutil.DeliverTx(ctx, appHaqq, pk, nil, signMode, convertCoinMsg)
+	res, err := testutil.DeliverTx(ctx, appneura, pk, nil, signMode, convertCoinMsg)
 	s.Require().NoError(err)
 
 	Expect(res.IsOK()).To(BeTrue(), "failed to convert coin: %s", res.Log)
 }
 
-func convertERC20(ctx sdk.Context, appHaqq *app.Haqq, pk *ethsecp256k1.PrivKey, amt math.Int, contract common.Address, signMode signing.SignMode) {
+func convertERC20(ctx sdk.Context, appneura *app.neura, pk *ethsecp256k1.PrivKey, amt math.Int, contract common.Address, signMode signing.SignMode) {
 	addrBz := pk.PubKey().Address().Bytes()
 
 	convertERC20Msg := types.NewMsgConvertERC20(amt, sdk.AccAddress(addrBz), contract, common.BytesToAddress(addrBz))
-	res, err := testutil.DeliverTx(ctx, appHaqq, pk, nil, signMode, convertERC20Msg)
+	res, err := testutil.DeliverTx(ctx, appneura, pk, nil, signMode, convertERC20Msg)
 	s.Require().NoError(err)
 	Expect(res.IsOK()).To(BeTrue(), "failed to convert ERC20: %s", res.Log)
 }

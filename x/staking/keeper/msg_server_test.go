@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/avenbreaks/neurastone/testutil"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
 	utiltx "github.com/avenbreaks/neurastone/testutil/tx"
 	"github.com/avenbreaks/neurastone/utils"
 	"github.com/avenbreaks/neurastone/x/staking/keeper"

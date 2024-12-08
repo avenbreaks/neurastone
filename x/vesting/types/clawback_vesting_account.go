@@ -12,7 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 )
 
 var (
@@ -268,7 +268,7 @@ func (va *ClawbackVestingAccount) SetCodeHash(codeHash common.Hash) error {
 // Type returns the type of Ethereum Account (EOA or Contract)
 func (va ClawbackVestingAccount) Type() int8 {
 	if bytes.Equal(emptyCodeHash, common.HexToHash(va.CodeHash).Bytes()) {
-		return haqqtypes.AccountTypeEOA
+		return neuratypes.AccountTypeEOA
 	}
-	return haqqtypes.AccountTypeContract
+	return neuratypes.AccountTypeContract
 }

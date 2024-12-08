@@ -40,14 +40,14 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 
 	"github.com/avenbreaks/neurastone/app"
-	haqqclient "github.com/avenbreaks/neurastone/client"
+	neuraclient "github.com/avenbreaks/neurastone/client"
 	"github.com/avenbreaks/neurastone/client/block"
 	"github.com/avenbreaks/neurastone/client/debug"
 	cmdcfg "github.com/avenbreaks/neurastone/cmd/config"
-	haqqkr "github.com/avenbreaks/neurastone/crypto/keyring"
+	neurakr "github.com/avenbreaks/neurastone/crypto/keyring"
 	"github.com/avenbreaks/neurastone/encoding"
 	"github.com/avenbreaks/neurastone/ethereum/eip712"
-	haqqserver "github.com/avenbreaks/neurastone/server"
+	neuraserver "github.com/avenbreaks/neurastone/server"
 	servercfg "github.com/avenbreaks/neurastone/server/config"
 	srvflags "github.com/avenbreaks/neurastone/server/flags"
 )
@@ -69,7 +69,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithBroadcastMode(flags.BroadcastSync).
 		WithHomeDir(app.DefaultNodeHome).
-		WithKeyringOptions(haqqkr.Option()).
+		WithKeyringOptions(neurakr.Option()).
 		WithViper(EnvPrefix).
 		WithLedgerHasProtobuf(true)
 
@@ -77,7 +77,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 	rootCmd := &cobra.Command{
 		Use:     app.Name,
-		Short:   "HAQQ Daemon",
+		Short:   "neura Daemon",
 		Version: fmt.Sprintf("%s %s", version.Version, version.Commit),
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
@@ -111,7 +111,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 	a := appCreator{encodingConfig}
 	rootCmd.AddCommand(
-		haqqclient.ValidateChainID(
+		neuraclient.ValidateChainID(
 			InitCmd(app.ModuleBasics, app.DefaultNodeHome),
 		),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome, genutiltypes.DefaultMessageValidator),
@@ -128,9 +128,9 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		block.Cmd(),
 	)
 
-	haqqserver.AddCommands(
+	neuraserver.AddCommands(
 		rootCmd,
-		haqqserver.NewDefaultStartOptions(a.newApp, app.DefaultNodeHome),
+		neuraserver.NewDefaultStartOptions(a.newApp, app.DefaultNodeHome),
 		a.appExport,
 		addModuleInitFlags,
 	)
@@ -140,7 +140,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		rpc.StatusCommand(),
 		queryCommand(),
 		txCommand(),
-		haqqclient.KeyCommands(app.DefaultNodeHome),
+		neuraclient.KeyCommands(app.DefaultNodeHome),
 	)
 	rootCmd, err := srvflags.AddTxFlags(rootCmd)
 	if err != nil {
@@ -284,7 +284,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		chainID = conf.ChainID
 	}
 
-	haqqApp := app.NewHaqq(
+	neuraApp := app.Newneura(
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(sdkserver.FlagInvCheckPeriod)),
@@ -304,7 +304,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		baseapp.SetChainID(chainID),
 	)
 
-	return haqqApp
+	return neuraApp
 }
 
 // appExport creates a new simapp (optionally at a given height)
@@ -313,23 +313,23 @@ func (a appCreator) appExport(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string,
 	appOpts servertypes.AppOptions, modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
-	var haqqApp *app.Haqq
+	var neuraApp *app.neura
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
 	if !ok || homePath == "" {
 		return servertypes.ExportedApp{}, errors.New("application home not set")
 	}
 
 	if height != -1 {
-		haqqApp = app.NewHaqq(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
+		neuraApp = app.Newneura(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
 
-		if err := haqqApp.LoadHeight(height); err != nil {
+		if err := neuraApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		haqqApp = app.NewHaqq(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
+		neuraApp = app.Newneura(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
 	}
 
-	return haqqApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
+	return neuraApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
 }
 
 // initTendermintConfig helps to override default Tendermint Config values.

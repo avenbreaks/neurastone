@@ -45,7 +45,7 @@ import (
 	ethdebug "github.com/avenbreaks/neurastone/rpc/namespaces/ethereum/debug"
 	"github.com/avenbreaks/neurastone/server/config"
 	srvflags "github.com/avenbreaks/neurastone/server/flags"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 )
 
 // DBOpener is a function to open `application.db`, potentially with customized options.
@@ -400,7 +400,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, opts StartOpt
 		ethmetricsexp.Setup(config.JSONRPC.MetricsAddress)
 	}
 
-	var idxer haqqtypes.EVMTxIndexer
+	var idxer neuratypes.EVMTxIndexer
 	if config.JSONRPC.EnableIndexer {
 		idxDB, err := OpenIndexerDB(home, server.GetAppDBBackend(ctx.Viper))
 		if err != nil {

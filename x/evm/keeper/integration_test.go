@@ -16,11 +16,11 @@ import (
 
 	"github.com/avenbreaks/neurastone/contracts"
 	"github.com/avenbreaks/neurastone/precompiles/staking"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/factory"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/grpc"
-	testkeyring "github.com/avenbreaks/neurastone/testutil/integration/haqq/keyring"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
-	integrationutils "github.com/avenbreaks/neurastone/testutil/integration/haqq/utils"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/factory"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/grpc"
+	testkeyring "github.com/avenbreaks/neurastone/testutil/integration/neura/keyring"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
+	integrationutils "github.com/avenbreaks/neurastone/testutil/integration/neura/utils"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )
 
@@ -31,8 +31,8 @@ type IntegrationTestSuite struct {
 	keyring     testkeyring.Keyring
 }
 
-// This test suite is meant to test the EVM module in the context of the Haqq.
-// It uses the integration test framework to spin up a local Haqq Network and
+// This test suite is meant to test the EVM module in the context of the neura.
+// It uses the integration test framework to spin up a local neura Network and
 // perform transactions on it.
 // The test suite focus on testing how the MsgEthereumTx message is handled under the
 // different params configuration of the module while testing the different Tx types

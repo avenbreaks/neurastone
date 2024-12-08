@@ -25,8 +25,8 @@ var execTypes = []struct {
 func (suite *AnteTestSuite) TestMinGasPriceDecorator() {
 	denom := utils.BaseDenom
 	testMsg := banktypes.MsgSend{
-		FromAddress: "haqq1tjdjfavsy956d25hvhs3p0nw9a7pfghqm0up92",
-		ToAddress:   "haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+		FromAddress: "neura1tjdjfavsy956d25hvhs3p0nw9a7pfghqm0up92",
+		ToAddress:   "neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 		Amount:      sdk.Coins{sdk.Coin{Amount: math.NewInt(10), Denom: denom}},
 	}
 

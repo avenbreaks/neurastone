@@ -6,8 +6,8 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	testutiltypes "github.com/cosmos/cosmos-sdk/types/module/testutil"
 
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/grpc"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/grpc"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
 )
 
 const (

@@ -17,7 +17,7 @@ import (
 	"github.com/avenbreaks/neurastone/indexer"
 	"github.com/avenbreaks/neurastone/rpc/backend/mocks"
 	rpctypes "github.com/avenbreaks/neurastone/rpc/types"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )
 
@@ -468,7 +468,7 @@ func (suite *BackendTestSuite) TestGetTransactionByTxIndex() {
 		registerMock func()
 		height       int64
 		index        uint
-		expTxResult  *haqqtypes.TxResult
+		expTxResult  *neuratypes.TxResult
 		expPass      bool
 	}{
 		{
@@ -480,7 +480,7 @@ func (suite *BackendTestSuite) TestGetTransactionByTxIndex() {
 			},
 			0,
 			0,
-			&haqqtypes.TxResult{},
+			&neuratypes.TxResult{},
 			false,
 		},
 	}
@@ -508,7 +508,7 @@ func (suite *BackendTestSuite) TestQueryTendermintTxIndexer() {
 		registerMock func()
 		txGetter     func(*rpctypes.ParsedTxs) *rpctypes.ParsedTx
 		query        string
-		expTxResult  *haqqtypes.TxResult
+		expTxResult  *neuratypes.TxResult
 		expPass      bool
 	}{
 		{
@@ -521,7 +521,7 @@ func (suite *BackendTestSuite) TestQueryTendermintTxIndexer() {
 				return &rpctypes.ParsedTx{}
 			},
 			"",
-			&haqqtypes.TxResult{},
+			&neuratypes.TxResult{},
 			false,
 		},
 	}
@@ -619,7 +619,7 @@ func (suite *BackendTestSuite) TestGetGasUsed() {
 	testCases := []struct {
 		name                     string
 		fixRevertGasRefundHeight int64
-		txResult                 *haqqtypes.TxResult
+		txResult                 *neuratypes.TxResult
 		price                    *big.Int
 		gas                      uint64
 		exp                      uint64
@@ -627,7 +627,7 @@ func (suite *BackendTestSuite) TestGetGasUsed() {
 		{
 			"success txResult",
 			1,
-			&haqqtypes.TxResult{
+			&neuratypes.TxResult{
 				Height:  1,
 				Failed:  false,
 				GasUsed: 53026,
@@ -639,7 +639,7 @@ func (suite *BackendTestSuite) TestGetGasUsed() {
 		{
 			"fail txResult before cap",
 			2,
-			&haqqtypes.TxResult{
+			&neuratypes.TxResult{
 				Height:  1,
 				Failed:  true,
 				GasUsed: 53026,
@@ -651,7 +651,7 @@ func (suite *BackendTestSuite) TestGetGasUsed() {
 		{
 			"fail txResult after cap",
 			2,
-			&haqqtypes.TxResult{
+			&neuratypes.TxResult{
 				Height:  3,
 				Failed:  true,
 				GasUsed: 53026,

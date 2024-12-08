@@ -1,9 +1,9 @@
 syntax = "proto3";
-package haqq.liquidvesting.v1;
+package neura.liquidvesting.v1;
 
 import "gogoproto/gogo.proto";
 import "amino/amino.proto";
-import "haqq/liquidvesting/v1/liquidvesting.proto";
+import "neura/liquidvesting/v1/liquidvesting.proto";
 
 option go_package = "github.com/avenbreaks/neurastone/x/liquidvesting/types";
 

@@ -7,9 +7,9 @@ title: "liquidvesting"
 
 ## Abstract
 
-This document specifies the internal `x/liquidvesting` module of the Haqq Network.
+This document specifies the internal `x/liquidvesting` module of the neura Network.
 
-With the `x/liquidvesting` users on Haqq Network can make their ISLM locked in vesting liquid.
+With the `x/liquidvesting` users on neura Network can make their ISLM locked in vesting liquid.
 
 ## Contents
 

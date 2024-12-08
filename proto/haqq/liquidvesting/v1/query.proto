@@ -1,11 +1,11 @@
 syntax = "proto3";
-package haqq.liquidvesting.v1;
+package neura.liquidvesting.v1;
 
 import "amino/amino.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "haqq/liquidvesting/v1/liquidvesting.proto";
+import "neura/liquidvesting/v1/liquidvesting.proto";
 
 option go_package = "github.com/avenbreaks/neurastone/x/liquidvesting/types";
 
@@ -13,11 +13,11 @@ option go_package = "github.com/avenbreaks/neurastone/x/liquidvesting/types";
 service Query {
   // Denom queries liquid vesting token info by denom
   rpc Denom(QueryDenomRequest) returns (QueryDenomResponse) {
-    option (google.api.http).get = "/haqq/liquidvesting/v1/denom";
+    option (google.api.http).get = "/neura/liquidvesting/v1/denom";
   };
   // Denoms queries liquid vesting tokens info
   rpc Denoms(QueryDenomsRequest) returns (QueryDenomsResponse) {
-    option (google.api.http).get = "/haqq/liquidvesting/v1/denoms";
+    option (google.api.http).get = "/neura/liquidvesting/v1/denoms";
   };
 }
 

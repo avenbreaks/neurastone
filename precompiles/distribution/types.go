@@ -74,7 +74,7 @@ func NewMsgSetWithdrawAddress(args []interface{}) (*distributiontypes.MsgSetWith
 	// If the withdrawer address is a hex address, convert it to a bech32 address.
 	if common.IsHexAddress(withdrawerAddress) {
 		var err error
-		withdrawerAddress, err = sdk.Bech32ifyAddressBytes("haqq", common.HexToAddress(withdrawerAddress).Bytes())
+		withdrawerAddress, err = sdk.Bech32ifyAddressBytes("neura", common.HexToAddress(withdrawerAddress).Bytes())
 		if err != nil {
 			return nil, common.Address{}, err
 		}

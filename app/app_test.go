@@ -44,7 +44,7 @@ func TestExport(t *testing.T) {
 
 	db := dbm.NewMemDB()
 	chainID := utils.MainNetChainID + "-1"
-	app := NewHaqq(
+	app := Newneura(
 		log.NewTMLogger(log.NewSyncWriter(os.Stdout)),
 		db, nil, true, map[int64]bool{},
 		DefaultNodeHome, 0,
@@ -69,7 +69,7 @@ func TestExport(t *testing.T) {
 	app.Commit()
 
 	// Making a new app object with the db, so that initchain hasn't been called
-	app2 := NewHaqq(
+	app2 := Newneura(
 		log.NewTMLogger(log.NewSyncWriter(os.Stdout)),
 		db, nil, true, map[int64]bool{},
 		DefaultNodeHome, 0,

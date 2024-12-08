@@ -319,7 +319,7 @@ var _ = Describe("United Contributors DAO", func() {
 			It("should fail - invalid owner address", func() {
 				// TX Process
 				transferOwnershipMsg = &types.MsgTransferOwnership{
-					Owner:    "haqq1",
+					Owner:    "neura1",
 					NewOwner: newOwnerAddr.String(),
 				}
 
@@ -333,7 +333,7 @@ var _ = Describe("United Contributors DAO", func() {
 				// TX Process
 				transferOwnershipMsg = &types.MsgTransferOwnership{
 					Owner:    s.address.String(),
-					NewOwner: "haqq1",
+					NewOwner: "neura1",
 				}
 
 				_, err = testutil.DeliverTx(s.ctx, s.app, s.priv, &gasPrice, signMode, transferOwnershipMsg)

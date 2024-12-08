@@ -38,17 +38,17 @@ func TestLoadUpgradeParams(t *testing.T) {
 			vars: envVars{
 				initialVersion: "v0.1.0",
 				targetVersion:  "v0.2.0",
-				chainID:        "haqq_11123-1",
+				chainID:        "neura_11123-1",
 				skipCleanup:    "true",
-				mountPath:      "/tmp/haqq",
+				mountPath:      "/tmp/neura",
 			},
 			want: Params{
-				MountPath: "/tmp/haqq",
+				MountPath: "/tmp/neura",
 				Versions: []VersionConfig{
-					{"v0.1.0", "v0.1.0", haqqRepo},
-					{"v0.2.0", "v0.2.0", haqqRepo},
+					{"v0.1.0", "v0.1.0", neuraRepo},
+					{"v0.2.0", "v0.2.0", neuraRepo},
 				},
-				ChainID:     "haqq_11123-1",
+				ChainID:     "neura_11123-1",
 				WorkDirRoot: wd,
 			},
 			expPass: true,
@@ -61,9 +61,9 @@ func TestLoadUpgradeParams(t *testing.T) {
 			want: Params{
 				MountPath: defaultMountPath,
 				Versions: []VersionConfig{
-					{"v0.1.0", "v0.1.0", haqqRepo},
-					{"v0.2.0", "v0.2.0", haqqRepo},
-					{latestVersionName, LocalVersionTag, haqqRepo},
+					{"v0.1.0", "v0.1.0", neuraRepo},
+					{"v0.2.0", "v0.2.0", neuraRepo},
+					{latestVersionName, LocalVersionTag, neuraRepo},
 				},
 				ChainID:     defaultChainID,
 				WorkDirRoot: wd,
@@ -79,8 +79,8 @@ func TestLoadUpgradeParams(t *testing.T) {
 			want: Params{
 				MountPath: defaultMountPath,
 				Versions: []VersionConfig{
-					{"v0.1.0", "v0.1.0", haqqRepo},
-					{"v0.2.0", "v0.2.0", haqqRepo},
+					{"v0.1.0", "v0.1.0", neuraRepo},
+					{"v0.2.0", "v0.2.0", neuraRepo},
 				},
 				ChainID:     defaultChainID,
 				WorkDirRoot: wd,
@@ -96,8 +96,8 @@ func TestLoadUpgradeParams(t *testing.T) {
 			want: Params{
 				MountPath: defaultMountPath,
 				Versions: []VersionConfig{
-					{"v0.1.0-rc1", "v0.1.0-rc1", haqqRepo},
-					{"v0.2.0-rc2", "v0.2.0-rc2", haqqRepo},
+					{"v0.1.0-rc1", "v0.1.0-rc1", neuraRepo},
+					{"v0.2.0-rc2", "v0.2.0-rc2", neuraRepo},
 				},
 				ChainID:     defaultChainID,
 				WorkDirRoot: wd,
@@ -110,8 +110,8 @@ func TestLoadUpgradeParams(t *testing.T) {
 			want: Params{
 				MountPath: defaultMountPath,
 				Versions: []VersionConfig{
-					{defaultInitialVersion, defaultInitialVersion, haqqRepo},
-					{latestVersionName, LocalVersionTag, haqqRepo},
+					{defaultInitialVersion, defaultInitialVersion, neuraRepo},
+					{latestVersionName, LocalVersionTag, neuraRepo},
 				},
 				ChainID:     defaultChainID,
 				WorkDirRoot: wd,

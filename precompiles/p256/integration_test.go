@@ -14,11 +14,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/avenbreaks/neurastone/precompiles/p256"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/factory"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/grpc"
-	testkeyring "github.com/avenbreaks/neurastone/testutil/integration/haqq/keyring"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/utils"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/factory"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/grpc"
+	testkeyring "github.com/avenbreaks/neurastone/testutil/integration/neura/keyring"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/utils"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )
 

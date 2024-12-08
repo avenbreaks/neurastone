@@ -63,12 +63,12 @@ func init() {
 	config.SetBip44CoinType(cfg)
 }
 
-// Setup initializes a new Haqq. A Nop logger is set in Haqq.
+// Setup initializes a new neura. A Nop logger is set in neura.
 func Setup(
 	isCheckTx bool,
 	feemarketGenesis *feemarkettypes.GenesisState,
 	chainID string,
-) (*Haqq, []byte) {
+) (*neura, []byte) {
 	privVal := mock.NewPV()
 	pubKey, _ := privVal.GetPubKey()
 
@@ -90,7 +90,7 @@ func Setup(
 	}
 
 	db := dbm.NewMemDB()
-	app := NewHaqq(
+	app := Newneura(
 		log.NewNopLogger(),
 		db, nil, true, map[int64]bool{},
 		DefaultNodeHome, 5,
@@ -131,7 +131,7 @@ func Setup(
 	return app, pubKey.Bytes()
 }
 
-func GenesisStateWithValSet(app *Haqq, genesisState types.GenesisState,
+func GenesisStateWithValSet(app *neura, genesisState types.GenesisState,
 	valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount,
 	balances ...banktypes.Balance,
 ) types.GenesisState {
@@ -201,7 +201,7 @@ func SetupTestingApp(chainID string) func() (ibctesting.TestingApp, map[string]j
 	return func() (ibctesting.TestingApp, map[string]json.RawMessage) {
 		db := dbm.NewMemDB()
 		cfg := encoding.MakeConfig(ModuleBasics)
-		app := NewHaqq(
+		app := Newneura(
 			log.NewNopLogger(),
 			db, nil, true,
 			map[int64]bool{},

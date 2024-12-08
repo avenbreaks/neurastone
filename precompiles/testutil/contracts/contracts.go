@@ -9,15 +9,15 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	haqqapp "github.com/avenbreaks/neurastone/app"
+	neuraapp "github.com/avenbreaks/neurastone/app"
 	"github.com/avenbreaks/neurastone/crypto/ethsecp256k1"
 	"github.com/avenbreaks/neurastone/precompiles/testutil"
-	haqqtestutil "github.com/avenbreaks/neurastone/testutil"
+	neuratestutil "github.com/avenbreaks/neurastone/testutil"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )
 
 // Call is a helper function to call any arbitrary smart contract.
-func Call(ctx sdk.Context, app *haqqapp.Haqq, args CallArgs) (res abci.ResponseDeliverTx, ethRes *evmtypes.MsgEthereumTxResponse, err error) {
+func Call(ctx sdk.Context, app *neuraapp.neura, args CallArgs) (res abci.ResponseDeliverTx, ethRes *evmtypes.MsgEthereumTxResponse, err error) {
 	var (
 		nonce    uint64
 		gasLimit = args.GasLimit
@@ -80,7 +80,7 @@ func Call(ctx sdk.Context, app *haqqapp.Haqq, args CallArgs) (res abci.ResponseD
 	})
 	msg.From = addr.Hex()
 
-	res, err = haqqtestutil.DeliverEthTx(app, args.PrivKey, msg)
+	res, err = neuratestutil.DeliverEthTx(app, args.PrivKey, msg)
 	if err != nil {
 		return abci.ResponseDeliverTx{}, nil, fmt.Errorf("error during deliver tx: %s", err)
 	}
@@ -98,7 +98,7 @@ func Call(ctx sdk.Context, app *haqqapp.Haqq, args CallArgs) (res abci.ResponseD
 
 // CallContractAndCheckLogs is a helper function to call any arbitrary smart contract and check that the logs
 // contain the expected events.
-func CallContractAndCheckLogs(ctx sdk.Context, app *haqqapp.Haqq, cArgs CallArgs, logCheckArgs testutil.LogCheckArgs) (abci.ResponseDeliverTx, *evmtypes.MsgEthereumTxResponse, error) {
+func CallContractAndCheckLogs(ctx sdk.Context, app *neuraapp.neura, cArgs CallArgs, logCheckArgs testutil.LogCheckArgs) (abci.ResponseDeliverTx, *evmtypes.MsgEthereumTxResponse, error) {
 	res, ethRes, err := Call(ctx, app, cArgs)
 	if err != nil {
 		return abci.ResponseDeliverTx{}, nil, err

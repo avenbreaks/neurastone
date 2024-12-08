@@ -1,18 +1,18 @@
 { pkgs, lib, config, ... }:
 let
-  cfg = config.services.haqqd-supervised;
+  cfg = config.services.neurad-supervised;
 
   defaultCfg = pkgs.callPackage ./default-config.nix {
-    haqqdPackage = cfg.initialPackage;
+    neuradPackage = cfg.initialPackage;
   };
 
-  haqqdUserName = "haqqd";
-  haqqdGroupName = haqqdUserName;
+  neuradUserName = "neurad";
+  neuradGroupName = neuradUserName;
 
   defaultCfgConfigToml = lib.recursiveUpdate (lib.importTOML "${defaultCfg}/config.toml") {
     instrumentation.prometheus = true;
-    chain-id = "haqq_11235-1";
-    p2p.seeds = "c45991e0098b9cacb8603caf4e1cdb7e6e5f87c0@eu.seed.haqq.network:26656,e37cb47590ba46b503269ef255873e9698244d8b@us.seed.haqq.network:26656,c593e93e1fb8be8b48d4e7bab514a227aa620bf8@as.seed.haqq.network:26656";
+    chain-id = "neura_11235-1";
+    p2p.seeds = "c45991e0098b9cacb8603caf4e1cdb7e6e5f87c0@eu.seed.neura.network:26656,e37cb47590ba46b503269ef255873e9698244d8b@us.seed.neura.network:26656,c593e93e1fb8be8b48d4e7bab514a227aa620bf8@as.seed.neura.network:26656";
   };
   defaultCfgAppToml = lib.recursiveUpdate (lib.importTOML "${defaultCfg}/app.toml")
     {
@@ -27,7 +27,7 @@ in
     # ./nginx.nix
   ];
 
-  options.services.haqqd-supervised =
+  options.services.neurad-supervised =
     {
       enable = lib.mkOption {
         type = lib.types.bool;
@@ -41,7 +41,7 @@ in
 
       initialPackage = lib.mkOption {
         type = lib.types.package;
-        default = pkgs.haqq;
+        default = pkgs.neura;
       };
 
       config = lib.mkOption {
@@ -51,7 +51,7 @@ in
 
       userHome = lib.mkOption {
         type = lib.types.str;
-        default = "/var/lib/haqqd";
+        default = "/var/lib/neurad";
       };
 
       app = lib.mkOption
@@ -73,7 +73,7 @@ in
 
         instance = lib.mkOption {
           type = lib.types.str;
-          default = "haqqd";
+          default = "neurad";
         };
 
         metricsUrl = lib.mkOption {
@@ -94,25 +94,25 @@ in
     # to support launching of binaries downloaded by cosmovisor from github releases
     programs.nix-ld.enable = true;
 
-    users.users.${haqqdUserName} =
+    users.users.${neuradUserName} =
       {
         isSystemUser = true;
         home = cfg.userHome;
         createHome = true;
-        group = haqqdGroupName;
+        group = neuradGroupName;
       };
 
-    users.groups.${haqqdGroupName} =
+    users.groups.${neuradGroupName} =
       { };
 
 
     systemd.services =
       {
-        haqqd-bootstrap = {
+        neurad-bootstrap = {
           serviceConfig =
             let
-              haqqd-init = pkgs.writeShellApplication {
-                name = "haqqd-bootstrap";
+              neurad-init = pkgs.writeShellApplication {
+                name = "neurad-bootstrap";
                 runtimeInputs = with pkgs; [
                   cfg.initialPackage
                   curl
@@ -123,14 +123,14 @@ in
                   dig.dnsutils
                 ];
 
-                text = builtins.readFile ./haqqd-bootstrap.sh;
+                text = builtins.readFile ./neurad-bootstrap.sh;
               };
             in
             {
-              User = haqqdUserName;
+              User = neuradUserName;
               Type = "oneshot";
               ExecStart = ''
-                ${haqqd-init}/bin/haqqd-bootstrap
+                ${neurad-init}/bin/neurad-bootstrap
               '';
               LimitNOFILE = "infinity";
             };
@@ -139,14 +139,14 @@ in
             NIX_LD = config.environment.variables.NIX_LD;
           };
 
-          before = [ "haqqd.service" ];
+          before = [ "neurad.service" ];
           after = [
             "network-online.target"
             "nss-lookup.target"
           ];
         };
 
-        haqqd =
+        neurad =
           {
             serviceConfig =
               let
@@ -154,17 +154,17 @@ in
                 tomlConfig = format.generate "config.toml" (lib.attrsets.recursiveUpdate defaultCfgConfigToml cfg.config);
                 appConfig = format.generate "app.toml" (lib.attrsets.recursiveUpdate defaultCfgAppToml cfg.app);
                 start = pkgs.writeShellApplication {
-                  name = "haqqd-start";
+                  name = "neurad-start";
                   text = ''
-                    ln -snf ${tomlConfig} .haqqd/config/config.toml
-                    ln -snf ${appConfig} .haqqd/config/app.toml
+                    ln -snf ${tomlConfig} .neurad/config/config.toml
+                    ln -snf ${appConfig} .neurad/config/app.toml
                     ${pkgs.cosmovisor}/bin/cosmovisor run start
                   '';
                 };
               in
               {
-                User = haqqdUserName;
-                ExecStart = ''${start}/bin/haqqd-start'';
+                User = neuradUserName;
+                ExecStart = ''${start}/bin/neurad-start'';
                 WorkingDirectory = cfg.userHome;
                 Restart = "on-failure";
                 RestartSec = 30;
@@ -172,8 +172,8 @@ in
               };
 
             environment = {
-              DAEMON_HOME = "${cfg.userHome}/.haqqd";
-              DAEMON_NAME = "haqqd";
+              DAEMON_HOME = "${cfg.userHome}/.neurad";
+              DAEMON_NAME = "neurad";
               DAEMON_ALLOW_DOWNLOAD_BINARIES = "true";
               UNSAFE_SKIP_BACKUP = "false";
 
@@ -181,7 +181,7 @@ in
             };
 
             wantedBy = [ "multi-user.target" ];
-            requires = [ "haqqd-bootstrap.service" ];
+            requires = [ "neurad-bootstrap.service" ];
           };
       };
   };

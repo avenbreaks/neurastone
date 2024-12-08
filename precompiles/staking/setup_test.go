@@ -17,7 +17,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	haqqapp "github.com/avenbreaks/neurastone/app"
+	neuraapp "github.com/avenbreaks/neurastone/app"
 	"github.com/avenbreaks/neurastone/precompiles/staking"
 	"github.com/avenbreaks/neurastone/x/evm/statedb"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
@@ -29,7 +29,7 @@ type PrecompileTestSuite struct {
 	suite.Suite
 
 	ctx        sdk.Context
-	app        *haqqapp.Haqq
+	app        *neuraapp.neura
 	address    common.Address
 	validators []stakingtypes.Validator
 	ethSigner  ethtypes.Signer

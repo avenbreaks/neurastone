@@ -13,7 +13,7 @@ import (
 
 	enccodec "github.com/avenbreaks/neurastone/encoding/codec"
 	"github.com/avenbreaks/neurastone/testutil/tx"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )
 
@@ -26,7 +26,7 @@ func buildMsgEthereumTx(txArgs evmtypes.EvmTxArgs, fromAddr common.Address) evmt
 
 // signMsgEthereumTx signs a MsgEthereumTx with the provided private key and chainID.
 func signMsgEthereumTx(msgEthereumTx evmtypes.MsgEthereumTx, privKey cryptotypes.PrivKey, chainID string) (evmtypes.MsgEthereumTx, error) {
-	ethChainID, err := haqqtypes.ParseChainID(chainID)
+	ethChainID, err := neuratypes.ParseChainID(chainID)
 	if err != nil {
 		return evmtypes.MsgEthereumTx{}, errorsmod.Wrapf(err, "failed to parse chainID: %v", chainID)
 	}

@@ -90,7 +90,7 @@ func NewTransferOwnershipCmd() *cobra.Command {
 			fmt.Sprintf(`Transfer all DAO shares from one address to another
 
 Example:
-$ %s tx %s transfer-ownership haqq1tjdjfavsy956d25hvhs3p0nw9a7pfghqm0up92 haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq --from mykey
+$ %s tx %s transfer-ownership neura1tjdjfavsy956d25hvhs3p0nw9a7pfghqm0up92 neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),

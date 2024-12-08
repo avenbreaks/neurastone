@@ -21,7 +21,7 @@ import (
 
 	rpctypes "github.com/avenbreaks/neurastone/rpc/types"
 	"github.com/avenbreaks/neurastone/server/config"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )
 
@@ -102,8 +102,8 @@ type EVMBackend interface {
 
 	// Tx Info
 	GetTransactionByHash(txHash common.Hash) (*rpctypes.RPCTransaction, error)
-	GetTxByEthHash(txHash common.Hash) (*haqqtypes.TxResult, error)
-	GetTxByTxIndex(height int64, txIndex uint) (*haqqtypes.TxResult, error)
+	GetTxByEthHash(txHash common.Hash) (*neuratypes.TxResult, error)
+	GetTxByTxIndex(height int64, txIndex uint) (*neuratypes.TxResult, error)
 	GetTransactionByBlockAndIndex(block *tmrpctypes.ResultBlock, idx hexutil.Uint) (*rpctypes.RPCTransaction, error)
 	GetTransactionReceipt(hash common.Hash) (map[string]interface{}, error)
 	GetTransactionByBlockHashAndIndex(hash common.Hash, idx hexutil.Uint) (*rpctypes.RPCTransaction, error)
@@ -138,7 +138,7 @@ type Backend struct {
 	chainID             *big.Int
 	cfg                 config.Config
 	allowUnprotectedTxs bool
-	indexer             haqqtypes.EVMTxIndexer
+	indexer             neuratypes.EVMTxIndexer
 }
 
 // NewBackend creates a new Backend instance for cosmos and ethereum namespaces
@@ -147,9 +147,9 @@ func NewBackend(
 	logger log.Logger,
 	clientCtx client.Context,
 	allowUnprotectedTxs bool,
-	indexer haqqtypes.EVMTxIndexer,
+	indexer neuratypes.EVMTxIndexer,
 ) *Backend {
-	chainID, err := haqqtypes.ParseChainID(clientCtx.ChainID)
+	chainID, err := neuratypes.ParseChainID(clientCtx.ChainID)
 	if err != nil {
 		panic(err)
 	}

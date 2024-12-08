@@ -30,7 +30,7 @@ type AnteTestSuite struct {
 
 	ctx       sdk.Context
 	clientCtx client.Context
-	app       *app.Haqq
+	app       *app.neura
 	denom     string
 }
 

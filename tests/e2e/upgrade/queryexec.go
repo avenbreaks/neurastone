@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// CreateModuleQueryExec creates a Haqq module query
+// CreateModuleQueryExec creates a neura module query
 func (m *Manager) CreateModuleQueryExec(moduleName, subCommand, chainID string) (string, error) {
 	cmd := []string{
 		"neurd",

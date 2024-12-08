@@ -30,14 +30,14 @@ RUN apk add --no-cache \
     tini \
     gcompat
     
-RUN addgroup -g 1000 haqq \
-    && adduser -S -h /home/haqq -D haqq -u 1000 -G haqq
+RUN addgroup -g 1000 neura \
+    && adduser -S -h /home/neura -D neura -u 1000 -G neura
 
 USER 1000
-WORKDIR /home/haqq
+WORKDIR /home/neura
 
 ENV DAEMON_NAME=neurd
-ENV DAEMON_HOME=/home/haqq/.neurd
+ENV DAEMON_HOME=/home/neura/.neurd
 ENV DAEMON_ALLOW_DOWNLOAD_BINARIES=true
 ENV DAEMON_RESTART_AFTER_UPGRADE=true
 ENV UNSAFE_SKIP_BACKUP=false

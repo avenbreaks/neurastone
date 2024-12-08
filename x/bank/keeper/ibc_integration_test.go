@@ -11,7 +11,7 @@ import (
 	"github.com/avenbreaks/neurastone/app"
 	ibctesting "github.com/avenbreaks/neurastone/ibc/testing"
 	teststypes "github.com/avenbreaks/neurastone/types/tests"
-	haqqbankkeeper "github.com/avenbreaks/neurastone/x/bank/keeper"
+	neurabankkeeper "github.com/avenbreaks/neurastone/x/bank/keeper"
 	"github.com/avenbreaks/neurastone/x/erc20/types"
 )
 
@@ -19,7 +19,7 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 	var (
 		erc20Symbol      = "CTKN"
 		sender, receiver string
-		haqqDenom        string
+		neuraDenom        string
 		receiverAcc      sdk.AccAddress
 		senderAcc        sdk.AccAddress
 		amount           int64 = 10
@@ -51,36 +51,36 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 	Describe("registered coin", func() {
 		BeforeEach(func() {
 			receiver = s.IBCOsmosisChain.SenderAccount.GetAddress().String()
-			sender = s.HaqqChain.SenderAccount.GetAddress().String()
-			receiverAcc = sdk.MustAccAddressFromBech32("haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq")
+			sender = s.neuraChain.SenderAccount.GetAddress().String()
+			receiverAcc = sdk.MustAccAddressFromBech32("neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq")
 			senderAcc = sdk.MustAccAddressFromBech32(sender)
-			haqqDenom = s.HaqqChain.App.(*app.Haqq).StakingKeeper.BondDenom(s.HaqqChain.GetContext())
+			neuraDenom = s.neuraChain.App.(*app.neura).StakingKeeper.BondDenom(s.neuraChain.GetContext())
 
 			erc20params := types.DefaultParams()
 			erc20params.EnableErc20 = false
-			err := s.app.Erc20Keeper.SetParams(s.HaqqChain.GetContext(), erc20params)
+			err := s.app.Erc20Keeper.SetParams(s.neuraChain.GetContext(), erc20params)
 			s.Require().NoError(err)
 
-			// Send from osmosis to Haqq
-			s.SendAndReceiveMessage(s.pathOsmosisHaqq, s.IBCOsmosisChain, "uosmo", amount, receiver, sender, 1, "")
-			s.HaqqChain.Coordinator.CommitBlock(s.HaqqChain)
+			// Send from osmosis to neura
+			s.SendAndReceiveMessage(s.pathOsmosisneura, s.IBCOsmosisChain, "uosmo", amount, receiver, sender, 1, "")
+			s.neuraChain.Coordinator.CommitBlock(s.neuraChain)
 			erc20params.EnableErc20 = true
-			err = s.app.Erc20Keeper.SetParams(s.HaqqChain.GetContext(), erc20params)
+			err = s.app.Erc20Keeper.SetParams(s.neuraChain.GetContext(), erc20params)
 			s.Require().NoError(err)
 
 			// Register uosmo pair
-			pair, err = s.app.Erc20Keeper.RegisterCoin(s.HaqqChain.GetContext(), osmoMeta)
+			pair, err = s.app.Erc20Keeper.RegisterCoin(s.neuraChain.GetContext(), osmoMeta)
 			s.Require().NoError(err)
 
-			bankQueryHelper := baseapp.NewQueryServerTestHelper(s.HaqqChain.GetContext(), s.app.InterfaceRegistry())
-			wrappedBankKeeper := haqqbankkeeper.NewWrappedBaseKeeper(s.app.BankKeeper, s.app.Erc20Keeper, s.app.AccountKeeper)
+			bankQueryHelper := baseapp.NewQueryServerTestHelper(s.neuraChain.GetContext(), s.app.InterfaceRegistry())
+			wrappedBankKeeper := neurabankkeeper.NewWrappedBaseKeeper(s.app.BankKeeper, s.app.Erc20Keeper, s.app.AccountKeeper)
 			banktypes.RegisterQueryServer(bankQueryHelper, wrappedBankKeeper)
 			bankQueryClient = banktypes.NewQueryClient(bankQueryHelper)
 		})
 
 		Describe("Get Balance of a given denom", func() {
 			It("internal - should change after conversion", func() {
-				uosmoInternalBalanceBeforeConversion := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+				uosmoInternalBalanceBeforeConversion := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 				s.Require().Equal(amount, uosmoInternalBalanceBeforeConversion.Amount.Int64())
 
 				// Convert ibc vouchers to erc20 tokens
@@ -93,19 +93,19 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				err := msgConvertCoin.ValidateBasic()
 				s.Require().NoError(err)
 
-				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.HaqqChain.GetContext()), msgConvertCoin)
+				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.neuraChain.GetContext()), msgConvertCoin)
 				s.Require().NoError(err)
 
-				s.HaqqChain.Coordinator.CommitBlock()
+				s.neuraChain.Coordinator.CommitBlock()
 
 				// Check balance after conversion
-				uosmoInternalBalanceAfterConversion := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+				uosmoInternalBalanceAfterConversion := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 				s.Require().Equal(amount, uosmoInternalBalanceBeforeConversion.Amount.Int64())
 				// should be less than before conversion for the amount converted
 				s.Require().Equal(uosmoInternalBalanceBeforeConversion.Amount.Int64()-amount, uosmoInternalBalanceAfterConversion.Amount.Int64())
 			})
 			It("grpc - should be the same after conversion", func() {
-				uosmoGrpcBalanceBeforeConversion, err := bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+				uosmoGrpcBalanceBeforeConversion, err := bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 					Address: sender,
 					Denom:   teststypes.UosmoIbcdenom,
 				})
@@ -122,13 +122,13 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				err = msgConvertCoin.ValidateBasic()
 				s.Require().NoError(err)
 
-				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.HaqqChain.GetContext()), msgConvertCoin)
+				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.neuraChain.GetContext()), msgConvertCoin)
 				s.Require().NoError(err)
 
-				s.HaqqChain.Coordinator.CommitBlock()
+				s.neuraChain.Coordinator.CommitBlock()
 
 				// Check balance after conversion
-				uosmoGrpcBalanceAfterConversion, err := bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+				uosmoGrpcBalanceAfterConversion, err := bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 					Address: sender,
 					Denom:   teststypes.UosmoIbcdenom,
 				})
@@ -136,7 +136,7 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				s.Require().Equal(uosmoGrpcBalanceBeforeConversion.Balance.Amount.Int64(), uosmoGrpcBalanceAfterConversion.Balance.Amount.Int64())
 			})
 			It("grpc - should behave like internal if ERC20 is disabled", func() {
-				uosmoGrpcBalanceBeforeConversion, err := bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+				uosmoGrpcBalanceBeforeConversion, err := bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 					Address: sender,
 					Denom:   teststypes.UosmoIbcdenom,
 				})
@@ -153,18 +153,18 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				err = msgConvertCoin.ValidateBasic()
 				s.Require().NoError(err)
 
-				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.HaqqChain.GetContext()), msgConvertCoin)
+				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.neuraChain.GetContext()), msgConvertCoin)
 				s.Require().NoError(err)
 
-				s.HaqqChain.Coordinator.CommitBlock()
+				s.neuraChain.Coordinator.CommitBlock()
 
 				erc20params := types.DefaultParams()
 				erc20params.EnableErc20 = false
-				err = s.app.Erc20Keeper.SetParams(s.HaqqChain.GetContext(), erc20params)
+				err = s.app.Erc20Keeper.SetParams(s.neuraChain.GetContext(), erc20params)
 				s.Require().NoError(err)
 
 				// Check balance after conversion
-				uosmoGrpcBalanceAfterConversion, err := bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+				uosmoGrpcBalanceAfterConversion, err := bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 					Address: sender,
 					Denom:   teststypes.UosmoIbcdenom,
 				})
@@ -176,7 +176,7 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 
 		Describe("Get All Balances", func() {
 			It("internal - should change after conversion", func() {
-				internalAllBalancesBeforeConversion := s.app.BankKeeper.GetAllBalances(s.HaqqChain.GetContext(), senderAcc)
+				internalAllBalancesBeforeConversion := s.app.BankKeeper.GetAllBalances(s.neuraChain.GetContext(), senderAcc)
 				// Should contain 2 denoms
 				s.Require().Equal(2, len(internalAllBalancesBeforeConversion))
 				found, uosmoBefore := internalAllBalancesBeforeConversion.Find(teststypes.UosmoIbcdenom)
@@ -193,20 +193,20 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				err := msgConvertCoin.ValidateBasic()
 				s.Require().NoError(err)
 
-				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.HaqqChain.GetContext()), msgConvertCoin)
+				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.neuraChain.GetContext()), msgConvertCoin)
 				s.Require().NoError(err)
 
-				s.HaqqChain.Coordinator.CommitBlock()
+				s.neuraChain.Coordinator.CommitBlock()
 
 				// Check balance after conversion
-				internalAllBalancesAfterConversion := s.app.BankKeeper.GetAllBalances(s.HaqqChain.GetContext(), senderAcc)
+				internalAllBalancesAfterConversion := s.app.BankKeeper.GetAllBalances(s.neuraChain.GetContext(), senderAcc)
 				// Should contain 1 denom
 				s.Require().Equal(1, len(internalAllBalancesAfterConversion))
 				found, _ = internalAllBalancesAfterConversion.Find(teststypes.UosmoIbcdenom)
 				s.Require().False(found)
 			})
 			It("grpc - should be the same after conversion", func() {
-				grpcAllBalancesBeforeConversion, err := bankQueryClient.AllBalances(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryAllBalancesRequest{
+				grpcAllBalancesBeforeConversion, err := bankQueryClient.AllBalances(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryAllBalancesRequest{
 					Address: sender,
 				})
 				s.Require().NoError(err)
@@ -225,13 +225,13 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				err = msgConvertCoin.ValidateBasic()
 				s.Require().NoError(err)
 
-				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.HaqqChain.GetContext()), msgConvertCoin)
+				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.neuraChain.GetContext()), msgConvertCoin)
 				s.Require().NoError(err)
 
-				s.HaqqChain.Coordinator.CommitBlock()
+				s.neuraChain.Coordinator.CommitBlock()
 
 				// Check balance after conversion
-				grpcAllBalancesAfterConversion, err := bankQueryClient.AllBalances(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryAllBalancesRequest{
+				grpcAllBalancesAfterConversion, err := bankQueryClient.AllBalances(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryAllBalancesRequest{
 					Address: sender,
 				})
 				s.Require().NoError(err)
@@ -241,7 +241,7 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				s.Require().Equal(uosmoBefore.Amount.Int64(), uosmoAfter.Amount.Int64())
 			})
 			It("grpc - should behave like internal if ERC20 is disabled", func() {
-				grpcAllBalancesBeforeConversion, err := bankQueryClient.AllBalances(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryAllBalancesRequest{
+				grpcAllBalancesBeforeConversion, err := bankQueryClient.AllBalances(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryAllBalancesRequest{
 					Address: sender,
 				})
 				s.Require().NoError(err)
@@ -260,18 +260,18 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				err = msgConvertCoin.ValidateBasic()
 				s.Require().NoError(err)
 
-				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.HaqqChain.GetContext()), msgConvertCoin)
+				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.neuraChain.GetContext()), msgConvertCoin)
 				s.Require().NoError(err)
 
-				s.HaqqChain.Coordinator.CommitBlock()
+				s.neuraChain.Coordinator.CommitBlock()
 
 				erc20params := types.DefaultParams()
 				erc20params.EnableErc20 = false
-				err = s.app.Erc20Keeper.SetParams(s.HaqqChain.GetContext(), erc20params)
+				err = s.app.Erc20Keeper.SetParams(s.neuraChain.GetContext(), erc20params)
 				s.Require().NoError(err)
 
 				// Check balance after conversion
-				grpcAllBalancesAfterConversion, err := bankQueryClient.AllBalances(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryAllBalancesRequest{
+				grpcAllBalancesAfterConversion, err := bankQueryClient.AllBalances(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryAllBalancesRequest{
 					Address: sender,
 				})
 				s.Require().NoError(err)
@@ -283,7 +283,7 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 
 		Describe("Get Spendable Balances", func() {
 			It("internal - should change after conversion", func() {
-				internalSpendableCoinsBeforeConversion := s.app.BankKeeper.SpendableCoins(s.HaqqChain.GetContext(), senderAcc)
+				internalSpendableCoinsBeforeConversion := s.app.BankKeeper.SpendableCoins(s.neuraChain.GetContext(), senderAcc)
 				// Should contain 2 denoms
 				s.Require().Equal(2, len(internalSpendableCoinsBeforeConversion))
 				found, uosmoBefore := internalSpendableCoinsBeforeConversion.Find(teststypes.UosmoIbcdenom)
@@ -300,20 +300,20 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				err := msgConvertCoin.ValidateBasic()
 				s.Require().NoError(err)
 
-				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.HaqqChain.GetContext()), msgConvertCoin)
+				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.neuraChain.GetContext()), msgConvertCoin)
 				s.Require().NoError(err)
 
-				s.HaqqChain.Coordinator.CommitBlock()
+				s.neuraChain.Coordinator.CommitBlock()
 
 				// Check balance after conversion
-				internalSpendableCoinsAfterConversion := s.app.BankKeeper.SpendableCoins(s.HaqqChain.GetContext(), senderAcc)
+				internalSpendableCoinsAfterConversion := s.app.BankKeeper.SpendableCoins(s.neuraChain.GetContext(), senderAcc)
 				// Should contain 1 denom
 				s.Require().Equal(1, len(internalSpendableCoinsAfterConversion))
 				found, _ = internalSpendableCoinsAfterConversion.Find(teststypes.UosmoIbcdenom)
 				s.Require().False(found)
 			})
 			It("grpc - should be the same after conversion", func() {
-				grpcSpendableBalancesBeforeConversion, err := bankQueryClient.SpendableBalances(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QuerySpendableBalancesRequest{
+				grpcSpendableBalancesBeforeConversion, err := bankQueryClient.SpendableBalances(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QuerySpendableBalancesRequest{
 					Address: sender,
 				})
 				s.Require().NoError(err)
@@ -332,13 +332,13 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				err = msgConvertCoin.ValidateBasic()
 				s.Require().NoError(err)
 
-				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.HaqqChain.GetContext()), msgConvertCoin)
+				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.neuraChain.GetContext()), msgConvertCoin)
 				s.Require().NoError(err)
 
-				s.HaqqChain.Coordinator.CommitBlock()
+				s.neuraChain.Coordinator.CommitBlock()
 
 				// Check balance after conversion
-				grpcSpendableBalancesAfterConversion, err := bankQueryClient.SpendableBalances(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QuerySpendableBalancesRequest{
+				grpcSpendableBalancesAfterConversion, err := bankQueryClient.SpendableBalances(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QuerySpendableBalancesRequest{
 					Address: sender,
 				})
 				s.Require().NoError(err)
@@ -348,7 +348,7 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				s.Require().Equal(uosmoBefore.Amount.Int64(), uosmoAfter.Amount.Int64())
 			})
 			It("grpc - should behave like internal if ERC20 is disabled", func() {
-				grpcSpendableBalancesBeforeConversion, err := bankQueryClient.SpendableBalances(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QuerySpendableBalancesRequest{
+				grpcSpendableBalancesBeforeConversion, err := bankQueryClient.SpendableBalances(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QuerySpendableBalancesRequest{
 					Address: sender,
 				})
 				s.Require().NoError(err)
@@ -367,18 +367,18 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				err = msgConvertCoin.ValidateBasic()
 				s.Require().NoError(err)
 
-				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.HaqqChain.GetContext()), msgConvertCoin)
+				_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.neuraChain.GetContext()), msgConvertCoin)
 				s.Require().NoError(err)
 
-				s.HaqqChain.Coordinator.CommitBlock()
+				s.neuraChain.Coordinator.CommitBlock()
 
 				erc20params := types.DefaultParams()
 				erc20params.EnableErc20 = false
-				err = s.app.Erc20Keeper.SetParams(s.HaqqChain.GetContext(), erc20params)
+				err = s.app.Erc20Keeper.SetParams(s.neuraChain.GetContext(), erc20params)
 				s.Require().NoError(err)
 
 				// Check balance after conversion
-				grpcSpendableBalancesAfterConversion, err := bankQueryClient.SpendableBalances(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QuerySpendableBalancesRequest{
+				grpcSpendableBalancesAfterConversion, err := bankQueryClient.SpendableBalances(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QuerySpendableBalancesRequest{
 					Address: sender,
 				})
 				s.Require().NoError(err)
@@ -392,21 +392,21 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 			BeforeEach(func() {
 				erc20params := types.DefaultParams()
 				erc20params.EnableErc20 = false
-				err := s.app.Erc20Keeper.SetParams(s.HaqqChain.GetContext(), erc20params)
+				err := s.app.Erc20Keeper.SetParams(s.neuraChain.GetContext(), erc20params)
 				s.Require().NoError(err)
 			})
 
 			It("should send unconverted coins on native layer", func() {
-				uosmoSenderBalanceBefore := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+				uosmoSenderBalanceBefore := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 				s.Require().Equal(amount, uosmoSenderBalanceBefore.Amount.Int64())
 
-				aislmSenderBalanceBefore := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+				aislmSenderBalanceBefore := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 				s.Require().False(aislmSenderBalanceBefore.IsZero())
 
-				uosmoReceiverBalanceBefore := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+				uosmoReceiverBalanceBefore := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 				s.Require().True(uosmoReceiverBalanceBefore.IsZero())
 
-				aislmReceiverBalanceBefore := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+				aislmReceiverBalanceBefore := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 				s.Require().True(aislmReceiverBalanceBefore.IsZero())
 
 				// Transfer Coins via DeliverTx
@@ -416,33 +416,33 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 
 				transferCoins := sdk.NewCoins(fiveUosmo, fiveIslm)
 				bankTransferMsg := banktypes.NewMsgSend(senderAcc, receiverAcc, transferCoins)
-				_, err = ibctesting.SendMsgs(s.HaqqChain, ibctesting.DefaultFeeAmt, bankTransferMsg)
+				_, err = ibctesting.SendMsgs(s.neuraChain, ibctesting.DefaultFeeAmt, bankTransferMsg)
 				s.Require().NoError(err) // message committed
 
-				uosmoSenderBalanceAfter := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+				uosmoSenderBalanceAfter := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 				s.Require().Equal(amount-fiveUosmo.Amount.Int64(), uosmoSenderBalanceAfter.Amount.Int64())
 
-				aislmSenderBalanceAfter := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+				aislmSenderBalanceAfter := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 				s.Require().True(aislmSenderBalanceBefore.Sub(fiveIslm).IsGTE(aislmSenderBalanceAfter))
 
-				uosmoReceiverBalanceAfter := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+				uosmoReceiverBalanceAfter := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 				s.Require().Equal(fiveUosmo.Amount.Int64(), uosmoReceiverBalanceAfter.Amount.Int64())
 
-				aislmReceiverBalanceAfter := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+				aislmReceiverBalanceAfter := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 				s.Require().True(aislmReceiverBalanceBefore.Add(fiveIslm).IsGTE(aislmReceiverBalanceAfter))
 				s.Require().True(aislmReceiverBalanceAfter.IsGTE(aislmReceiverBalanceBefore.Add(fiveIslm)))
 			})
 			It("should fail on sending of unconverted coins on native layer", func() {
-				uosmoSenderBalanceBefore := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+				uosmoSenderBalanceBefore := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 				s.Require().Equal(amount, uosmoSenderBalanceBefore.Amount.Int64())
 
-				aislmSenderBalanceBefore := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+				aislmSenderBalanceBefore := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 				s.Require().False(aislmSenderBalanceBefore.IsZero())
 
-				uosmoReceiverBalanceBefore := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+				uosmoReceiverBalanceBefore := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 				s.Require().True(uosmoReceiverBalanceBefore.IsZero())
 
-				aislmReceiverBalanceBefore := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+				aislmReceiverBalanceBefore := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 				s.Require().True(aislmReceiverBalanceBefore.IsZero())
 
 				// Transfer Coins via DeliverTx
@@ -453,34 +453,34 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 				transferCoins := sdk.NewCoins(fiveUosmo, fiveIslm)
 				bankTransferMsg := banktypes.NewMsgSend(senderAcc, receiverAcc, transferCoins)
 
-				s.HaqqChain.Coordinator.UpdateTimeForChain(s.HaqqChain)
-				fee := sdk.Coins{sdk.NewInt64Coin(haqqDenom, ibctesting.DefaultFeeAmt)}
+				s.neuraChain.Coordinator.UpdateTimeForChain(s.neuraChain)
+				fee := sdk.Coins{sdk.NewInt64Coin(neuraDenom, ibctesting.DefaultFeeAmt)}
 
 				_, _, err = ibctesting.SignAndDeliver(
-					s.HaqqChain.T,
-					s.HaqqChain.TxConfig,
-					s.HaqqChain.App.GetBaseApp(),
+					s.neuraChain.T,
+					s.neuraChain.TxConfig,
+					s.neuraChain.App.GetBaseApp(),
 					[]sdk.Msg{bankTransferMsg},
 					fee,
-					s.HaqqChain.ChainID,
-					[]uint64{s.HaqqChain.SenderAccount.GetAccountNumber()},
-					[]uint64{s.HaqqChain.SenderAccount.GetSequence()},
-					false, s.HaqqChain.SenderPrivKey,
+					s.neuraChain.ChainID,
+					[]uint64{s.neuraChain.SenderAccount.GetAccountNumber()},
+					[]uint64{s.neuraChain.SenderAccount.GetSequence()},
+					false, s.neuraChain.SenderPrivKey,
 				)
 				s.Require().Error(err)
 				// NextBlock calls app.Commit()
-				s.HaqqChain.NextBlock()
+				s.neuraChain.NextBlock()
 
-				uosmoSenderBalanceAfter := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+				uosmoSenderBalanceAfter := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 				s.Require().Equal(amount, uosmoSenderBalanceAfter.Amount.Int64())
 
-				aislmSenderBalanceAfter := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+				aislmSenderBalanceAfter := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 				s.Require().True(aislmSenderBalanceBefore.Sub(fiveIslm).IsLTE(aislmSenderBalanceAfter))
 
-				uosmoReceiverBalanceAfter := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+				uosmoReceiverBalanceAfter := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 				s.Require().True(uosmoReceiverBalanceAfter.IsZero())
 
-				aislmReceiverBalanceAfter := s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+				aislmReceiverBalanceAfter := s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 				s.Require().True(aislmReceiverBalanceBefore.IsGTE(aislmReceiverBalanceAfter))
 				s.Require().True(aislmReceiverBalanceAfter.IsGTE(aislmReceiverBalanceBefore))
 			})
@@ -490,7 +490,7 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 			BeforeEach(func() {
 				erc20params := types.DefaultParams()
 				erc20params.EnableErc20 = true
-				err := s.app.Erc20Keeper.SetParams(s.HaqqChain.GetContext(), erc20params)
+				err := s.app.Erc20Keeper.SetParams(s.neuraChain.GetContext(), erc20params)
 				s.Require().NoError(err)
 			})
 
@@ -518,38 +518,38 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 
 				Describe("All coins are on native layer", func() {
 					BeforeEach(func() {
-						uosmoSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+						uosmoSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 						s.Require().Equal(amount, uosmoSenderBalanceBefore.Amount.Int64())
-						aislmSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+						aislmSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 						s.Require().False(aislmSenderBalanceBefore.IsZero())
 
-						uosmoSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().Equal(amount, uosmoSenderGrpcBalanceBefore.Balance.Amount.Int64())
-						aislmSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().False(aislmSenderGrpcBalanceBefore.Balance.IsZero())
 
-						uosmoReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+						uosmoReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoReceiverBalanceBefore.IsZero())
-						aislmReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+						aislmReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 						s.Require().True(aislmReceiverBalanceBefore.IsZero())
 
-						uosmoReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(uosmoReceiverGrpcBalanceBefore.Balance.IsZero())
-						aislmReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmReceiverGrpcBalanceBefore.Balance.IsZero())
@@ -564,46 +564,46 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						fiveUosmo := sdk.NewCoin(teststypes.UosmoIbcdenom, sdk.NewInt(5))
 						transferCoins := sdk.NewCoins(fiveUosmo, fiveIslm)
 						bankTransferMsg := banktypes.NewMsgSend(senderAcc, receiverAcc, transferCoins)
-						_, err = ibctesting.SendMsgs(s.HaqqChain, ibctesting.DefaultFeeAmt, bankTransferMsg)
+						_, err = ibctesting.SendMsgs(s.neuraChain, ibctesting.DefaultFeeAmt, bankTransferMsg)
 						s.Require().NoError(err) // message committed
 
 						// Check the results
 
 						// Sender must have zero uosmo on SDK layer and 5 uosmo on EVM
-						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoSenderBalanceAfter.IsZero())
-						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().Equal(uosmoSenderGrpcBalanceBefore.Balance.Sub(fiveUosmo).Amount.Int64(), uosmoSenderGrpcBalanceAfter.Balance.Amount.Int64())
 						// Sender must have less aislm tokens than before on transfer amount and fee
-						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 						s.Require().True(aislmSenderBalanceBefore.Sub(fiveIslm).IsGTE(aislmSenderBalanceAfter))
-						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmSenderGrpcBalanceBefore.Balance.Sub(fiveIslm).IsGTE(*aislmSenderGrpcBalanceAfter.Balance))
 
 						// Receiver must have zero uosmo on SDK layer and 5 uosmo on EVM
-						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoReceiverBalanceAfter.IsZero())
-						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().Equal(uosmoReceiverGrpcBalanceBefore.Balance.Add(fiveUosmo).Amount.Int64(), uosmoReceiverGrpcBalanceAfter.Balance.Amount.Int64())
 						// Receiver must have 5 ISLM
-						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 						s.Require().True(aislmReceiverBalanceBefore.Add(fiveIslm).IsGTE(aislmReceiverBalanceAfter))
 						s.Require().True(aislmReceiverBalanceAfter.IsGTE(aislmReceiverBalanceBefore.Add(fiveIslm)))
-						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmReceiverGrpcBalanceBefore.Balance.Add(fiveIslm).IsGTE(*aislmReceiverGrpcBalanceAfter.Balance))
@@ -620,29 +620,29 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						transferCoins := sdk.NewCoins(fiveHundredUosmo, fiveIslm)
 						bankTransferMsg := banktypes.NewMsgSend(senderAcc, receiverAcc, transferCoins)
 
-						s.HaqqChain.Coordinator.UpdateTimeForChain(s.HaqqChain)
-						fee := sdk.NewInt64Coin(haqqDenom, ibctesting.DefaultFeeAmt)
+						s.neuraChain.Coordinator.UpdateTimeForChain(s.neuraChain)
+						fee := sdk.NewInt64Coin(neuraDenom, ibctesting.DefaultFeeAmt)
 						_, _, err = ibctesting.SignAndDeliver(
-							s.HaqqChain.T,
-							s.HaqqChain.TxConfig,
-							s.HaqqChain.App.GetBaseApp(),
+							s.neuraChain.T,
+							s.neuraChain.TxConfig,
+							s.neuraChain.App.GetBaseApp(),
 							[]sdk.Msg{bankTransferMsg},
 							sdk.Coins{fee},
-							s.HaqqChain.ChainID,
-							[]uint64{s.HaqqChain.SenderAccount.GetAccountNumber()},
-							[]uint64{s.HaqqChain.SenderAccount.GetSequence()},
-							false, s.HaqqChain.SenderPrivKey,
+							s.neuraChain.ChainID,
+							[]uint64{s.neuraChain.SenderAccount.GetAccountNumber()},
+							[]uint64{s.neuraChain.SenderAccount.GetSequence()},
+							false, s.neuraChain.SenderPrivKey,
 						)
 						s.Require().Error(err)
 						// NextBlock calls app.Commit()
-						s.HaqqChain.NextBlock()
+						s.neuraChain.NextBlock()
 
 						// Check the results
 
 						// Sender must have the same uosmo balance on both SDK and EVM layers as before
-						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 						s.Require().Equal(amount, uosmoSenderBalanceAfter.Amount.Int64())
-						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
@@ -650,31 +650,31 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						s.Require().True(uosmoSenderGrpcBalanceBefore.Balance.IsGTE(*uosmoSenderGrpcBalanceAfter.Balance))
 						s.Require().True(uosmoSenderGrpcBalanceAfter.Balance.IsGTE(*uosmoSenderGrpcBalanceBefore.Balance))
 						// Sender must have the same aislm balance (minus fee) on both SDK and EVM layers as before
-						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 						s.Require().True(aislmSenderBalanceBefore.Sub(fiveIslm).IsLT(aislmSenderBalanceAfter))
-						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmSenderGrpcBalanceBefore.Balance.Sub(fee).IsGTE(*aislmSenderGrpcBalanceAfter.Balance))
 						s.Require().True(aislmSenderGrpcBalanceAfter.Balance.IsGTE(aislmSenderGrpcBalanceBefore.Balance.Sub(fee)))
 
 						// Receiver must have the same uosmo balance on both SDK and EVM layers as before
-						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoReceiverBalanceAfter.IsZero())
-						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(uosmoReceiverGrpcBalanceAfter.Balance.IsZero())
 						// Receiver must have the same aislm balance on both SDK and EVM layers as before
-						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 						s.Require().True(aislmReceiverBalanceAfter.IsZero())
-						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmReceiverGrpcBalanceAfter.Balance.IsZero())
@@ -689,80 +689,80 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						transferCoins := sdk.NewCoins(sixUosmo, fiveIslm)
 						bankTransferMsg := banktypes.NewMsgSend(senderAcc, receiverAcc, transferCoins)
 
-						s.HaqqChain.Coordinator.UpdateTimeForChain(s.HaqqChain)
-						fee := sdk.NewInt64Coin(haqqDenom, ibctesting.DefaultFeeAmt)
+						s.neuraChain.Coordinator.UpdateTimeForChain(s.neuraChain)
+						fee := sdk.NewInt64Coin(neuraDenom, ibctesting.DefaultFeeAmt)
 
 						// ensure the chain has the latest time
-						s.HaqqChain.Coordinator.UpdateTimeForChain(s.HaqqChain)
+						s.neuraChain.Coordinator.UpdateTimeForChain(s.neuraChain)
 
 						_, _, err = ibctesting.SignAndDeliver(
-							s.HaqqChain.T,
-							s.HaqqChain.TxConfig,
-							s.HaqqChain.App.GetBaseApp(),
+							s.neuraChain.T,
+							s.neuraChain.TxConfig,
+							s.neuraChain.App.GetBaseApp(),
 							[]sdk.Msg{bankTransferMsg},
 							sdk.Coins{fee},
-							s.HaqqChain.ChainID,
-							[]uint64{s.HaqqChain.SenderAccount.GetAccountNumber()},
-							[]uint64{s.HaqqChain.SenderAccount.GetSequence()},
+							s.neuraChain.ChainID,
+							[]uint64{s.neuraChain.SenderAccount.GetAccountNumber()},
+							[]uint64{s.neuraChain.SenderAccount.GetSequence()},
 							true,
-							s.HaqqChain.SenderPrivKey,
+							s.neuraChain.SenderPrivKey,
 						)
 						s.Require().NoError(err)
 
 						_, _, err = ibctesting.SignAndDeliver(
-							s.HaqqChain.T,
-							s.HaqqChain.TxConfig,
-							s.HaqqChain.App.GetBaseApp(),
+							s.neuraChain.T,
+							s.neuraChain.TxConfig,
+							s.neuraChain.App.GetBaseApp(),
 							[]sdk.Msg{bankTransferMsg},
 							sdk.Coins{fee},
-							s.HaqqChain.ChainID,
-							[]uint64{s.HaqqChain.SenderAccount.GetAccountNumber()},
-							[]uint64{s.HaqqChain.SenderAccount.GetSequence() + 1},
+							s.neuraChain.ChainID,
+							[]uint64{s.neuraChain.SenderAccount.GetAccountNumber()},
+							[]uint64{s.neuraChain.SenderAccount.GetSequence() + 1},
 							false,
-							s.HaqqChain.SenderPrivKey,
+							s.neuraChain.SenderPrivKey,
 						)
 						s.Require().Error(err)
 
 						// NextBlock calls app.Commit()
-						s.HaqqChain.NextBlock()
+						s.neuraChain.NextBlock()
 
 						// Check the results
 
 						// Sender must have zero uosmo on SDK layer and 5 uosmo on EVM
-						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoSenderBalanceAfter.IsZero())
-						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().Equal(uosmoSenderGrpcBalanceBefore.Balance.Sub(sixUosmo).Amount.Int64(), uosmoSenderGrpcBalanceAfter.Balance.Amount.Int64())
 						// Sender must have less aislm tokens than before on transfer amount and fee
-						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 						s.Require().True(aislmSenderBalanceBefore.Sub(fiveIslm).IsGTE(aislmSenderBalanceAfter))
-						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmSenderGrpcBalanceBefore.Balance.Sub(fiveIslm).IsGTE(*aislmSenderGrpcBalanceAfter.Balance))
 
 						// Receiver must have zero uosmo on SDK layer and 5 uosmo on EVM
-						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoReceiverBalanceAfter.IsZero())
-						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().Equal(uosmoReceiverGrpcBalanceBefore.Balance.Add(sixUosmo).Amount.Int64(), uosmoReceiverGrpcBalanceAfter.Balance.Amount.Int64())
 						// Receiver must have 5 ISLM
-						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 						s.Require().True(aislmReceiverBalanceBefore.Add(fiveIslm).IsGTE(aislmReceiverBalanceAfter))
 						s.Require().True(aislmReceiverBalanceAfter.IsGTE(aislmReceiverBalanceBefore.Add(fiveIslm)))
-						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmReceiverGrpcBalanceBefore.Balance.Add(fiveIslm).IsGTE(*aislmReceiverGrpcBalanceAfter.Balance))
@@ -778,44 +778,44 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						err := msgConvertCoin.ValidateBasic()
 						s.Require().NoError(err)
 
-						_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.HaqqChain.GetContext()), msgConvertCoin)
+						_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.neuraChain.GetContext()), msgConvertCoin)
 						s.Require().NoError(err)
 
-						s.HaqqChain.Coordinator.CommitBlock()
+						s.neuraChain.Coordinator.CommitBlock()
 
 						// Get the initial balances after conversion
-						uosmoSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+						uosmoSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 						s.Require().Equal(sixUosmo.Amount.Int64(), uosmoSenderBalanceBefore.Amount.Int64())
-						aislmSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+						aislmSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 						s.Require().False(aislmSenderBalanceBefore.IsZero())
 
-						uosmoSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().Equal(amount, uosmoSenderGrpcBalanceBefore.Balance.Amount.Int64())
-						aislmSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().False(aislmSenderGrpcBalanceBefore.Balance.IsZero())
 
-						uosmoReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+						uosmoReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoReceiverBalanceBefore.IsZero())
-						aislmReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+						aislmReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 						s.Require().True(aislmReceiverBalanceBefore.IsZero())
 
-						uosmoReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(uosmoReceiverGrpcBalanceBefore.Balance.IsZero())
-						aislmReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmReceiverGrpcBalanceBefore.Balance.IsZero())
@@ -831,46 +831,46 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						// Transfer Coins via DeliverTx
 						transferCoins := sdk.NewCoins(fourUosmo, fiveIslm)
 						bankTransferMsg := banktypes.NewMsgSend(senderAcc, receiverAcc, transferCoins)
-						_, err = ibctesting.SendMsgs(s.HaqqChain, ibctesting.DefaultFeeAmt, bankTransferMsg)
+						_, err = ibctesting.SendMsgs(s.neuraChain, ibctesting.DefaultFeeAmt, bankTransferMsg)
 						s.Require().NoError(err) // message committed
 
 						// Check the results
 
 						// Sender must have zero uosmo on SDK layer and 6 uosmo on EVM
-						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoSenderBalanceAfter.IsZero())
-						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().Equal(uosmoSenderGrpcBalanceBefore.Balance.Sub(fourUosmo).Amount.Int64(), uosmoSenderGrpcBalanceAfter.Balance.Amount.Int64())
 						// Sender must have less aislm tokens than before on transfer amount and fee
-						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 						s.Require().True(aislmSenderBalanceBefore.Sub(fiveIslm).IsGTE(aislmSenderBalanceAfter))
-						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmSenderGrpcBalanceBefore.Balance.Sub(fiveIslm).IsGTE(*aislmSenderGrpcBalanceAfter.Balance))
 
 						// Receiver must have zero uosmo on SDK layer and 4 uosmo on EVM
-						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoReceiverBalanceAfter.IsZero())
-						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().Equal(uosmoReceiverGrpcBalanceBefore.Balance.Add(fourUosmo).Amount.Int64(), uosmoReceiverGrpcBalanceAfter.Balance.Amount.Int64())
 						// Receiver must have 5 ISLM
-						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 						s.Require().True(aislmReceiverBalanceBefore.Add(fiveIslm).IsGTE(aislmReceiverBalanceAfter))
 						s.Require().True(aislmReceiverBalanceAfter.IsGTE(aislmReceiverBalanceBefore.Add(fiveIslm)))
-						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmReceiverGrpcBalanceBefore.Balance.Add(fiveIslm).IsGTE(*aislmReceiverGrpcBalanceAfter.Balance))
@@ -888,29 +888,29 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						transferCoins := sdk.NewCoins(fiveHundredUosmo, fiveIslm)
 						bankTransferMsg := banktypes.NewMsgSend(senderAcc, receiverAcc, transferCoins)
 
-						s.HaqqChain.Coordinator.UpdateTimeForChain(s.HaqqChain)
-						fee := sdk.NewInt64Coin(haqqDenom, ibctesting.DefaultFeeAmt)
+						s.neuraChain.Coordinator.UpdateTimeForChain(s.neuraChain)
+						fee := sdk.NewInt64Coin(neuraDenom, ibctesting.DefaultFeeAmt)
 						_, _, err = ibctesting.SignAndDeliver(
-							s.HaqqChain.T,
-							s.HaqqChain.TxConfig,
-							s.HaqqChain.App.GetBaseApp(),
+							s.neuraChain.T,
+							s.neuraChain.TxConfig,
+							s.neuraChain.App.GetBaseApp(),
 							[]sdk.Msg{bankTransferMsg},
 							sdk.Coins{fee},
-							s.HaqqChain.ChainID,
-							[]uint64{s.HaqqChain.SenderAccount.GetAccountNumber()},
-							[]uint64{s.HaqqChain.SenderAccount.GetSequence()},
-							false, s.HaqqChain.SenderPrivKey,
+							s.neuraChain.ChainID,
+							[]uint64{s.neuraChain.SenderAccount.GetAccountNumber()},
+							[]uint64{s.neuraChain.SenderAccount.GetSequence()},
+							false, s.neuraChain.SenderPrivKey,
 						)
 						s.Require().Error(err)
 						// NextBlock calls app.Commit()
-						s.HaqqChain.NextBlock()
+						s.neuraChain.NextBlock()
 
 						// Check the results
 
 						// Sender must have the same uosmo balance on both SDK and EVM layers as before
-						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 						s.Require().Equal(sixUosmo.Amount.Int64(), uosmoSenderBalanceAfter.Amount.Int64())
-						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
@@ -918,31 +918,31 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						s.Require().True(uosmoSenderGrpcBalanceBefore.Balance.IsGTE(*uosmoSenderGrpcBalanceAfter.Balance))
 						s.Require().True(uosmoSenderGrpcBalanceAfter.Balance.IsGTE(*uosmoSenderGrpcBalanceBefore.Balance))
 						// Sender must have the same aislm balance (minus fee) on both SDK and EVM layers as before
-						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 						s.Require().True(aislmSenderBalanceBefore.Sub(fiveIslm).IsLT(aislmSenderBalanceAfter))
-						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmSenderGrpcBalanceBefore.Balance.Sub(fee).IsGTE(*aislmSenderGrpcBalanceAfter.Balance))
 						s.Require().True(aislmSenderGrpcBalanceAfter.Balance.IsGTE(aislmSenderGrpcBalanceBefore.Balance.Sub(fee)))
 
 						// Receiver must have the same uosmo balance on both SDK and EVM layers as before
-						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoReceiverBalanceAfter.IsZero())
-						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(uosmoReceiverGrpcBalanceAfter.Balance.IsZero())
 						// Receiver must have the same aislm balance on both SDK and EVM layers as before
-						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 						s.Require().True(aislmReceiverBalanceAfter.IsZero())
-						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmReceiverGrpcBalanceAfter.Balance.IsZero())
@@ -957,44 +957,44 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						err := msgConvertCoin.ValidateBasic()
 						s.Require().NoError(err)
 
-						_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.HaqqChain.GetContext()), msgConvertCoin)
+						_, err = s.app.Erc20Keeper.ConvertCoin(sdk.WrapSDKContext(s.neuraChain.GetContext()), msgConvertCoin)
 						s.Require().NoError(err)
 
-						s.HaqqChain.Coordinator.CommitBlock()
+						s.neuraChain.Coordinator.CommitBlock()
 
 						// Get the initial balances after conversion
-						uosmoSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+						uosmoSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoSenderBalanceBefore.IsZero())
-						aislmSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+						aislmSenderBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 						s.Require().False(aislmSenderBalanceBefore.IsZero())
 
-						uosmoSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().Equal(amount, uosmoSenderGrpcBalanceBefore.Balance.Amount.Int64())
-						aislmSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmSenderGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().False(aislmSenderGrpcBalanceBefore.Balance.IsZero())
 
-						uosmoReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+						uosmoReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoReceiverBalanceBefore.IsZero())
-						aislmReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+						aislmReceiverBalanceBefore = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 						s.Require().True(aislmReceiverBalanceBefore.IsZero())
 
-						uosmoReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(uosmoReceiverGrpcBalanceBefore.Balance.IsZero())
-						aislmReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmReceiverGrpcBalanceBefore, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmReceiverGrpcBalanceBefore.Balance.IsZero())
@@ -1010,46 +1010,46 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						// Transfer Coins via DeliverTx
 						transferCoins := sdk.NewCoins(fourUosmo, fiveIslm)
 						bankTransferMsg := banktypes.NewMsgSend(senderAcc, receiverAcc, transferCoins)
-						_, err = ibctesting.SendMsgs(s.HaqqChain, ibctesting.DefaultFeeAmt, bankTransferMsg)
+						_, err = ibctesting.SendMsgs(s.neuraChain, ibctesting.DefaultFeeAmt, bankTransferMsg)
 						s.Require().NoError(err) // message committed
 
 						// Check the results
 
 						// Sender must have zero uosmo on SDK layer and 6 uosmo on EVM
-						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoSenderBalanceAfter.IsZero())
-						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().Equal(uosmoSenderGrpcBalanceBefore.Balance.Sub(fourUosmo).Amount.Int64(), uosmoSenderGrpcBalanceAfter.Balance.Amount.Int64())
 						// Sender must have less aislm tokens than before on transfer amount and fee
-						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 						s.Require().True(aislmSenderBalanceBefore.Sub(fiveIslm).IsGTE(aislmSenderBalanceAfter))
-						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmSenderGrpcBalanceBefore.Balance.Sub(fiveIslm).IsGTE(*aislmSenderGrpcBalanceAfter.Balance))
 
 						// Receiver must have zero uosmo on SDK layer and 4 uosmo on EVM
-						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoReceiverBalanceAfter.IsZero())
-						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().Equal(uosmoReceiverGrpcBalanceBefore.Balance.Add(fourUosmo).Amount.Int64(), uosmoReceiverGrpcBalanceAfter.Balance.Amount.Int64())
 						// Receiver must have 5 ISLM
-						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 						s.Require().True(aislmReceiverBalanceBefore.Add(fiveIslm).IsGTE(aislmReceiverBalanceAfter))
 						s.Require().True(aislmReceiverBalanceAfter.IsGTE(aislmReceiverBalanceBefore.Add(fiveIslm)))
-						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmReceiverGrpcBalanceBefore.Balance.Add(fiveIslm).IsGTE(*aislmReceiverGrpcBalanceAfter.Balance))
@@ -1067,29 +1067,29 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						transferCoins := sdk.NewCoins(fiveHundredUosmo, fiveIslm)
 						bankTransferMsg := banktypes.NewMsgSend(senderAcc, receiverAcc, transferCoins)
 
-						s.HaqqChain.Coordinator.UpdateTimeForChain(s.HaqqChain)
-						fee := sdk.NewInt64Coin(haqqDenom, ibctesting.DefaultFeeAmt)
+						s.neuraChain.Coordinator.UpdateTimeForChain(s.neuraChain)
+						fee := sdk.NewInt64Coin(neuraDenom, ibctesting.DefaultFeeAmt)
 						_, _, err = ibctesting.SignAndDeliver(
-							s.HaqqChain.T,
-							s.HaqqChain.TxConfig,
-							s.HaqqChain.App.GetBaseApp(),
+							s.neuraChain.T,
+							s.neuraChain.TxConfig,
+							s.neuraChain.App.GetBaseApp(),
 							[]sdk.Msg{bankTransferMsg},
 							sdk.Coins{fee},
-							s.HaqqChain.ChainID,
-							[]uint64{s.HaqqChain.SenderAccount.GetAccountNumber()},
-							[]uint64{s.HaqqChain.SenderAccount.GetSequence()},
-							false, s.HaqqChain.SenderPrivKey,
+							s.neuraChain.ChainID,
+							[]uint64{s.neuraChain.SenderAccount.GetAccountNumber()},
+							[]uint64{s.neuraChain.SenderAccount.GetSequence()},
+							false, s.neuraChain.SenderPrivKey,
 						)
 						s.Require().Error(err)
 						// NextBlock calls app.Commit()
-						s.HaqqChain.NextBlock()
+						s.neuraChain.NextBlock()
 
 						// Check the results
 
 						// Sender must have the same uosmo balance on both SDK and EVM layers as before
-						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
+						uosmoSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, teststypes.UosmoIbcdenom)
 						s.Require().Equal(uosmoSenderBalanceBefore.Amount.Int64(), uosmoSenderBalanceAfter.Amount.Int64())
-						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
@@ -1097,31 +1097,31 @@ var _ = Describe("Check balance of IBC tokens registered as ERC20", Ordered, fun
 						s.Require().True(uosmoSenderGrpcBalanceBefore.Balance.IsGTE(*uosmoSenderGrpcBalanceAfter.Balance))
 						s.Require().True(uosmoSenderGrpcBalanceAfter.Balance.IsGTE(*uosmoSenderGrpcBalanceBefore.Balance))
 						// Sender must have the same aislm balance (minus fee) on both SDK and EVM layers as before
-						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), senderAcc, haqqDenom)
+						aislmSenderBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), senderAcc, neuraDenom)
 						s.Require().True(aislmSenderBalanceBefore.Sub(fiveIslm).IsLT(aislmSenderBalanceAfter))
-						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmSenderGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: senderAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmSenderGrpcBalanceBefore.Balance.Sub(fee).IsGTE(*aislmSenderGrpcBalanceAfter.Balance))
 						s.Require().True(aislmSenderGrpcBalanceAfter.Balance.IsGTE(aislmSenderGrpcBalanceBefore.Balance.Sub(fee)))
 
 						// Receiver must have the same uosmo balance on both SDK and EVM layers as before
-						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
+						uosmoReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, teststypes.UosmoIbcdenom)
 						s.Require().True(uosmoReceiverBalanceAfter.IsZero())
-						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						uosmoReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
 							Denom:   teststypes.UosmoIbcdenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(uosmoReceiverGrpcBalanceAfter.Balance.IsZero())
 						// Receiver must have the same aislm balance on both SDK and EVM layers as before
-						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.HaqqChain.GetContext(), receiverAcc, haqqDenom)
+						aislmReceiverBalanceAfter = s.app.BankKeeper.GetBalance(s.neuraChain.GetContext(), receiverAcc, neuraDenom)
 						s.Require().True(aislmReceiverBalanceAfter.IsZero())
-						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.HaqqChain.GetContext()), &banktypes.QueryBalanceRequest{
+						aislmReceiverGrpcBalanceAfter, err = bankQueryClient.Balance(sdk.WrapSDKContext(s.neuraChain.GetContext()), &banktypes.QueryBalanceRequest{
 							Address: receiverAcc.String(),
-							Denom:   haqqDenom,
+							Denom:   neuraDenom,
 						})
 						s.Require().NoError(err)
 						s.Require().True(aislmReceiverGrpcBalanceAfter.Balance.IsZero())

@@ -28,7 +28,7 @@ import (
 	"github.com/avenbreaks/neurastone/encoding"
 )
 
-func TestHaqqAnteHandlerDecorator(t *testing.T) {
+func TestneuraAnteHandlerDecorator(t *testing.T) {
 	valPkey := ed25519.GenPrivKey()
 	valAddr := sdk.ValAddress(valPkey.PubKey().Address())
 
@@ -49,7 +49,7 @@ func TestHaqqAnteHandlerDecorator(t *testing.T) {
 
 	chainID := MainnetChainID + "-1"
 	db := dbm.NewMemDB()
-	app := NewHaqq(
+	app := Newneura(
 		log.NewTMLogger(log.NewSyncWriter(os.Stdout)),
 		db, nil, true,
 		map[int64]bool{}, DefaultNodeHome, 0,
@@ -72,7 +72,7 @@ func TestHaqqAnteHandlerDecorator(t *testing.T) {
 	)
 	app.Commit()
 
-	handler := NewHaqqAnteHandlerDecorator(*app.StakingKeeper.Keeper, func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, err error) {
+	handler := NewneuraAnteHandlerDecorator(*app.StakingKeeper.Keeper, func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, err error) {
 		return ctx, nil
 	})
 

@@ -41,7 +41,7 @@ var _ = DescribeTableSubtree("when sending a Cosmos transaction", func(signMode 
 
 			msg = &banktypes.MsgSend{
 				FromAddress: addr.String(),
-				ToAddress:   "haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+				ToAddress:   "neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 				Amount:      sdk.Coins{sdk.Coin{Amount: sdkmath.NewInt(1e14), Denom: utils.BaseDenom}},
 			}
 
@@ -76,7 +76,7 @@ var _ = DescribeTableSubtree("when sending a Cosmos transaction", func(signMode 
 
 			msg = &banktypes.MsgSend{
 				FromAddress: addr.String(),
-				ToAddress:   "haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+				ToAddress:   "neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 				Amount:      sdk.Coins{sdk.Coin{Amount: sdkmath.NewInt(1e14), Denom: utils.BaseDenom}},
 			}
 
@@ -113,7 +113,7 @@ var _ = DescribeTableSubtree("when sending a Cosmos transaction", func(signMode 
 
 			msg = &banktypes.MsgSend{
 				FromAddress: addr.String(),
-				ToAddress:   "haqq1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
+				ToAddress:   "neura1hdr0lhv75vesvtndlh78ck4cez6esz8u2lk0hq",
 				Amount:      sdk.Coins{sdk.Coin{Amount: sdkmath.NewInt(1), Denom: utils.BaseDenom}},
 			}
 

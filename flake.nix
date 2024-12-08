@@ -41,16 +41,16 @@
       {
         packages = rec {
           nixos-test = pkgs.callPackage ./nix/test { overlay = self.overlays.default; };
-          haqq = pkgsUnstable.callPackage ./nix/package.nix {
+          neura = pkgsUnstable.callPackage ./nix/package.nix {
             inherit (pkgsUnstable) buildGoApplication;
             inherit go;
             rev = if (self ? rev) then self.rev else self.dirtyRev;
           };
-          haqq-with-tests = haqq.overrideAttrs (_: {
+          neura-with-tests = neura.overrideAttrs (_: {
             subPackages = null;
             doCheck = true;
           });
-          default = haqq;
+          default = neura;
         };
 
         devShells = {
@@ -76,12 +76,12 @@
 
       overlays.default = prev: final: {
         inherit (inputs.cosmos.packages.${prev.system}) cosmovisor;
-        inherit (self.packages.${prev.system}) haqq;
+        inherit (self.packages.${prev.system}) neura;
         grafana-agent-unstable = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.grafana-agent;
       };
 
       nixosModules = {
-        haqqdSupervised = {
+        neuradSupervised = {
           imports = [ ./nix/nixos-module ];
 
           nixpkgs.overlays = [ self.overlays.default ];
@@ -91,11 +91,11 @@
       nixConfig = {
         extra-trusted-public-keys = [
           "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
-          "haqq.cachix.org-1:m8QJypf2boIKRBz4BvVyGPo7gHQoj4D6iMGCmGozNEg="
+          "neura.cachix.org-1:m8QJypf2boIKRBz4BvVyGPo7gHQoj4D6iMGCmGozNEg="
         ];
         extra-substituters = [
           "https://devenv.cachix.org"
-          "https://haqq.cachix.org"
+          "https://neura.cachix.org"
         ];
       };
     };

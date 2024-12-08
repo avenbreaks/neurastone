@@ -7,7 +7,7 @@
       sops.secrets.grafana_secret_key = {
       mode = "0400";
       owner = config.users.users.grafana-agent.name;
-      sopsFile = config.services.haqqd.grafana.sopsFile;
+      sopsFile = config.services.neurad.grafana.sopsFile;
       restartUnits = [ "grafana-agent-flow.service" ];
       };
       */
@@ -19,7 +19,7 @@
     ];
   };
 
-  services.haqqd-supervised = {
+  services.neurad-supervised = {
     enable = true;
     deleteOldBackups = 7;
     config = {
@@ -27,11 +27,11 @@
         enable = true;
 
         # get block hash from ping pub
-        # https://ping.pub/haqq/block/<current - 1k>
+        # https://ping.pub/neura/block/<current - 1k>
         trust_height = 9623214;
         trust_hash = "6E784CF9689F635DF7521B77A737E4BD7048699A93442C5E1E926B4A2736C83A";
 
-        rpc_servers = "https://rpc.tm.haqq.network:443,https://m-s1-tm.haqq.sh:443";
+        rpc_servers = "https://rpc.tm.neura.network:443,https://m-s1-tm.neura.sh:443";
       };
 
       # small chance to get discovered in a little time of running the test

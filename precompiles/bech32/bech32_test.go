@@ -106,7 +106,7 @@ func (s *PrecompileTestSuite) TestRun() {
 			"invalid bech32 human readable prefix (HRP)",
 		},
 		{
-			"pass - hex to bech32 account (haqq)",
+			"pass - hex to bech32 account (neura)",
 			func() *vm.Contract {
 				input, err := s.precompile.Pack(
 					bech32.HexToBech32Method,
@@ -129,7 +129,7 @@ func (s *PrecompileTestSuite) TestRun() {
 			"",
 		},
 		{
-			"pass - hex to bech32 validator operator (haqqvaloper)",
+			"pass - hex to bech32 validator operator (neuravaloper)",
 			func() *vm.Contract {
 				input, err := s.precompile.Pack(
 					bech32.HexToBech32Method,
@@ -152,7 +152,7 @@ func (s *PrecompileTestSuite) TestRun() {
 			"",
 		},
 		{
-			"pass - hex to bech32 consensus address (haqqvalcons)",
+			"pass - hex to bech32 consensus address (neuravalcons)",
 			func() *vm.Contract {
 				input, err := s.precompile.Pack(
 					bech32.HexToBech32Method,

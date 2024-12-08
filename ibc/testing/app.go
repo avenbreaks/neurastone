@@ -19,7 +19,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibcgotesting "github.com/cosmos/ibc-go/v7/testing"
 
-	haqqapp "github.com/avenbreaks/neurastone/app"
+	neuraapp "github.com/avenbreaks/neurastone/app"
 	"github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/utils"
 )
@@ -27,7 +27,7 @@ import (
 // DefaultTestingAppInit is a test helper function used to initialize an App
 // on the ibc testing pkg
 // need this design to make it compatible with the SetupTestinApp func on ibctesting pkg
-var DefaultTestingAppInit func(chainID string) func() (ibcgotesting.TestingApp, map[string]json.RawMessage) = haqqapp.SetupTestingApp
+var DefaultTestingAppInit func(chainID string) func() (ibcgotesting.TestingApp, map[string]json.RawMessage) = neuraapp.SetupTestingApp
 
 // SetupWithGenesisValSet initializes a new SimApp with a validator set and genesis accounts
 // that also act as delegators. For simplicity, each validator is bonded with a delegation
@@ -97,7 +97,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 		abci.RequestInitChain{
 			ChainId:         chainID,
 			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: haqqapp.DefaultConsensusParams,
+			ConsensusParams: neuraapp.DefaultConsensusParams,
 			AppStateBytes:   stateBytes,
 		},
 	)

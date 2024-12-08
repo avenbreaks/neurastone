@@ -50,12 +50,12 @@ type legacyWeb3ExtensionArgs struct {
 // It returns the signed transaction and an error
 func CreateEIP712CosmosTx(
 	ctx sdk.Context,
-	haqqApp *app.Haqq,
+	neuraApp *app.neura,
 	args EIP712TxArgs,
 ) (sdk.Tx, error) {
 	builder, err := PrepareEIP712CosmosTx(
 		ctx,
-		haqqApp,
+		neuraApp,
 		args,
 	)
 	return builder.GetTx(), err
@@ -66,7 +66,7 @@ func CreateEIP712CosmosTx(
 // It returns the tx builder with the signed transaction and an error
 func PrepareEIP712CosmosTx(
 	ctx sdk.Context,
-	haqqApp *app.Haqq,
+	neuraApp *app.neura,
 	args EIP712TxArgs,
 ) (client.TxBuilder, error) {
 	txArgs := args.CosmosTxArgs
@@ -78,9 +78,9 @@ func PrepareEIP712CosmosTx(
 	chainIDNum := pc.Uint64()
 
 	from := sdk.AccAddress(txArgs.Priv.PubKey().Address().Bytes())
-	accNumber := haqqApp.AccountKeeper.GetAccount(ctx, from).GetAccountNumber()
+	accNumber := neuraApp.AccountKeeper.GetAccount(ctx, from).GetAccountNumber()
 
-	nonce, err := haqqApp.AccountKeeper.GetSequence(ctx, from)
+	nonce, err := neuraApp.AccountKeeper.GetSequence(ctx, from)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +117,7 @@ func PrepareEIP712CosmosTx(
 
 	return signCosmosEIP712Tx(
 		ctx,
-		haqqApp,
+		neuraApp,
 		args,
 		builder,
 		chainIDNum,
@@ -129,7 +129,7 @@ func PrepareEIP712CosmosTx(
 // the provided private key and the typed data
 func signCosmosEIP712Tx(
 	ctx sdk.Context,
-	haqqApp *app.Haqq,
+	neuraApp *app.neura,
 	args EIP712TxArgs,
 	builder authtx.ExtensionOptionsTxBuilder,
 	chainID uint64,
@@ -138,7 +138,7 @@ func signCosmosEIP712Tx(
 	priv := args.CosmosTxArgs.Priv
 
 	from := sdk.AccAddress(priv.PubKey().Address().Bytes())
-	nonce, err := haqqApp.AccountKeeper.GetSequence(ctx, from)
+	nonce, err := neuraApp.AccountKeeper.GetSequence(ctx, from)
 	if err != nil {
 		return nil, err
 	}

@@ -44,7 +44,7 @@ type CosmosTxArgs struct {
 // It returns the signed transaction and an error
 func PrepareCosmosTx(
 	ctx sdk.Context,
-	haqqApp *app.Haqq,
+	neuraApp *app.neura,
 	args CosmosTxArgs,
 	signMode signing.SignMode,
 ) (authsigning.Tx, error) {
@@ -68,7 +68,7 @@ func PrepareCosmosTx(
 
 	return signCosmosTx(
 		ctx,
-		haqqApp,
+		neuraApp,
 		args,
 		txBuilder,
 		signMode,
@@ -79,13 +79,13 @@ func PrepareCosmosTx(
 // the provided private key
 func signCosmosTx(
 	ctx sdk.Context,
-	haqqApp *app.Haqq,
+	neuraApp *app.neura,
 	args CosmosTxArgs,
 	txBuilder client.TxBuilder,
 	signMode signing.SignMode,
 ) (authsigning.Tx, error) {
 	addr := sdk.AccAddress(args.Priv.PubKey().Address().Bytes())
-	seq, err := haqqApp.AccountKeeper.GetSequence(ctx, addr)
+	seq, err := neuraApp.AccountKeeper.GetSequence(ctx, addr)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func signCosmosTx(
 	}
 
 	// Second round: all signer infos are set, so each signer can sign.
-	accNumber := haqqApp.AccountKeeper.GetAccount(ctx, addr).GetAccountNumber()
+	accNumber := neuraApp.AccountKeeper.GetAccount(ctx, addr).GetAccountNumber()
 	signerData := authsigning.SignerData{
 		ChainID:       args.ChainID,
 		AccountNumber: accNumber,

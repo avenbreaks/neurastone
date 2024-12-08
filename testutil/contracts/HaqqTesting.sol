@@ -2,10 +2,10 @@
 pragma solidity 0.8.18;
 
 /*
-* @title HaqqTesting
+* @title neuraTesting
 * This smart contract allows making deposits and withdrawals for testing purposes.
 */
-contract HaqqTesting {
+contract neuraTesting {
     uint256 public constant MAX_DEPOSITS = 1;
 
     mapping(address => uint256) public depositsCounter;
@@ -35,8 +35,8 @@ contract HaqqTesting {
     /// @dev Function to make a new deposit.
     /// @param _beneficiaryAddress address that will receive payments from this deposit
     function deposit(address _beneficiaryAddress) external payable returns (bool success) {
-        require(_beneficiaryAddress != address(0), "HaqqVesting: beneficiary address is zero");
-        require(msg.value > 0, "HaqqVesting: deposit sum is zero");
+        require(_beneficiaryAddress != address(0), "neuraVesting: beneficiary address is zero");
+        require(msg.value > 0, "neuraVesting: deposit sum is zero");
         // new deposit id for this deposit
         uint256 depositId = ++depositsCounter[_beneficiaryAddress];
         require(depositId <= MAX_DEPOSITS, "Max deposit number for this address reached");

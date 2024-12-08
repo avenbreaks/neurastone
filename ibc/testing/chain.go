@@ -16,13 +16,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/avenbreaks/neurastone/crypto/ethsecp256k1"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/utils"
 	evmtypes "github.com/avenbreaks/neurastone/x/evm/types"
 )
 
-// ChainIDPrefix defines the default chain ID prefix for Haqq Network test chains
-var ChainIDPrefix = "haqq_"
+// ChainIDPrefix defines the default chain ID prefix for neura Network test chains
+var ChainIDPrefix = "neura_"
 
 func init() {
 	ibcgotesting.ChainIDPrefix = ChainIDPrefix
@@ -56,12 +56,12 @@ func NewTestChain(t *testing.T, coord *ibcgotesting.Coordinator, chainID string)
 
 	baseAcc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
 
-	acc := &haqqtypes.EthAccount{
+	acc := &neuratypes.EthAccount{
 		BaseAccount: baseAcc,
 		CodeHash:    common.BytesToHash(evmtypes.EmptyCodeHash).Hex(),
 	}
 
-	amount := sdk.TokensFromConsensusPower(1, haqqtypes.PowerReduction)
+	amount := sdk.TokensFromConsensusPower(1, neuratypes.PowerReduction)
 
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),

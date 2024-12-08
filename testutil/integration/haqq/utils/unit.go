@@ -8,7 +8,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
 	"github.com/avenbreaks/neurastone/utils"
 	coinomicstypes "github.com/avenbreaks/neurastone/x/coinomics/types"
 	erc20types "github.com/avenbreaks/neurastone/x/erc20/types"

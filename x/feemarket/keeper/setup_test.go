@@ -24,7 +24,7 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	ctx         sdk.Context
-	app         *app.Haqq
+	app         *app.neura
 	queryClient types.QueryClient
 	address     common.Address
 	consAddress sdk.ConsAddress

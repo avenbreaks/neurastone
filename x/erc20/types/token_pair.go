@@ -5,7 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 )
 
 // NewTokenPair returns an instance of TokenPair
@@ -35,7 +35,7 @@ func (tp TokenPair) Validate() error {
 		return err
 	}
 
-	return haqqtypes.ValidateAddress(tp.Erc20Address)
+	return neuratypes.ValidateAddress(tp.Erc20Address)
 }
 
 // IsNativeCoin returns true if the owner of the ERC20 contract is the

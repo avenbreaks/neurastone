@@ -8,7 +8,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	testtx "github.com/avenbreaks/neurastone/testutil/tx"
-	haqqtypes "github.com/avenbreaks/neurastone/types"
+	neuratypes "github.com/avenbreaks/neurastone/types"
 	"github.com/avenbreaks/neurastone/utils"
 )
 
@@ -62,7 +62,7 @@ type ConfigOption func(*Config)
 
 // WithChainID sets a custom chainID for the network. It panics if the chainID is invalid.
 func WithChainID(chainID string) ConfigOption {
-	chainIDNum, err := haqqtypes.ParseChainID(chainID)
+	chainIDNum, err := neuratypes.ParseChainID(chainID)
 	if err != nil {
 		panic(err)
 	}

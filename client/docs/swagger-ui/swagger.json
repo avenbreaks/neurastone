@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Haqq Network gRPC API",
+    "title": "neura Network gRPC API",
     "version": "1.8.0"
   },
   "tags": [
@@ -6797,7 +6797,7 @@
         ]
       }
     },
-    "/haqq/coinomics/v1/params": {
+    "/neura/coinomics/v1/params": {
       "get": {
         "summary": "Params retrieves coinomics moudle params.",
         "operationId": "Params",
@@ -6805,7 +6805,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/haqq.coinomics.v1.QueryParamsResponse"
+              "$ref": "#/definitions/neura.coinomics.v1.QueryParamsResponse"
             }
           },
           "default": {
@@ -6820,7 +6820,7 @@
         ]
       }
     },
-    "/haqq/coinomics/v1/reward_coefficient": {
+    "/neura/coinomics/v1/reward_coefficient": {
       "get": {
         "summary": "InflationRewardCoefficientRate APY rate for staking rewards",
         "operationId": "RewardCoefficient",
@@ -6828,7 +6828,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/haqq.coinomics.v1.QueryRewardCoefficientResponse"
+              "$ref": "#/definitions/neura.coinomics.v1.QueryRewardCoefficientResponse"
             }
           },
           "default": {
@@ -6843,7 +6843,7 @@
         ]
       }
     },
-    "/haqq/liquidvesting/v1/denom": {
+    "/neura/liquidvesting/v1/denom": {
       "get": {
         "summary": "Denom queries liquid vesting token info by denom",
         "operationId": "Denom",
@@ -6851,7 +6851,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/haqq.liquidvesting.v1.QueryDenomResponse"
+              "$ref": "#/definitions/neura.liquidvesting.v1.QueryDenomResponse"
             }
           },
           "default": {
@@ -6875,7 +6875,7 @@
         ]
       }
     },
-    "/haqq/liquidvesting/v1/denoms": {
+    "/neura/liquidvesting/v1/denoms": {
       "get": {
         "summary": "Denoms queries liquid vesting tokens info",
         "operationId": "Denoms",
@@ -6883,7 +6883,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/haqq.liquidvesting.v1.QueryDenomsResponse"
+              "$ref": "#/definitions/neura.liquidvesting.v1.QueryDenomsResponse"
             }
           },
           "default": {
@@ -6938,7 +6938,7 @@
         ]
       }
     },
-    "/haqq/ucdao/v1/balances/{address}": {
+    "/neura/ucdao/v1/balances/{address}": {
       "get": {
         "summary": "AllBalances queries the balance of all coins for a single account.",
         "description": "When called from another module, this query might consume a high amount of\ngas if the pagination field is incorrectly set.",
@@ -6947,7 +6947,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/haqq.ucdao.v1.QueryAllBalancesResponse"
+              "$ref": "#/definitions/neura.ucdao.v1.QueryAllBalancesResponse"
             }
           },
           "default": {
@@ -7009,7 +7009,7 @@
         ]
       }
     },
-    "/haqq/ucdao/v1/balances/{address}/by_denom": {
+    "/neura/ucdao/v1/balances/{address}/by_denom": {
       "get": {
         "summary": "Balance queries the balance of a single coin for a single account.",
         "operationId": "Balance",
@@ -7017,7 +7017,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/haqq.ucdao.v1.QueryBalanceResponse"
+              "$ref": "#/definitions/neura.ucdao.v1.QueryBalanceResponse"
             }
           },
           "default": {
@@ -7048,7 +7048,7 @@
         ]
       }
     },
-    "/haqq/ucdao/v1/params": {
+    "/neura/ucdao/v1/params": {
       "get": {
         "summary": "Params queries the parameters of x/ucdao module.",
         "operationId": "Params",
@@ -7056,7 +7056,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/haqq.ucdao.v1.QueryParamsResponse"
+              "$ref": "#/definitions/neura.ucdao.v1.QueryParamsResponse"
             }
           },
           "default": {
@@ -7071,7 +7071,7 @@
         ]
       }
     },
-    "/haqq/ucdao/v1/total_balance": {
+    "/neura/ucdao/v1/total_balance": {
       "get": {
         "summary": "TotalBalance queries the total balance of all coins locked in the module.",
         "description": "When called from another module, this query might consume a high amount of\ngas if the pagination field is incorrectly set.",
@@ -7080,7 +7080,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/haqq.ucdao.v1.QueryTotalBalanceResponse"
+              "$ref": "#/definitions/neura.ucdao.v1.QueryTotalBalanceResponse"
             }
           },
           "default": {
@@ -7135,7 +7135,7 @@
         ]
       }
     },
-    "/haqq/vesting/v1/balances/{address}": {
+    "/neura/vesting/v1/balances/{address}": {
       "get": {
         "summary": "Balances retrieves the unvested, vested and locked tokens for a vesting\naccount",
         "operationId": "Balances",
@@ -7143,7 +7143,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/haqq.vesting.v1.QueryBalancesResponse"
+              "$ref": "#/definitions/neura.vesting.v1.QueryBalancesResponse"
             }
           },
           "default": {
@@ -7167,7 +7167,7 @@
         ]
       }
     },
-    "/haqq/vesting/v1/total_locked": {
+    "/neura/vesting/v1/total_locked": {
       "get": {
         "summary": "TotalLocked retrieves the total summary of all unvested, vested and locked\ntokens",
         "operationId": "TotalLocked",
@@ -7175,7 +7175,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/haqq.vesting.v1.QueryTotalLockedResponse"
+              "$ref": "#/definitions/neura.vesting.v1.QueryTotalLockedResponse"
             }
           },
           "default": {
@@ -7198,7 +7198,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/haqq.coinomics.v1.QueryMaxSupplyResponse"
+              "$ref": "#/definitions/neura.coinomics.v1.QueryMaxSupplyResponse"
             }
           },
           "default": {
@@ -14516,7 +14516,7 @@
         }
       }
     },
-    "haqq.coinomics.v1.Params": {
+    "neura.coinomics.v1.Params": {
       "type": "object",
       "properties": {
         "mintDenom": {
@@ -14534,7 +14534,7 @@
       },
       "description": "Params holds parameters for the coinomics module."
     },
-    "haqq.coinomics.v1.QueryMaxSupplyResponse": {
+    "neura.coinomics.v1.QueryMaxSupplyResponse": {
       "type": "object",
       "properties": {
         "maxSupply": {
@@ -14542,16 +14542,16 @@
         }
       }
     },
-    "haqq.coinomics.v1.QueryParamsResponse": {
+    "neura.coinomics.v1.QueryParamsResponse": {
       "type": "object",
       "properties": {
         "params": {
-          "$ref": "#/definitions/haqq.coinomics.v1.Params",
+          "$ref": "#/definitions/neura.coinomics.v1.Params",
           "description": "params defines the parameters of the module."
         }
       }
     },
-    "haqq.coinomics.v1.QueryRewardCoefficientResponse": {
+    "neura.coinomics.v1.QueryRewardCoefficientResponse": {
       "type": "object",
       "properties": {
         "rewardCoefficient": {
@@ -14560,7 +14560,7 @@
         }
       }
     },
-    "haqq.liquidvesting.v1.Denom": {
+    "neura.liquidvesting.v1.Denom": {
       "type": "object",
       "properties": {
         "baseDenom": {
@@ -14596,24 +14596,24 @@
       },
       "title": "Denom represents liquid token bonded to some specific vesting schedule"
     },
-    "haqq.liquidvesting.v1.QueryDenomResponse": {
+    "neura.liquidvesting.v1.QueryDenomResponse": {
       "type": "object",
       "properties": {
         "denom": {
-          "$ref": "#/definitions/haqq.liquidvesting.v1.Denom",
+          "$ref": "#/definitions/neura.liquidvesting.v1.Denom",
           "title": "denom is liquidated vesting token"
         }
       },
       "title": "QueryDenomResponse is response for Denom rpc method"
     },
-    "haqq.liquidvesting.v1.QueryDenomsResponse": {
+    "neura.liquidvesting.v1.QueryDenomsResponse": {
       "type": "object",
       "properties": {
         "denoms": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/haqq.liquidvesting.v1.Denom"
+            "$ref": "#/definitions/neura.liquidvesting.v1.Denom"
           },
           "title": "denoms are liquidated vesting tokens"
         },
@@ -14624,7 +14624,7 @@
       },
       "title": "QueryDenomsResponse is response for Denoms rpc method"
     },
-    "haqq.ucdao.v1.AllowedCollateral": {
+    "neura.ucdao.v1.AllowedCollateral": {
       "type": "object",
       "properties": {
         "value": {
@@ -14632,12 +14632,12 @@
           "description": "value is the allowed collateral value."
         },
         "type": {
-          "$ref": "#/definitions/haqq.ucdao.v1.CollateralValueType",
+          "$ref": "#/definitions/neura.ucdao.v1.CollateralValueType",
           "description": "type is the allowed collateral value type."
         }
       }
     },
-    "haqq.ucdao.v1.CollateralValueType": {
+    "neura.ucdao.v1.CollateralValueType": {
       "type": "string",
       "enum": [
         "COLLATERAL_VALUE_TYPE_UNSPECIFIED",
@@ -14647,7 +14647,7 @@
       "default": "COLLATERAL_VALUE_TYPE_UNSPECIFIED",
       "description": "CollateralValueType defines the type of collateral value.\n\n - COLLATERAL_VALUE_TYPE_UNSPECIFIED: COLLATERAL_VALUE_TYPE_UNSPECIFIED is the unspecified collateral value type.\n - COLLATERAL_VALUE_TYPE_STRICT: COLLATERAL_VALUE_TYPE_STRICT is the strict collateral value type.\n - COLLATERAL_VALUE_TYPE_MASK: COLLATERAL_VALUE_TYPE_MASK is the mask collateral value type."
     },
-    "haqq.ucdao.v1.Params": {
+    "neura.ucdao.v1.Params": {
       "type": "object",
       "properties": {
         "enableDao": {
@@ -14658,14 +14658,14 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/haqq.ucdao.v1.AllowedCollateral"
+            "$ref": "#/definitions/neura.ucdao.v1.AllowedCollateral"
           },
           "description": "allowed_collaterals is the allowed collateral values."
         }
       },
       "description": "Params defines the parameters for the dao module."
     },
-    "haqq.ucdao.v1.QueryAllBalancesResponse": {
+    "neura.ucdao.v1.QueryAllBalancesResponse": {
       "type": "object",
       "properties": {
         "balances": {
@@ -14683,7 +14683,7 @@
       },
       "description": "QueryAllBalancesResponse is the response type for the Query/AllBalances RPC\nmethod."
     },
-    "haqq.ucdao.v1.QueryBalanceResponse": {
+    "neura.ucdao.v1.QueryBalanceResponse": {
       "type": "object",
       "properties": {
         "balance": {
@@ -14693,16 +14693,16 @@
       },
       "description": "QueryBalanceResponse is the response type for the Query/Balance RPC method."
     },
-    "haqq.ucdao.v1.QueryParamsResponse": {
+    "neura.ucdao.v1.QueryParamsResponse": {
       "type": "object",
       "properties": {
         "params": {
-          "$ref": "#/definitions/haqq.ucdao.v1.Params"
+          "$ref": "#/definitions/neura.ucdao.v1.Params"
         }
       },
       "description": "QueryParamsResponse defines the response type for querying x/ucdao parameters."
     },
-    "haqq.ucdao.v1.QueryTotalBalanceResponse": {
+    "neura.ucdao.v1.QueryTotalBalanceResponse": {
       "type": "object",
       "properties": {
         "totalBalance": {
@@ -14720,7 +14720,7 @@
       },
       "title": "QueryTotalBalanceResponse is the response type for the Query/TotalBalance RPC\nmethod"
     },
-    "haqq.vesting.v1.QueryBalancesResponse": {
+    "neura.vesting.v1.QueryBalancesResponse": {
       "type": "object",
       "properties": {
         "locked": {
@@ -14750,7 +14750,7 @@
       },
       "description": "QueryBalancesResponse is the response type for the Query/Balances RPC\nmethod."
     },
-    "haqq.vesting.v1.QueryTotalLockedResponse": {
+    "neura.vesting.v1.QueryTotalLockedResponse": {
       "type": "object",
       "properties": {
         "locked": {

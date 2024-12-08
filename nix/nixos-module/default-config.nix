@@ -1,19 +1,19 @@
-{ pkgs, haqqdPackage }:
+{ pkgs, neuradPackage }:
 let
   inherit (pkgs) stdenv callPackage;
 in
 stdenv.mkDerivation {
-  name = "haqqd-default-config";
-  version = haqqdPackage.version;
+  name = "neurad-default-config";
+  version = neuradPackage.version;
 
-  buildInputs = [ haqqdPackage ];
+  buildInputs = [ neuradPackage ];
 
   dontUnpack = true;
 
-  CHAIN_ID = "haqqd_11235-1";
+  CHAIN_ID = "neurad_11235-1";
 
   buildPhase = ''
-    haqqd init "haqqd-node" --chain-id $CHAIN_ID --home .
+    neurad init "neurad-node" --chain-id $CHAIN_ID --home .
 
     mkdir $out
     mv config/app.toml $out

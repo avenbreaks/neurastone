@@ -54,7 +54,7 @@ type IntegrationNetwork struct {
 	cfg        Config
 	ctx        sdktypes.Context
 	validators []stakingtypes.Validator
-	app        *app.Haqq
+	app        *app.neura
 
 	// This is only needed for IBC chain testing setup
 	valSet     *tmtypes.ValidatorSet
@@ -116,29 +116,29 @@ func (n *IntegrationNetwork) configureAndInitChain() error {
 
 	delegations := createDelegations(valSet.Validators, genAccounts[0].GetAddress())
 
-	// Create a new HaqqApp with the following params
-	haqqApp := createHaqqApp(n.cfg.chainID)
+	// Create a new neuraApp with the following params
+	neuraApp := createneuraApp(n.cfg.chainID)
 
 	// Configure Genesis state
 	genesisState := app.NewDefaultGenesisState()
 
-	genesisState = setAuthGenesisState(haqqApp, genesisState, genAccounts)
+	genesisState = setAuthGenesisState(neuraApp, genesisState, genAccounts)
 
 	stakingParams := StakingCustomGenesisState{
 		denom:       n.cfg.denom,
 		validators:  validators,
 		delegations: delegations,
 	}
-	genesisState = setStakingGenesisState(haqqApp, genesisState, stakingParams)
+	genesisState = setStakingGenesisState(neuraApp, genesisState, stakingParams)
 
-	genesisState = setCoinomicsGenesisState(haqqApp, genesisState)
+	genesisState = setCoinomicsGenesisState(neuraApp, genesisState)
 
 	totalSupply := calculateTotalSupply(fundedAccountBalances)
 	bankParams := BankCustomGenesisState{
 		totalSupply: totalSupply,
 		balances:    fundedAccountBalances,
 	}
-	genesisState = setBankGenesisState(haqqApp, genesisState, bankParams)
+	genesisState = setBankGenesisState(neuraApp, genesisState, bankParams)
 
 	// Init chain
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -147,7 +147,7 @@ func (n *IntegrationNetwork) configureAndInitChain() error {
 	}
 
 	now := time.Now()
-	haqqApp.InitChain(
+	neuraApp.InitChain(
 		abcitypes.RequestInitChain{
 			Time:            now,
 			ChainId:         n.cfg.chainID,
@@ -157,30 +157,30 @@ func (n *IntegrationNetwork) configureAndInitChain() error {
 		},
 	)
 	// Commit genesis changes
-	haqqApp.Commit()
+	neuraApp.Commit()
 
 	header := tmproto.Header{
 		ChainID:            n.cfg.chainID,
-		Height:             haqqApp.LastBlockHeight() + 1,
+		Height:             neuraApp.LastBlockHeight() + 1,
 		Time:               now,
-		AppHash:            haqqApp.LastCommitID().Hash,
+		AppHash:            neuraApp.LastCommitID().Hash,
 		ValidatorsHash:     valSet.Hash(),
 		NextValidatorsHash: valSet.Hash(),
 		ProposerAddress:    valSet.Proposer.Address,
 	}
-	haqqApp.BeginBlock(abcitypes.RequestBeginBlock{Header: header})
+	neuraApp.BeginBlock(abcitypes.RequestBeginBlock{Header: header})
 
 	// Set networks global parameters
-	n.app = haqqApp
+	n.app = neuraApp
 	// TODO - this might not be the best way to initilize the context
-	n.ctx = haqqApp.BaseApp.NewContext(false, header)
+	n.ctx = neuraApp.BaseApp.NewContext(false, header)
 	n.validators = validators
 	n.valSet = valSet
 	n.valSigners = valSigners
 
 	// Register ISLM in denom metadata
 	islmMetadata := banktypes.Metadata{
-		Description: "The native token of Haqq Network",
+		Description: "The native token of neura Network",
 		Base:        n.cfg.denom,
 		// NOTE: Denom units MUST be increasing
 		DenomUnits: []*banktypes.DenomUnit{
@@ -198,7 +198,7 @@ func (n *IntegrationNetwork) configureAndInitChain() error {
 		Symbol:  "ISLM",
 		Display: n.cfg.denom,
 	}
-	haqqApp.BankKeeper.SetDenomMetaData(n.ctx, islmMetadata)
+	neuraApp.BankKeeper.SetDenomMetaData(n.ctx, islmMetadata)
 
 	return nil
 }

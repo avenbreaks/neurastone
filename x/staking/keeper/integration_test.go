@@ -18,10 +18,10 @@ import (
 
 	"github.com/avenbreaks/neurastone/testutil"
 	"github.com/avenbreaks/neurastone/testutil/integration/common/factory"
-	haqqfactory "github.com/avenbreaks/neurastone/testutil/integration/haqq/factory"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/grpc"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/keyring"
-	"github.com/avenbreaks/neurastone/testutil/integration/haqq/network"
+	neurafactory "github.com/avenbreaks/neurastone/testutil/integration/neura/factory"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/grpc"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/keyring"
+	"github.com/avenbreaks/neurastone/testutil/integration/neura/network"
 	"github.com/avenbreaks/neurastone/utils"
 	vestingtypes "github.com/avenbreaks/neurastone/x/vesting/types"
 )
@@ -37,7 +37,7 @@ var _ = Describe("Staking module tests", func() {
 		nw   *network.UnitTestNetwork
 		gh   grpc.Handler
 		keys keyring.Keyring
-		tf   haqqfactory.TxFactory
+		tf   neurafactory.TxFactory
 	)
 
 	Context("using a vesting account", func() {
@@ -83,7 +83,7 @@ var _ = Describe("Staking module tests", func() {
 				network.WithBalances(balances...),
 			)
 			gh = grpc.NewIntegrationHandler(nw)
-			tf = haqqfactory.New(nw, gh)
+			tf = neurafactory.New(nw, gh)
 
 			Expect(nw.NextBlock()).To(BeNil())
 

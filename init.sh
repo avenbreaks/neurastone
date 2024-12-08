@@ -1,7 +1,7 @@
 #!/bin/bash 
 set -e
 KEY="localkey"
-CHAINID="haqq_121799-1"
+CHAINID="neura_121799-1"
 MONIKER="localtestnet"
 KEYRING="test"
 KEYALGO="eth_secp256k1"
